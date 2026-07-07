@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { App } from './App';
 import { Home } from './features/home/Home';
-import { ModuloShell } from './features/modulos/ModuloShell';
+import { ModuloDispatcher } from './features/modulos/ModuloDispatcher';
 import { Importar } from './features/importar/Importar';
 import { Backup } from './features/backup/Backup';
 import { ToastProvider } from './components/Toast';
@@ -16,7 +16,7 @@ const router = createHashRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'modulo/:slug', element: <ModuloShell /> },
+      { path: 'modulo/:slug', element: <ModuloDispatcher /> },
       { path: 'importar', element: <Importar /> },
       { path: 'backup', element: <Backup /> },
     ],

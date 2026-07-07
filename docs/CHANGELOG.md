@@ -2,6 +2,33 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Fase 2 — Diagnósticos core — 2026-07-07
+
+Módulos 01 Patrimonial, 02 Jurídico e 05 Logístico completos (os que já têm dados reais),
+cada um com as 3 abas da spec: Onboarding · Dados · Análise.
+
+### Adicionado
+- **Schema v2**: entidade `AnalisePilar` (SWOT + leitura executiva + recomendações), store `analises`,
+  migração aditiva. Incluída em backup/restore.
+- **CRUD na camada de dados** (`src/db/actions.ts`) para ativo, stakeholder, hipótese, evidência e análise.
+- **Regra de ouro enforçada nos dados**: hipótese só vai a "validada" com ≥ N evidências vinculadas
+  (default 3) — bloqueio em `salvarHipotese`, não só na UI.
+- **Módulo 05 Logístico** com o **funil hipótese → evidência → validação → business case**
+  (critério de pronto da fase), ranking de dores, players logísticos, evidências com vínculo a hipótese,
+  e resumo do galpão.
+- **Módulo 01 Patrimonial**: inventário de ativos (CRUD com ficha completa), matriz de potencial por pilar,
+  lista de coordenadas (mapa Leaflet fica para a Fase 5).
+- **Módulo 02 Jurídico**: matriz ativo × item jurídico colorida e clicável, lista de pendências
+  com responsável/prazo, seção Holding/SPE (prós, contras, anotações) com aviso de que não substitui advogado.
+- **Componentes**: `Tabs`, `SwotEditor` (drag nativo), `DiagnosticoLayout`, `AnaliseTab`, `ModuloDispatcher`.
+
+### Verificado (ver docs/QA_CHECKLIST.md)
+- Funil com dados reais: criar hipótese → vincular evidências → validação bloqueada com <3 e liberada com 3 →
+  **persiste após reload**. Build limpo, console sem erros, sem overflow em mobile.
+
+### Decisão de escopo
+- Recharts adiado: rankings em barras CSS acessíveis por ora; gráficos pizza/radar entram quando um módulo os exigir.
+
 ## Fase 1 — Fundação — 2026-07-07
 
 Primeira fundação funcional do app web local-first.

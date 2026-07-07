@@ -275,6 +275,29 @@ export interface KPI extends BaseEntity {
   historico: Medicao[]; // valor atual = última medição (derivado)
 }
 
+/* ── Análise por pilar (SWOT + leitura executiva) ─────────────────────── */
+export interface SwotItem {
+  id: ID;
+  texto: string;
+}
+
+export interface Swot {
+  forcas: SwotItem[];
+  fraquezas: SwotItem[];
+  oportunidades: SwotItem[];
+  ameacas: SwotItem[];
+}
+
+export type QuadranteSwot = keyof Swot;
+
+/** Uma análise por pilar (unicidade lógica por `pilar`). */
+export interface AnalisePilar extends BaseEntity {
+  pilar: Pilar;
+  swot: Swot;
+  leituraExecutiva: string;
+  recomendacoes: string;
+}
+
 /* ── Config (store auxiliar, não é entidade de domínio) ───────────────── */
 export interface Config {
   chave: string;
@@ -295,5 +318,6 @@ export interface BackupCompleto {
   decisoes: Decisao[];
   tarefas: Tarefa[];
   kpis: KPI[];
+  analises: AnalisePilar[];
   config: Config[];
 }

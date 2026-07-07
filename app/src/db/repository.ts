@@ -67,6 +67,7 @@ export async function limparTudo(): Promise<void> {
       db.decisoes,
       db.tarefas,
       db.kpis,
+      db.analises,
     ],
     async () => {
       await Promise.all([
@@ -79,6 +80,7 @@ export async function limparTudo(): Promise<void> {
         db.decisoes.clear(),
         db.tarefas.clear(),
         db.kpis.clear(),
+        db.analises.clear(),
       ]);
     }
   );

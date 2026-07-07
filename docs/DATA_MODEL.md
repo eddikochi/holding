@@ -5,8 +5,8 @@
 
 ## Versão de schema
 
-- **Schema atual: v1** (`SCHEMA_VERSION = 1` em `database.ts`).
-- Nenhuma migração de versão do IndexedDB ocorreu ainda (v1 é a inicial).
+- **Schema atual: v2** (`SCHEMA_VERSION = 2` em `database.ts`).
+- v1 → v2: migração aditiva (nova store `analises`), sem transformação de dados existentes.
 
 ## Convenções
 
@@ -28,7 +28,11 @@
 | 7 | `Decisao` | `decisoes` | id, data |
 | 8 | `Tarefa` | `tarefas` | id, horizonte, status, businessCaseId |
 | 9 | `KPI` | `kpis` | id, pilar |
+| — | `AnalisePilar` (análise) | `analises` | id, pilar |
 | — | `Config` (auxiliar) | `config` | chave |
+
+> `AnalisePilar` guarda o SWOT (4 quadrantes de itens) + leitura executiva + recomendações,
+> uma por pilar. Não é uma das 9 entidades de domínio — é artefato de análise (aba "Análise").
 
 ## Relacionamentos (texto)
 
@@ -51,6 +55,13 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 (`Config.minEvidenciasParaValidar`, default 3 — `getMinEvidencias()` em `database.ts`).
 
 ## Histórico de decisões de schema
+
+### v2 — 2026-07-07 — análise por pilar (Fase 2)
+- Nova store `analises` com a entidade `AnalisePilar` (`Swot` + `leituraExecutiva` + `recomendacoes`),
+  uma por pilar (`obterOuCriarAnalise` cria sob demanda; unicidade lógica por `pilar`).
+- Incluída em backup/restore e em `limparTudo`. Migração `version(2)` aditiva — nenhum dado v1 alterado.
+- Regra de validação da hipótese (≥ N evidências) passou a ser **enforçada na camada de dados**
+  (`salvarHipotese` em `db/actions.ts`), não só na UI.
 
 ### v1 — 2026-07-07 — schema inicial (Fase 1)
 - Criadas as 9 entidades conforme SPEC.md § "MODELO DE DADOS CENTRAL".

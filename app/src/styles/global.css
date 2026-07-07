@@ -135,6 +135,64 @@ input[type=text], input[type=file], select, textarea {
   border-radius: var(--r-input); font-size: 14px; font-family: inherit; background: #fff; color: var(--ink);
 }
 
+/* tabs */
+.tabs-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: var(--s4); overflow-x: auto; }
+.tab-btn {
+  background: none; border: none; padding: 10px 16px; font-size: 13.5px; font-weight: 600;
+  color: var(--ink-soft); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  white-space: nowrap; font-family: inherit;
+}
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* swot */
+.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
+@media (max-width: 640px) { .swot-grid { grid-template-columns: 1fr; } }
+.swot-quad { border: 1px solid var(--line); border-top: 3px solid var(--line); border-radius: var(--r-panel); padding: var(--s3); background: var(--bg); }
+.swot-quad h4 { margin: 0 0 var(--s2); font-size: 13px; }
+.swot-list { list-style: none; margin: 0 0 var(--s2); padding: 0; }
+.swot-vazio { color: var(--ink-soft); font-size: 12px; font-style: italic; padding: 4px 0; }
+.swot-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 6px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 6px 8px; margin-bottom: 4px; font-size: 12.5px; cursor: grab;
+}
+.swot-item:active { cursor: grabbing; }
+.swot-x { background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px; }
+.swot-add { display: flex; gap: 4px; }
+.swot-add input { font-size: 12.5px; padding: 6px 8px; }
+
+/* funil logístico */
+.funil { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: stretch; }
+.funil-etapa { flex: 1 1 130px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-panel); padding: var(--s3); text-align: center; position: relative; }
+.funil-etapa .n { font-size: 26px; font-weight: 800; color: var(--blue); }
+.funil-etapa .l { font-size: 11.5px; color: var(--ink-soft); }
+.funil-seta { display: flex; align-items: center; color: var(--ink-soft); font-size: 20px; }
+@media (max-width: 640px) { .funil-seta { transform: rotate(90deg); } }
+
+/* barras de ranking */
+.rank-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
+.rank-row .rl { flex: 0 0 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-row .rt { flex: 1; background: #edece7; border-radius: 4px; height: 16px; overflow: hidden; }
+.rank-row .rf { background: var(--amber); height: 100%; border-radius: 4px; min-width: 2px; }
+.rank-row .rn { flex: 0 0 26px; text-align: right; font-weight: 700; }
+
+/* matriz jurídica */
+.matriz-cell { text-align: center; cursor: pointer; font-weight: 700; font-size: 11px; border-radius: 4px; padding: 4px 2px; }
+.jur-nao_iniciado { background: #f0f0ec; color: var(--ink-soft); }
+.jur-em_andamento { background: var(--blue-soft); color: var(--blue); }
+.jur-ok { background: var(--green-soft); color: var(--green); }
+.jur-pendencia { background: var(--red-soft); color: var(--red); }
+.jur-nao_se_aplica { background: #fff; color: var(--ink-soft); border: 1px dashed var(--line); }
+
+/* form em grade */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+@media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+
+/* dialog simples */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: flex-start; justify-content: center; padding: 24px; z-index: 60; overflow-y: auto; }
+.modal { background: var(--panel); border-radius: var(--r-panel); padding: var(--s4); width: min(640px, 100%); }
+
 /* toast */
 .toast {
   position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);

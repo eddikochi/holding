@@ -13,10 +13,11 @@ import type {
   Decisao,
   Tarefa,
   KPI,
+  AnalisePilar,
   Config,
 } from '../models/types';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export class MasterplanDB extends Dexie {
   ativos!: Table<Ativo, string>;
@@ -28,6 +29,7 @@ export class MasterplanDB extends Dexie {
   decisoes!: Table<Decisao, string>;
   tarefas!: Table<Tarefa, string>;
   kpis!: Table<KPI, string>;
+  analises!: Table<AnalisePilar, string>;
   config!: Table<Config, string>;
 
   constructor() {
@@ -44,6 +46,10 @@ export class MasterplanDB extends Dexie {
       tarefas: 'id, horizonte, status, businessCaseId',
       kpis: 'id, pilar',
       config: 'chave',
+    });
+    // v2: nova store `analises` (SWOT + leitura executiva por pilar). Migração aditiva.
+    this.version(2).stores({
+      analises: 'id, pilar',
     });
   }
 }

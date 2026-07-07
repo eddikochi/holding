@@ -14,6 +14,18 @@
 | `BadgeHipotese` / `BadgeDecisao` | `components/Badge.tsx` | — | Marcar visualmente hipótese vs. decisão (regra de ouro). |
 | `BadgeSemFonte` | `components/Badge.tsx` | — | Número sem fonte declarada. |
 | `ToastProvider` / `useToast` | `components/Toast.tsx` | — | Feedback efêmero de ação (salvou, importou). |
+| `Tabs` | `components/Tabs.tsx` | `abas`, `inicial?` | Abas acessíveis (role=tab). Base das 3 abas dos diagnósticos. |
+| `SwotEditor` | `components/SwotEditor.tsx` | `valor`, `onChange` | SWOT: 4 quadrantes, itens add/remove + drag nativo entre quadrantes. |
+
+## Componentes de módulo (Fase 2)
+
+| Componente | Arquivo | Papel |
+|------------|---------|-------|
+| `DiagnosticoLayout` | `features/modulos/DiagnosticoLayout.tsx` | Casca de diagnóstico com as 3 abas fixas (Onboarding/Dados/Análise). |
+| `OnboardingTab` | idem | Aba 1 didática, lê `content/onboarding.ts`. |
+| `AnaliseTab` | `features/modulos/AnaliseTab.tsx` | Aba 3 compartilhada: SWOT + leitura executiva + recomendações. |
+| `ModuloDispatcher` | `features/modulos/ModuloDispatcher.tsx` | Roteia 01/02/05 → layout completo; demais → shell placeholder. |
+| `PatrimonialDados` / `JuridicoDados` / `LogisticoDados` | `features/modulos/*/` | Aba "Dados" de cada módulo da Fase 2. |
 
 ## Classes utilitárias (em `styles/global.css`)
 
