@@ -2,6 +2,30 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Fase 3 — Demais diagnósticos · 2026-07-07 · ✅ APROVADA
+
+Escopo: módulos 03 Imobiliário, 04 Econômico, 06 Agroindustrial, 07 Turístico (onboarding + dados + análise).
+
+| # | Item | Resultado |
+|---|------|-----------|
+| 1 | Build `tsc && vite build` sem erros (strict) | ✅ 76 módulos |
+| 2 | 03/04/06/07 abrem com 3 abas (Onboarding/Dados/Análise) | ✅ |
+| 3 | 03: painéis Comparáveis + R$/m² + Cenários de uso | ✅ |
+| 4 | 03: **R$/m² médio calculado** (2 galpões 500 e 400 → média R$ 450) | ✅ aluguel sem dado fica "—" (não inventa) |
+| 5 | 03: comparáveis **persistem após reload** | ✅ 2 comparáveis intactos |
+| 6 | 04: separação visual fato vs. especulação por confiança | ✅ "Com fonte (1)" / "A confirmar (1)" |
+| 7 | 06: players do agro + sazonalidade (calendário) + demandas | ✅ |
+| 8 | 06: sazonalidade clique-cicla e **persiste em Config** | ✅ Jan → baixa gravado |
+| 9 | 07: banner "pilar tende a ser projeto separado" + inventário | ✅ |
+| 10 | Console sem erros | ✅ |
+| 11 | Responsivo: sem overflow horizontal | ✅ |
+
+### Observações
+- Reúso de `Evidencia` para 04/06/07 (abordagem enxuta) funciona; `fonteDetalhe` carrega a categoria livre.
+- Recharts segue não introduzido; nenhum módulo da Fase 3 exigiu gráfico além de tabelas/listas.
+
+---
+
 ## Fase 2 — Diagnósticos core · 2026-07-07 · ✅ APROVADA
 
 Critério de pronto da spec: *"consigo ver o funil hipótese→evidência→validação do hub logístico

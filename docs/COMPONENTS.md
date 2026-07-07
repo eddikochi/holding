@@ -26,6 +26,10 @@
 | `AnaliseTab` | `features/modulos/AnaliseTab.tsx` | Aba 3 compartilhada: SWOT + leitura executiva + recomendações. |
 | `ModuloDispatcher` | `features/modulos/ModuloDispatcher.tsx` | Roteia 01/02/05 → layout completo; demais → shell placeholder. |
 | `PatrimonialDados` / `JuridicoDados` / `LogisticoDados` | `features/modulos/*/` | Aba "Dados" de cada módulo da Fase 2. |
+| `EvidenciasPanel` | `features/modulos/EvidenciasPanel.tsx` | Lista + CRUD de evidências de um pilar. Opção `separarFatoEspeculacao` agrupa por confiança. Reusado por 04/06/07. |
+| `StakeholdersPanel` | `features/modulos/StakeholdersPanel.tsx` | Lista + CRUD de stakeholders de um pilar. Usado por 06. |
+| `SazonalidadeEditor` | `features/modulos/agroindustrial/` | Calendário anual de intensidade (clique cicla), salvo em Config. |
+| `ImobiliarioDados` / `EconomicoDados` / `AgroindustrialDados` / `TuristicoDados` | `features/modulos/*/` | Aba "Dados" dos módulos da Fase 3. |
 
 ## Classes utilitárias (em `styles/global.css`)
 

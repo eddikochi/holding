@@ -11,7 +11,10 @@ import type {
   Hipotese,
   Evidencia,
   AnalisePilar,
+  ComparavelImobiliario,
+  SazonalidadeMes,
   Pilar,
+  TipoAtivo,
   ItemChecklistJuridico,
 } from '../models/types';
 
@@ -183,4 +186,45 @@ export async function obterOuCriarAnalise(pilar: Pilar): Promise<AnalisePilar> {
 export async function salvarAnalise(a: AnalisePilar): Promise<void> {
   a.updatedAt = agora();
   await db.analises.put(a);
+}
+
+/* ── COMPARÁVEL IMOBILIÁRIO (módulo 03) ───────────────────────────────── */
+export function comparavelEmBranco(tipo: TipoAtivo = 'galpao'): ComparavelImobiliario {
+  const ts = agora();
+  return {
+    id: novoId(),
+    createdAt: ts,
+    updatedAt: ts,
+    descricao: '',
+    tipo,
+    fonte: '',
+    data: ts,
+  };
+}
+
+export async function salvarComparavel(c: ComparavelImobiliario): Promise<void> {
+  c.updatedAt = agora();
+  await db.comparaveis.put(c);
+}
+
+export async function apagarComparavel(id: string): Promise<void> {
+  await db.comparaveis.delete(id);
+}
+
+/* ── SAZONALIDADE AGRO (módulo 06) — guardada em Config ───────────────── */
+const SAZONALIDADE_CHAVE = 'sazonalidade_agro';
+
+export function sazonalidadeVazia(): SazonalidadeMes[] {
+  return Array.from({ length: 12 }, (_, mes) => ({ mes, intensidade: 'nenhuma' as const, nota: '' }));
+}
+
+export async function obterSazonalidade(): Promise<SazonalidadeMes[]> {
+  const c = await db.config.get(SAZONALIDADE_CHAVE);
+  const v = c?.valor as SazonalidadeMes[] | undefined;
+  if (Array.isArray(v) && v.length === 12) return v;
+  return sazonalidadeVazia();
+}
+
+export async function salvarSazonalidade(meses: SazonalidadeMes[]): Promise<void> {
+  await db.config.put({ chave: SAZONALIDADE_CHAVE, valor: meses });
 }

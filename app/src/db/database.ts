@@ -14,10 +14,11 @@ import type {
   Tarefa,
   KPI,
   AnalisePilar,
+  ComparavelImobiliario,
   Config,
 } from '../models/types';
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export class MasterplanDB extends Dexie {
   ativos!: Table<Ativo, string>;
@@ -30,6 +31,7 @@ export class MasterplanDB extends Dexie {
   tarefas!: Table<Tarefa, string>;
   kpis!: Table<KPI, string>;
   analises!: Table<AnalisePilar, string>;
+  comparaveis!: Table<ComparavelImobiliario, string>;
   config!: Table<Config, string>;
 
   constructor() {
@@ -50,6 +52,10 @@ export class MasterplanDB extends Dexie {
     // v2: nova store `analises` (SWOT + leitura executiva por pilar). Migração aditiva.
     this.version(2).stores({
       analises: 'id, pilar',
+    });
+    // v3: nova store `comparaveis` (imóveis pesquisados, módulo 03). Migração aditiva.
+    this.version(3).stores({
+      comparaveis: 'id, tipo',
     });
   }
 }

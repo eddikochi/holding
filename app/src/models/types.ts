@@ -91,6 +91,14 @@ export interface FotoRef {
   referencia?: string; // caminho/descrição externa
 }
 
+/** Cenários de uso de um ativo (módulo 03 Imobiliário). Cada um com prós/contras. */
+export interface CenariosUso {
+  alugar: { pros: string; contras: string };
+  retrofit: { pros: string; contras: string };
+  desenvolvimento: { pros: string; contras: string };
+  venda: { pros: string; contras: string };
+}
+
 export interface Ativo extends BaseEntity {
   nome: string;
   tipo: TipoAtivo;
@@ -107,6 +115,7 @@ export interface Ativo extends BaseEntity {
   potencialPorPilar: Partial<Record<Pilar, string>>;
   situacaoJuridicaResumo: string;
   checklistJuridico: ItemChecklistJuridico[]; // sempre os 9 itens
+  cenariosUso?: CenariosUso; // módulo 03 (opcional, preenchido sob demanda)
   origem?: OrigemImportacao;
 }
 
@@ -298,6 +307,27 @@ export interface AnalisePilar extends BaseEntity {
   recomendacoes: string;
 }
 
+/* ── Comparável imobiliário (módulo 03) ───────────────────────────────── */
+/** Imóvel pesquisado no mercado, para calcular R$/m² médio por tipo. */
+export interface ComparavelImobiliario extends BaseEntity {
+  descricao: string;
+  tipo: TipoAtivo;
+  m2?: number;
+  precoPedido?: number; // venda, R$
+  aluguelMensal?: number; // R$/mês
+  fonte: string; // de onde veio o dado (anúncio, corretor…) — nunca vazio na prática
+  data: ISODate;
+  observacao?: string;
+}
+
+/* ── Sazonalidade agro (módulo 06) — guardada em Config ───────────────── */
+export type IntensidadeSazonal = 'baixa' | 'media' | 'alta' | 'nenhuma';
+export interface SazonalidadeMes {
+  mes: number; // 0 = janeiro … 11 = dezembro
+  intensidade: IntensidadeSazonal;
+  nota: string;
+}
+
 /* ── Config (store auxiliar, não é entidade de domínio) ───────────────── */
 export interface Config {
   chave: string;
@@ -319,5 +349,6 @@ export interface BackupCompleto {
   tarefas: Tarefa[];
   kpis: KPI[];
   analises: AnalisePilar[];
+  comparaveis: ComparavelImobiliario[];
   config: Config[];
 }

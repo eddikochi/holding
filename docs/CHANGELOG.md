@@ -2,6 +2,28 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Fase 3 — Demais diagnósticos — 2026-07-07
+
+Módulos 03 Imobiliário, 04 Econômico, 06 Agroindustrial e 07 Turístico completos
+(onboarding + dados + análise). Todos os 7 diagnósticos agora têm tela real.
+
+### Adicionado
+- **Schema v3**: entidade `ComparavelImobiliario` (store `comparaveis`), campo `Ativo.cenariosUso`,
+  tipos de sazonalidade (em `Config`). Migração aditiva; incluído em backup.
+- **Módulo 03 Imobiliário**: comparáveis de mercado (CRUD), **cálculo automático de R$/m² médio por tipo**
+  (só com dado real; sem dado fica em branco), cenários de uso por ativo (alugar/retrofit/desenvolver/vender).
+- **Módulo 04 Econômico**: registro de dados com fonte obrigatória, **separação visual fato vs. especulação**
+  (por grau de confiança), cobrindo demografia, incentivos e corredor bioceânico.
+- **Módulo 06 Agroindustrial**: players do agro, **calendário de sazonalidade** anual e demandas/parcerias.
+- **Módulo 07 Turístico**: inventário de atrativos/ideias com marcação visual de que **é projeto separado**
+  (não entra na priorização por default).
+- **Componentes reutilizáveis**: `EvidenciasPanel` (com split fato/especulação), `StakeholdersPanel`,
+  `SazonalidadeEditor`.
+- **Abordagem enxuta** (aprovada): 04/06/07 reúsam `Evidencia`; só 03 exigiu entidade nova.
+
+### Verificado (ver docs/QA_CHECKLIST.md)
+- R$/m² calculado corretamente e persistente; split fato/especulação; sazonalidade persistida; sem erros no console.
+
 ## Fase 2 — Diagnósticos core — 2026-07-07
 
 Módulos 01 Patrimonial, 02 Jurídico e 05 Logístico completos (os que já têm dados reais),

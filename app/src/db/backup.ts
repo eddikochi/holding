@@ -11,7 +11,7 @@ import type { BackupCompleto, Stakeholder, Ativo, Evidencia } from '../models/ty
 export async function montarBackup(): Promise<BackupCompleto> {
   const [
     ativos, stakeholders, evidencias, hipoteses, oportunidades,
-    businessCases, decisoes, tarefas, kpis, analises, config,
+    businessCases, decisoes, tarefas, kpis, analises, comparaveis, config,
   ] = await Promise.all([
     db.ativos.toArray(),
     db.stakeholders.toArray(),
@@ -23,6 +23,7 @@ export async function montarBackup(): Promise<BackupCompleto> {
     db.tarefas.toArray(),
     db.kpis.toArray(),
     db.analises.toArray(),
+    db.comparaveis.toArray(),
     db.config.toArray(),
   ]);
   return {
@@ -30,7 +31,7 @@ export async function montarBackup(): Promise<BackupCompleto> {
     schemaVersion: SCHEMA_VERSION,
     exportadoEm: agora(),
     ativos, stakeholders, evidencias, hipoteses, oportunidades,
-    businessCases, decisoes, tarefas, kpis, analises, config,
+    businessCases, decisoes, tarefas, kpis, analises, comparaveis, config,
   };
 }
 
@@ -46,11 +47,12 @@ export async function restaurarBackup(backup: BackupCompleto): Promise<void> {
     'rw',
     [
       db.ativos, db.stakeholders, db.evidencias, db.hipoteses, db.oportunidades,
-      db.businessCases, db.decisoes, db.tarefas, db.kpis, db.analises, db.config,
+      db.businessCases, db.decisoes, db.tarefas, db.kpis, db.analises, db.comparaveis, db.config,
     ],
     async () => {
       await limparTudo();
       await db.analises.clear();
+      await db.comparaveis.clear();
       await db.config.clear();
       await Promise.all([
         db.ativos.bulkAdd(backup.ativos ?? []),
@@ -63,6 +65,7 @@ export async function restaurarBackup(backup: BackupCompleto): Promise<void> {
         db.tarefas.bulkAdd(backup.tarefas ?? []),
         db.kpis.bulkAdd(backup.kpis ?? []),
         db.analises.bulkAdd(backup.analises ?? []),
+        db.comparaveis.bulkAdd(backup.comparaveis ?? []),
         db.config.bulkAdd(backup.config ?? []),
       ]);
     }

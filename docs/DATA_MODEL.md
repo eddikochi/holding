@@ -5,8 +5,9 @@
 
 ## Versão de schema
 
-- **Schema atual: v2** (`SCHEMA_VERSION = 2` em `database.ts`).
-- v1 → v2: migração aditiva (nova store `analises`), sem transformação de dados existentes.
+- **Schema atual: v3** (`SCHEMA_VERSION = 3` em `database.ts`).
+- v1 → v2: migração aditiva (nova store `analises`).
+- v2 → v3: migração aditiva (nova store `comparaveis`); campo opcional `cenariosUso` no Ativo (não indexado, sem migração).
 
 ## Convenções
 
@@ -29,10 +30,19 @@
 | 8 | `Tarefa` | `tarefas` | id, horizonte, status, businessCaseId |
 | 9 | `KPI` | `kpis` | id, pilar |
 | — | `AnalisePilar` (análise) | `analises` | id, pilar |
+| — | `ComparavelImobiliario` (mód. 03) | `comparaveis` | id, tipo |
 | — | `Config` (auxiliar) | `config` | chave |
 
 > `AnalisePilar` guarda o SWOT (4 quadrantes de itens) + leitura executiva + recomendações,
 > uma por pilar. Não é uma das 9 entidades de domínio — é artefato de análise (aba "Análise").
+>
+> `ComparavelImobiliario`: imóvel pesquisado no mercado (m², preço, aluguel, fonte), base do
+> cálculo de R$/m² médio por tipo no módulo 03.
+>
+> **Reúso deliberado (abordagem enxuta da Fase 3):** dados econômicos, atrativos turísticos e
+> demandas do agro NÃO ganharam entidade própria — são `Evidencia` do pilar correspondente, com
+> `fonte`/`fonteDetalhe`/`confianca`. Sazonalidade do agro fica em `Config` (`sazonalidade_agro`).
+> Cenários de uso ficam no próprio `Ativo` (`cenariosUso`).
 
 ## Relacionamentos (texto)
 
@@ -55,6 +65,15 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 (`Config.minEvidenciasParaValidar`, default 3 — `getMinEvidencias()` em `database.ts`).
 
 ## Histórico de decisões de schema
+
+### v3 — 2026-07-07 — dados dos diagnósticos 03/04/06/07 (Fase 3)
+- Nova store `comparaveis` (`ComparavelImobiliario`) para o cálculo de R$/m² médio por tipo (módulo 03).
+- Campo opcional `Ativo.cenariosUso` (alugar/retrofit/desenvolvimento/venda, cada um com prós/contras).
+- Tipos `SazonalidadeMes`/`IntensidadeSazonal` (módulo 06), persistidos em `Config` (`sazonalidade_agro`).
+- **Decisão de escopo (enxuta, aprovada pelo usuário "sem preferência"):** 04 Econômico, 06 (demandas)
+  e 07 Turístico reúsam `Evidencia` em vez de entidades novas — dado com fonte + grau de confiança,
+  separando fato (confiança alta/média) de especulação (baixa). Menos schema, mesma cobertura da spec.
+- `comparaveis` incluída em backup/restore e `limparTudo`. Migração `version(3)` aditiva.
 
 ### v2 — 2026-07-07 — análise por pilar (Fase 2)
 - Nova store `analises` com a entidade `AnalisePilar` (`Swot` + `leituraExecutiva` + `recomendacoes`),
