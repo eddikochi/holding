@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 
-// base relativa: o build em dist/ funciona aberto direto do disco (local-first)
+// base relativa + tudo inline (viteSingleFile): o build vira UM único index.html
+// autocontido, que abre por duplo-clique (file://), sem servidor.
+// HashRouter (em main.tsx) garante a navegação funcionando via file://.
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), viteSingleFile()],
   base: './',
 });

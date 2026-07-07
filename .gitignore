@@ -2,6 +2,9 @@
 app/node_modules/
 app/dist/
 
+# HTML autocontido gerado pelo build (regenerável com: npm run build)
+MASTERPLAN_SAO_BORJA.html
+
 # helper de dev local (caminho específico da máquina)
 app/dev-server.cmd
 
