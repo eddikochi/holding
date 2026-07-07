@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>São Borja — Campo &amp; Dashboard</title>
+<style>
+  :root{
+    --bg:#F7F7F4;
+    --panel:#FFFFFF;
+    --ink:#1B1B1A;
+    --ink-soft:#5B5B57;
+    --line:#DCDAD2;
+    --blue:#1E3A5F;
+    --blue-soft:#EAF0F6;
+    --amber:#C0762A;
+    --amber-soft:#FBF0E2;
+    --green:#3B6E4E;
+    --green-soft:#EAF3EC;
+    --red:#9C3B2E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:15px;
+    line-height:1.45;
+    padding-bottom:60px;
+  }
+  header{
+    background:var(--blue);
+    color:#fff;
+    padding:18px 16px 14px;
+    position:sticky;
+    top:0;
+    z-index:20;
+  }
+  header h1{margin:0 0 2px;font-size:18px;font-weight:700;letter-spacing:.2px;}
+  header p{margin:0;font-size:12px;color:#C9D6E3;}
+  nav{
+    display:flex;
+    overflow-x:auto;
+    background:#16304C;
+    position:sticky;
+    top:62px;
+    z-index:19;
+    -webkit-overflow-scrolling:touch;
+  }
+  nav button{
+    flex:0 0 auto;
+    background:none;
+    border:none;
+    color:#AFC2D6;
+    font-size:13px;
+    font-weight:600;
+    padding:12px 14px;
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+  }
+  nav button.active{color:#fff;border-bottom-color:var(--amber);}
+  main{max-width:920px;margin:0 auto;padding:16px;}
+  section.view{display:none;}
+  section.view.active{display:block;}
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .panel h2{margin:0 0 4px;font-size:16px;}
+  .panel .sub{color:var(--ink-soft);font-size:12.5px;margin-bottom:14px;}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin:10px 0 4px;}
+  input[type=text],input[type=number],input[type=date],textarea,select{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    font-size:14px;
+    background:#fff;
+    color:var(--ink);
+    font-family:inherit;
+  }
+  textarea{min-height:64px;resize:vertical;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px;}
+  @media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr;}}
+  .btn{
+    display:inline-block;
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    padding:10px 16px;
+    border-radius:7px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:12px;
+  }
+  .btn.secondary{background:#fff;color:var(--blue);border:1px solid var(--blue);}
+  .btn.danger{background:#fff;color:var(--red);border:1px solid var(--red);}
+  .btn.small{padding:6px 10px;font-size:12px;margin-top:0;}
+  .row-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top;}
+  th{color:var(--ink-soft);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.3px;}
+  tr:hover td{background:#FAFAF8;}
+  .tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;}
+  .tag.alta{background:var(--amber-soft);color:var(--amber);}
+  .tag.media{background:var(--blue-soft);color:var(--blue);}
+  .tag.baixa{background:#F0F0EC;color:var(--ink-soft);}
+  .tag.validado{background:var(--green-soft);color:var(--green);}
+  .tag.parcial{background:var(--amber-soft);color:var(--amber);}
+  .tag.naovalidado{background:#F0F0EC;color:var(--ink-soft);}
+  .empty{color:var(--ink-soft);font-size:13px;padding:14px 0;text-align:center;}
+  .stat{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .stat:last-child{border-bottom:none;}
+  .stat .n{font-size:22px;font-weight:800;color:var(--blue);}
+  .stat .label{font-size:12.5px;color:var(--ink-soft);}
+  .bar-row{margin:10px 0;}
+  .bar-row .bhead{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px;}
+  .bar-track{background:#EEEEE9;border-radius:5px;height:10px;overflow:hidden;}
+  .bar-fill{background:var(--amber);height:100%;border-radius:5px;}
+  .insight{
+    padding:10px 12px;
+    border-radius:8px;
+    margin-bottom:8px;
+    font-size:13px;
+    border-left:4px solid var(--amber);
+    background:var(--amber-soft);
+  }
+  .insight.ok{border-left-color:var(--green);background:var(--green-soft);}
+  .insight.warn{border-left-color:var(--red);background:#F7EAE7;}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .badge-count{background:var(--amber);color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;margin-left:6px;}
+  .note{font-size:11.5px;color:var(--ink-soft);margin-top:6px;}
+  .close-x{background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;font-weight:700;}
+  dialog{border:none;border-radius:10px;padding:0;width:min(560px,92vw);}
+  dialog::backdrop{background:rgba(0,0,0,.4);}
+  .dialog-inner{padding:18px;}
+  .dialog-inner h3{margin-top:0;}
+  .toast{
+    position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;
+    font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:50;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>São Borja — Hub Logístico · Ferramenta de Campo</h1>
+  <p>Insumo para seções 12 Discovery · 13 Pesquisa de Campo · 14 Hipóteses (Vol. I) e 24–26 (Vol. II)</p>
+</header>
+
+<nav id="nav"></nav>
+
+<main>
+
+  <!-- DIAGNÓSTICO -->
+  <section class="view" data-view="diagnostico">
+    <div class="panel">
+      <h2>Diagnóstico do galpão</h2>
+      <div class="sub">Preencha o que conseguir ver. Não precisa ser tudo de uma vez — o que faltar fica em branco e você completa depois.</div>
+      <div class="grid3" id="galpaoForm"></div>
+      <button class="btn" onclick="saveGalpao()">Salvar diagnóstico</button>
+      <span class="note" id="galpaoSavedNote"></span>
+    </div>
+  </section>
+
+  <!-- PLANILHA MASTER -->
+  <section class="view" data-view="planilha">
+    <div class="panel">
+      <h2>Planilha master — players</h2>
+      <div class="sub">Uma linha por pessoa/empresa entrevistada ou observada.</div>
+      <button class="btn" onclick="openPlayerDialog()">+ Adicionar registro</button>
+    </div>
+    <div class="panel">
+      <div class="toolbar">
+        <button class="btn secondary small" onclick="exportCSV()">Exportar CSV</button>
+        <span class="note">Total de registros: <b id="playerCount">0</b></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table id="playerTable">
+          <thead>
+            <tr>
+              <th>Nome</th><th>Segmento</th><th>Dor</th><th>Urgência</th><th>Paga?</th><th>Hipótese</th><th>Validação</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="playerTbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="playerEmpty" style="display:none;">Nenhum registro ainda. Adicione o primeiro acima.</div>
+    </div>
+  </section>
+
+  <!-- ROTEIRO -->
+  <section class="view" data-view="roteiro">
+    <div class="panel">
+      <h2>Roteiro de entrevista</h2>
+      <div class="sub">Use como guia rápido durante a conversa. Depois, resuma o essencial no campo "dor identificada" da planilha master.</div>
+      <div id="roteiroList"></div>
+    </div>
+  </section>
+
+  <!-- REGISTRO DE CAMPO -->
+  <section class="view" data-view="registro">
+    <div class="panel">
+      <h2>Registro de campo (rotas)</h2>
+      <div class="sub">Observações livres, mesmo sem entrevista formal. Data/hora é salva automaticamente.</div>
+      <label>Rota</label>
+      <select id="rotaSelect">
+        <option value="Logística">Rota 1 — Logística (ponte, postos, pátios, transportadoras)</option>
+        <option value="Imobiliária">Rota 2 — Imobiliária (galpões, terrenos, aluguel, vacância)</option>
+        <option value="Comercial">Rota 3 — Comercial (distribuidores, comércio, agro)</option>
+      </select>
+      <label>Observação</label>
+      <textarea id="rotaTexto" placeholder="O que você viu, ouviu ou notou..."></textarea>
+      <button class="btn" onclick="addRegistro()">Salvar observação</button>
+    </div>
+    <div class="panel">
+      <h2>Observações salvas</h2>
+      <div id="registroList"></div>
+      <div class="empty" id="registroEmpty" style="display:none;">Nenhuma observação registrada ainda.</div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section class="view" data-view="dashboard">
+    <div class="panel">
+      <h2>Dashboard de resultados</h2>
+      <div class="sub">Gerado automaticamente a partir da planilha master.</div>
+      <div id="statsRow"></div>
+    </div>
+    <div class="panel">
+      <h2>Dores mais recorrentes</h2>
+      <div id="dorRanking"></div>
+      <div class="empty" id="dorEmpty" style="display:none;">Sem dados suficientes ainda.</div>
+    </div>
+    <div class="panel">
+      <h2>Distribuição por segmento</h2>
+      <div id="segRanking"></div>
+    </div>
+    <div class="panel">
+      <h2>Disposição de pagamento</h2>
+      <div id="pagRanking"></div>
+    </div>
+    <div class="panel">
+      <h2>Hipóteses do discovery</h2>
+      <div id="hipStatus"></div>
+    </div>
+    <div class="panel">
+      <h2>Insights automáticos</h2>
+      <div id="insightsBox"></div>
+    </div>
+    <div class="panel">
+      <h2>Backup</h2>
+      <div class="sub">Faça isso no fim de cada dia de campo.</div>
+      <div class="toolbar">
+        <button class="btn secondary" onclick="exportJSON()">Exportar tudo (JSON)</button>
+        <button class="btn secondary" onclick="document.getElementById('importFile').click()">Importar JSON</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(event)">
+      </div>
+      <div class="note">O export gera um arquivo com data. Guarde em mais de um lugar (celular + notebook / e-mail pra você mesmo).</div>
+    </div>
+  </section>
+
+</main>
+
+<dialog id="playerDialog">
+  <div class="dialog-inner">
+    <h3 id="dialogTitle">Novo registro</h3>
+    <input type="hidden" id="playerId">
+    <label>Nome / empresa</label>
+    <input type="text" id="p_nome">
+    <div class="grid2">
+      <div>
+        <label>Segmento</label>
+        <select id="p_segmento">
+          <option>Transportadora</option>
+          <option>Empresa local</option>
+          <option>Ecommerce regional</option>
+          <option>Despachante / fronteira</option>
+          <option>Empresa argentina</option>
+          <option>Imobiliário / corretor</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div>
+        <label>Contato</label>
+        <input type="text" id="p_contato" placeholder="telefone, nome, referência">
+      </div>
+    </div>
+    <label>Localização</label>
+    <input type="text" id="p_local">
+    <label>Dor identificada (categoria)</label>
+    <select id="p_dor">
+      <option>Overflow / falta de espaço</option>
+      <option>Armazenagem temporária</option>
+      <option>Cross docking / redistribuição</option>
+      <option>Gargalo operacional de fronteira</option>
+      <option>Dificuldade com transportadoras</option>
+      <option>Sazonalidade</option>
+      <option>Baixa digitalização</option>
+      <option>Fulfillment / separação / embalagem</option>
+      <option>Sem dor clara</option>
+      <option>Outra</option>
+    </select>
+    <label>Detalhe da dor (texto livre)</label>
+    <textarea id="p_dordetalhe"></textarea>
+    <div class="grid2">
+      <div>
+        <label>Frequência</label>
+        <select id="p_freq"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+      </div>
+      <div>
+        <label>Urgência</label>
+        <select id="p_urg"><option>Alta</option><option>Média</option><option>Baixa</option></select>
+      </div>
+    </div>
+    <label>Disposição de pagamento</label>
+    <select id="p_pagamento"><option>Sim</option><option>Talvez</option><option>Não</option><option>Não perguntado</option></select>
+    <label>Oportunidade percebida</label>
+    <textarea id="p_oportunidade"></textarea>
+    <label>Concorrentes citados</label>
+    <input type="text" id="p_concorrentes">
+    <label>Riscos</label>
+    <input type="text" id="p_riscos">
+    <label>Hipótese relacionada</label>
+    <select id="p_hipotese"></select>
+    <label>Estágio de validação</label>
+    <select id="p_validacao"><option>Não validado</option><option>Parcial</option><option>Validado</option></select>
+    <label>Próximo passo</label>
+    <input type="text" id="p_proximo">
+    <div class="row-actions">
+      <button class="btn" onclick="savePlayer()">Salvar</button>
+      <button class="btn secondary" onclick="document.getElementById('playerDialog').close()">Cancelar</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- dados fixos ---------- */
+const HIPOTESES = [
+  "Demanda reprimida por armazenagem flexível",
+  "Pequenos operadores precisam de apoio operacional",
+  "Oportunidade em cross docking leve",
+  "Fulfillment regional possui espaço",
+  "Empresas precisam de overflow operacional",
+  "Baixa digitalização regional",
+  "Potencial de apoio operacional Brasil–Argentina",
+  "Nenhuma / não se aplica"
+];
+
+const GALPAO_CAMPOS = [
+  ["metragem","Metragem total (m²)"],
+  ["pedireito","Pé direito"],
+  ["docas","Docas"],
+  ["rampa","Rampa"],
+  ["acessos","Acessos"],
+  ["eletrica","Elétrica"],
+  ["cobertura","Cobertura"],
+  ["drenagem","Drenagem"],
+  ["internet","Internet disponível"],
+  ["seguranca","Segurança"],
+  ["monitoramento","Monitoramento"],
+  ["distanciaponte","Distância da ponte"],
+  ["acessorod","Acesso rodoviário"],
+  ["fluxocaminhoes","Fluxo de caminhões observado"],
+  ["expansao","Potencial de expansão"]
+];
+
+const ROTEIRO_PERGUNTAS = [
+  "Qual a maior dificuldade logística hoje?",
+  "Onde vocês perdem mais tempo?",
+  "Existe problema de espaço?",
+  "Existe problema com estoque?",
+  "Existe gargalo operacional?",
+  "Existe dificuldade com transportadoras?",
+  "Existe dificuldade operacional de fronteira?",
+  "Existe sazonalidade?",
+  "Que serviço ajudaria mais hoje?",
+  "Quanto uma solução desse tipo valeria?",
+  "Vocês usariam um espaço logístico flexível se estivesse disponível?"
+];
+
+/* ---------- storage ---------- */
+const LS_KEY = "sb_campo_data_v1";
+function loadData(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {galpao:{}, players:[], registros:[]};
+}
+let DATA = loadData();
+function persist(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(DATA)); }
+  catch(e){ toast("Aviso: não consegui salvar no navegador. Exporte o JSON como backup."); }
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+}
+
+/* ---------- nav ---------- */
+const VIEWS = [
+  ["diagnostico","Galpão"],
+  ["planilha","Planilha master"],
+  ["roteiro","Roteiro"],
+  ["registro","Campo"],
+  ["dashboard","Dashboard"]
+];
+function buildNav(){
+  const nav = document.getElementById("nav");
+  VIEWS.forEach(([id,label],i)=>{
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.dataset.view = id;
+    if(i===0) b.classList.add("active");
+    b.onclick = ()=>switchView(id);
+    nav.appendChild(b);
+  });
+}
+function switchView(id){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active", b.dataset.view===id));
+  document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("active", s.dataset.view===id));
+  if(id==="dashboard") renderDashboard();
+}
+
+/* ---------- diagnóstico ---------- */
+function buildGalpaoForm(){
+  const wrap = document.getElementById("galpaoForm");
+  GALPAO_CAMPOS.forEach(([key,label])=>{
+    const d = document.createElement("div");
+    d.innerHTML = `<label>${label}</label><input type="text" id="g_${key}" value="${(DATA.galpao[key]||"").replace(/"/g,'&quot;')}">`;
+    wrap.appendChild(d);
+  });
+}
+function saveGalpao(){
+  GALPAO_CAMPOS.forEach(([key])=>{
+    DATA.galpao[key] = document.getElementById("g_"+key).value;
+  });
+  persist();
+  document.getElementById("galpaoSavedNote").textContent = "Salvo em " + new Date().toLocaleString("pt-BR");
+  toast("Diagnóstico salvo");
+}
+
+/* ---------- roteiro ---------- */
+function buildRoteiro(){
+  const wrap = document.getElementById("roteiroList");
+  ROTEIRO_PERGUNTAS.forEach(q=>{
+    const d = document.createElement("div");
+    d.style.padding = "10px 0";
+    d.style.borderBottom = "1px solid var(--line)";
+    d.innerHTML = `<div style="font-weight:600;font-size:13.5px;">${q}</div>`;
+    wrap.appendChild(d);
+  });
+}
+
+/* ---------- planilha master ---------- */
+function hipotesesOptions(selected){
+  return HIPOTESES.map(h=>`<option ${h===selected?"selected":""}>${h}</option>`).join("");
+}
+function openPlayerDialog(id){
+  const dlg = document.getElementById("playerDialog");
+  document.getElementById("p_hipotese").innerHTML = hipotesesOptions();
+  if(id){
+    const p = DATA.players.find(x=>x.id===id);
+    document.getElementById("dialogTitle").textContent = "Editar registro";
+    document.getElementById("playerId").value = p.id;
+    document.getElementById("p_nome").value = p.nome||"";
+    document.getElementById("p_segmento").value = p.segmento||"Transportadora";
+    document.getElementById("p_contato").value = p.contato||"";
+    document.getElementById("p_local").value = p.local||"";
+    document.getElementById("p_dor").value = p.dor||"Overflow / falta de espaço";
+    document.getElementById("p_dordetalhe").value = p.dordetalhe||"";
+    document.getElementById("p_freq").value = p.freq||"Média";
+    document.getElementById("p_urg").value = p.urg||"Média";
+    document.getElementById("p_pagamento").value = p.pagamento||"Não perguntado";
+    document.getElementById("p_oportunidade").value = p.oportunidade||"";
+    document.getElementById("p_concorrentes").value = p.concorrentes||"";
+    document.getElementById("p_riscos").value = p.riscos||"";
+    document.getElementById("p_hipotese").value = p.hipotese||HIPOTESES[0];
+    document.getElementById("p_validacao").value = p.validacao||"Não validado";
+    document.getElementById("p_proximo").value = p.proximo||"";
+  }else{
+    document.getElementById("dialogTitle").textContent = "Novo registro";
+    document.getElementById("playerId").value = "";
+    ["p_nome","p_contato","p_local","p_dordetalhe","p_oportunidade","p_concorrentes","p_riscos","p_proximo"]
+      .forEach(id=>document.getElementById(id).value="");
+    document.getElementById("p_segmento").value = "Transportadora";
+    document.getElementById("p_dor").value = "Overflow / falta de espaço";
+    document.getElementById("p_freq").value = "Média";
+    document.getElementById("p_urg").value = "Média";
+    document.getElementById("p_pagamento").value = "Não perguntado";
+    document.getElementById("p_validacao").value = "Não validado";
+  }
+  dlg.showModal();
+}
+function savePlayer(){
+  const id = document.getElementById("playerId").value || ("p_"+Date.now());
+  const rec = {
+    id,
+    nome: document.getElementById("p_nome").value,
+    segmento: document.getElementById("p_segmento").value,
+    contato: document.getElementById("p_contato").value,
+    local: document.getElementById("p_local").value,
+    dor: document.getElementById("p_dor").value,
+    dordetalhe: document.getElementById("p_dordetalhe").value,
+    freq: document.getElementById("p_freq").value,
+    urg: document.getElementById("p_urg").value,
+    pagamento: document.getElementById("p_pagamento").value,
+    oportunidade: document.getElementById("p_oportunidade").value,
+    concorrentes: document.getElementById("p_concorrentes").value,
+    riscos: document.getElementById("p_riscos").value,
+    hipotese: document.getElementById("p_hipotese").value,
+    validacao: document.getElementById("p_validacao").value,
+    proximo: document.getElementById("p_proximo").value,
+    ts: new Date().toISOString()
+  };
+  const idx = DATA.players.findIndex(x=>x.id===id);
+  if(idx>=0) DATA.players[idx] = rec; else DATA.players.push(rec);
+  persist();
+  document.getElementById("playerDialog").close();
+  renderPlayers();
+  toast("Registro salvo");
+}
+function deletePlayer(id){
+  if(!confirm("Apagar este registro?")) return;
+  DATA.players = DATA.players.filter(x=>x.id!==id);
+  persist();
+  renderPlayers();
+}
+function tagClass(val){
+  if(["Alta","Validado"].includes(val)) return val==="Validado"?"validado":"alta";
+  if(["Média","Parcial"].includes(val)) return val==="Parcial"?"parcial":"media";
+  if(["Baixa","Não validado"].includes(val)) return val==="Não validado"?"naovalidado":"baixa";
+  return "";
+}
+function renderPlayers(){
+  const tbody = document.getElementById("playerTbody");
+  tbody.innerHTML = "";
+  document.getElementById("playerCount").textContent = DATA.players.length;
+  document.getElementById("playerEmpty").style.display = DATA.players.length ? "none":"block";
+  DATA.players.forEach(p=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${escapeHTML(p.nome||"(sem nome)")}</b><br><span style="color:var(--ink-soft)">${escapeHTML(p.local||"")}</span></td>
+      <td>${escapeHTML(p.segmento||"")}</td>
+      <td>${escapeHTML(p.dor||"")}</td>
+      <td><span class="tag ${tagClass(p.urg)}">${escapeHTML(p.urg||"")}</span></td>
+      <td>${escapeHTML(p.pagamento||"")}</td>
+      <td>${escapeHTML(p.hipotese||"")}</td>
+      <td><span class="tag ${tagClass(p.validacao)}">${escapeHTML(p.validacao||"")}</span></td>
+      <td>
+        <button class="btn small secondary" onclick="openPlayerDialog('${p.id}')">Editar</button>
+        <button class="btn small danger" onclick="deletePlayer('${p.id}')">×</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* ---------- registro de campo ---------- */
+function addRegistro(){
+  const rota = document.getElementById("rotaSelect").value;
+  const texto = document.getElementById("rotaTexto").value.trim();
+  if(!texto){ toast("Escreva a observação antes de salvar"); return; }
+  DATA.registros.unshift({id:"r_"+Date.now(), rota, texto, ts:new Date().toISOString()});
+  document.getElementById("rotaTexto").value = "";
+  persist();
+  renderRegistros();
+  toast("Observação salva");
+}
+function deleteRegistro(id){
+  DATA.registros = DATA.registros.filter(r=>r.id!==id);
+  persist();
+  renderRegistros();
+}
+function renderRegistros(){
+  const wrap = document.getElementById("registroList");
+  wrap.innerHTML = "";
+  document.getElementById("registroEmpty").style.display = DATA.registros.length ? "none":"block";
+  DATA.registros.forEach(r=>{
+    const d = document.createElement("div");
+    d.style.padding = "10px 0";
+    d.style.borderBottom = "1px solid var(--line)";
+    const dt = new Date(r.ts).toLocaleString("pt-BR");
+    d.innerHTML = `
+      <div style="display:flex;justify-content:space-between;">
+        <span class="tag media">${escapeHTML(r.rota)}</span>
+        <span>
+          <span class="note" style="margin-right:8px;">${dt}</span>
+          <button class="close-x" onclick="deleteRegistro('${r.id}')">apagar</button>
+        </span>
+      </div>
+      <div style="margin-top:6px;font-size:13.5px;">${escapeHTML(r.texto)}</div>`;
+    wrap.appendChild(d);
+  });
+}
+
+/* ---------- dashboard ---------- */
+function renderDashboard(){
+  const players = DATA.players;
+  const total = players.length;
+
+  // stats row
+  const comPagamento = players.filter(p=>p.pagamento==="Sim").length;
+  const altaUrg = players.filter(p=>p.urg==="Alta").length;
+  const validados = players.filter(p=>p.validacao==="Validado").length;
+  document.getElementById("statsRow").innerHTML = `
+    <div class="stat"><span class="label">Registros totais</span><span class="n">${total}</span></div>
+    <div class="stat"><span class="label">Disposição de pagamento confirmada</span><span class="n">${comPagamento}</span></div>
+    <div class="stat"><span class="label">Urgência alta</span><span class="n">${altaUrg}</span></div>
+    <div class="stat"><span class="label">Hipóteses validadas (registros)</span><span class="n">${validados}</span></div>
+  `;
+
+  // ranking de dores
+  const dorCount = {};
+  players.forEach(p=>{ if(p.dor) dorCount[p.dor] = (dorCount[p.dor]||0)+1; });
+  renderBars("dorRanking", dorCount, total, "dorEmpty");
+
+  // segmento
+  const segCount = {};
+  players.forEach(p=>{ if(p.segmento) segCount[p.segmento] = (segCount[p.segmento]||0)+1; });
+  renderBars("segRanking", segCount, total, null);
+
+  // pagamento
+  const pagCount = {};
+  players.forEach(p=>{ if(p.pagamento) pagCount[p.pagamento] = (pagCount[p.pagamento]||0)+1; });
+  renderBars("pagRanking", pagCount, total, null);
+
+  // hipóteses
+  const hipWrap = document.getElementById("hipStatus");
+  hipWrap.innerHTML = "";
+  HIPOTESES.filter(h=>h!=="Nenhuma / não se aplica").forEach(h=>{
+    const related = players.filter(p=>p.hipotese===h);
+    const validado = related.filter(p=>p.validacao==="Validado").length;
+    const parcial = related.filter(p=>p.validacao==="Parcial").length;
+    const naoval = related.filter(p=>p.validacao==="Não validado").length;
+    let status = "naovalidado", label = "Sem evidência ainda";
+    if(validado>0){ status="validado"; label = validado+" registro(s) validando"; }
+    else if(parcial>0){ status="parcial"; label = parcial+" registro(s) parcial"; }
+    else if(related.length>0){ label = related.length+" registro(s), sem validação"; }
+    const d = document.createElement("div");
+    d.style.padding="9px 0";
+    d.style.borderBottom="1px solid var(--line)";
+    d.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;max-width:70%;">${h}</span>
+        <span class="tag ${status}">${label}</span>
+      </div>`;
+    hipWrap.appendChild(d);
+  });
+
+  // insights automáticos
+  const insWrap = document.getElementById("insightsBox");
+  insWrap.innerHTML = "";
+  let any = false;
+  Object.entries(dorCount).sort((a,b)=>b[1]-a[1]).forEach(([dor,count])=>{
+    if(count>=3){
+      any = true;
+      insWrap.innerHTML += `<div class="insight ok"><b>Padrão identificado:</b> "${dor}" apareceu em ${count} registros diferentes.</div>`;
+    }
+  });
+  HIPOTESES.filter(h=>h!=="Nenhuma / não se aplica").forEach(h=>{
+    const has = players.some(p=>p.hipotese===h);
+    if(!has){
+      any = true;
+      insWrap.innerHTML += `<div class="insight warn"><b>Sem evidência ainda:</b> "${h}" não tem nenhum registro vinculado.</div>`;
+    }
+  });
+  if(!any){
+    insWrap.innerHTML = `<div class="insight">Ainda não há dados suficientes para gerar insights. Continue registrando entrevistas na planilha master.</div>`;
+  }
+}
+function renderBars(elId, countObj, total, emptyId){
+  const wrap = document.getElementById(elId);
+  wrap.innerHTML = "";
+  const entries = Object.entries(countObj).sort((a,b)=>b[1]-a[1]);
+  if(emptyId) document.getElementById(emptyId).style.display = entries.length ? "none":"block";
+  const max = entries.length ? entries[0][1] : 1;
+  entries.forEach(([label,count])=>{
+    const pct = Math.round((count/max)*100);
+    const d = document.createElement("div");
+    d.className = "bar-row";
+    d.innerHTML = `
+      <div class="bhead"><span>${escapeHTML(label)}</span><span><b>${count}</b>${total?` / ${total}`:""}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>`;
+    wrap.appendChild(d);
+  });
+}
+
+/* ---------- export / import ---------- */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(DATA,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,"-");
+  a.href = URL.createObjectURL(blob);
+  a.download = `sao_borja_campo_backup_${stamp}.json`;
+  a.click();
+  toast("Backup exportado");
+}
+function importJSON(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed.players || !parsed.registros){ toast("Arquivo inválido"); return; }
+      if(confirm("Importar vai SUBSTITUIR os dados atuais deste navegador. Continuar?")){
+        DATA = parsed;
+        persist();
+        buildGalpaoFormRefresh();
+        renderPlayers();
+        renderRegistros();
+        toast("Dados importados");
+      }
+    }catch(err){ toast("Não consegui ler esse arquivo"); }
+  };
+  reader.readAsText(file);
+  ev.target.value = "";
+}
+function buildGalpaoFormRefresh(){
+  document.getElementById("galpaoForm").innerHTML = "";
+  buildGalpaoForm();
+}
+function exportCSV(){
+  const cols = ["nome","segmento","contato","local","dor","dordetalhe","freq","urg","pagamento","oportunidade","concorrentes","riscos","hipotese","validacao","proximo"];
+  const header = cols.join(";");
+  const rows = DATA.players.map(p=>cols.map(c=>`"${String(p[c]||"").replace(/"/g,'""')}"`).join(";"));
+  const csv = [header, ...rows].join("\n");
+  const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "sao_borja_planilha_master.csv";
+  a.click();
+}
+
+/* ---------- init ---------- */
+buildNav();
+buildGalpaoForm();
+buildRoteiro();
+renderPlayers();
+renderRegistros();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# dependências e build
+app/node_modules/
+app/dist/
+
+# helper de dev local (caminho específico da máquina)
+app/dev-server.cmd
+
+# sistema
+.DS_Store
+Thumbs.db
+*.local

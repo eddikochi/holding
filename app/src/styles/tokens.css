@@ -1,0 +1,35 @@
+/* Design tokens — fonte: .claude/skills/design-tokens/SKILL.md */
+:root {
+  /* neutros */
+  --bg: #f7f7f4;
+  --panel: #ffffff;
+  --ink: #1b1b1a;
+  --ink-soft: #5b5b57;
+  --line: #dcdad2;
+
+  /* famílias de ação */
+  --blue: #1e3a5f;
+  --blue-soft: #eaf0f6;
+  --amber: #c0762a;
+  --amber-soft: #fbf0e2;
+  --green: #3b6e4e;
+  --green-soft: #eaf3ec;
+  --red: #9c3b2e;
+  --red-soft: #f7eae7;
+
+  /* tipografia */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* espaçamento (escala de 4px) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s6: 24px;
+  --s8: 32px;
+
+  /* forma */
+  --r-input: 7px;
+  --r-panel: 10px;
+  --r-pill: 20px;
+}
