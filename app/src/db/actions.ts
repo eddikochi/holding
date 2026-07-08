@@ -456,3 +456,20 @@ export async function obterModeloDecisorio(): Promise<string> {
 export async function salvarModeloDecisorio(texto: string): Promise<void> {
   await db.config.put({ chave: GOV_MODELO, valor: texto });
 }
+
+/* ── ONBOARDING dos diagnósticos (Config): 1ª visita + checklist ──────── */
+export async function onboardingVisto(slug: string): Promise<boolean> {
+  const c = await db.config.get('onboarding_visto_' + slug);
+  return c?.valor === true;
+}
+export async function marcarOnboardingVisto(slug: string): Promise<void> {
+  await db.config.put({ chave: 'onboarding_visto_' + slug, valor: true });
+}
+export async function obterChecklistDiscovery(slug: string, tamanho: number): Promise<boolean[]> {
+  const c = await db.config.get('discovery_checklist_' + slug);
+  const v = Array.isArray(c?.valor) ? (c!.valor as boolean[]) : [];
+  return Array.from({ length: tamanho }, (_, i) => v[i] === true);
+}
+export async function salvarChecklistDiscovery(slug: string, marcados: boolean[]): Promise<void> {
+  await db.config.put({ chave: 'discovery_checklist_' + slug, valor: marcados });
+}

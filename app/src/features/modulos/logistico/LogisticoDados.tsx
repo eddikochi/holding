@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, DEFAULT_MIN_EVIDENCIAS } from '../../../db/database';
+import { db } from '../../../db/database';
 import {
   salvarStakeholder, apagarStakeholder, stakeholderEmBranco,
-  salvarHipotese, apagarHipotese, hipoteseEmBranco, RegraDominioError,
   salvarEvidencia, evidenciaEmBranco, vincularEvidenciaAHipotese,
 } from '../../../db/actions';
-import { rankingDeDores, hipotesesComContagem, etapasDoFunil } from '../../../lib/calc/logistico';
+import { rankingDeDores } from '../../../lib/calc/logistico';
 import { EmptyState } from '../../../components/EmptyState';
-import { BadgeStatusHipotese, BadgeConfianca } from '../../../components/Badge';
+import { BadgeConfianca } from '../../../components/Badge';
 import { useToast } from '../../../components/Toast';
 import { fmtData } from '../../../lib/datas';
-import type { Hipotese, Stakeholder, Evidencia, StatusHipotese } from '../../../models/types';
+import type { Hipotese, Stakeholder, Evidencia } from '../../../models/types';
 
 /**
- * Aba "Dados" do módulo 05 Logístico — o pilar mais maduro.
- * Mostra o funil hipótese → evidência → validação → business case,
- * players logísticos, ranking de dores e as hipóteses do Hub com status.
+ * Aba "Dados" do módulo 05 Logístico. Gerencia os dados de campo do pilar:
+ * players, ranking de dores, evidências e o galpão. O funil de validação
+ * (hipótese → evidência → validação) fica na aba Discovery (DiscoveryPanel).
  */
 export function LogisticoDados() {
   const toast = useToast();
@@ -30,7 +29,6 @@ export function LogisticoDados() {
     return { stakeholders, hipoteses, evidencias, ativos };
   });
 
-  const [editHip, setEditHip] = useState<Hipotese | null>(null);
   const [editStk, setEditStk] = useState<Stakeholder | null>(null);
   const [editEv, setEditEv] = useState<Evidencia | null>(null);
 
@@ -39,75 +37,12 @@ export function LogisticoDados() {
   const { stakeholders, hipoteses, evidencias, ativos } = dados;
   const dores = rankingDeDores(stakeholders);
   const maxDor = dores[0]?.contagem ?? 1;
-  const hipContagem = hipotesesComContagem(hipoteses, evidencias, DEFAULT_MIN_EVIDENCIAS);
-  const funil = etapasDoFunil(hipoteses, evidencias, 0);
-
-  const semNada = stakeholders.length + hipoteses.length + evidencias.length === 0;
 
   return (
     <div>
-      {/* FUNIL — critério de pronto da Fase 2 */}
-      <div className="panel">
-        <h2>Funil de validação do Hub</h2>
-        <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>
-          O caminho de uma tese até virar decisão: hipótese → evidências que a sustentam →
-          validação → business case. Uma hipótese só é "validada" com pelo menos {DEFAULT_MIN_EVIDENCIAS} evidências vinculadas.
-        </p>
-        <div className="funil">
-          <div className="funil-etapa"><div className="n">{funil.hipoteses}</div><div className="l">hipóteses</div></div>
-          <div className="funil-seta">→</div>
-          <div className="funil-etapa"><div className="n">{funil.evidenciasVinculadas}</div><div className="l">evidências vinculadas</div></div>
-          <div className="funil-seta">→</div>
-          <div className="funil-etapa"><div className="n">{funil.hipotesesValidadas}</div><div className="l">hipóteses validadas</div></div>
-          <div className="funil-seta">→</div>
-          <div className="funil-etapa"><div className="n">{funil.businessCases}</div><div className="l">business cases (Fase 4)</div></div>
-        </div>
-        {semNada && (
-          <div style={{ marginTop: 12 }}>
-            <EmptyState titulo="O funil se preenche com seus dados">
-              Cadastre as hipóteses do Hub abaixo, registre players e evidências (ou importe do campo)
-              e vincule cada evidência à hipótese que ela sustenta. O funil acima reflete isso em tempo real.
-            </EmptyState>
-          </div>
-        )}
-      </div>
-
-      {/* HIPÓTESES DO HUB */}
-      <div className="panel">
-        <div className="row-actions" style={{ justifyContent: 'space-between' }}>
-          <h2 style={{ margin: 0 }}>Hipóteses do Hub</h2>
-          <button className="btn small" onClick={() => setEditHip(hipoteseEmBranco('logistico'))}>+ Nova hipótese</button>
-        </div>
-        {hipoteses.length === 0 ? (
-          <EmptyState titulo="Nenhuma hipótese ainda">
-            Uma hipótese é uma aposta a testar — ex.: "há demanda por armazenagem flexível".
-            Cadastre as do Hub para começar a acumular evidências.
-          </EmptyState>
-        ) : (
-          <table>
-            <thead><tr><th>Enunciado</th><th>Status</th><th>Evidências</th><th></th></tr></thead>
-            <tbody>
-              {hipContagem.map(({ hipotese: h, evidenciasVinculadas, atingeMinimo }) => (
-                <tr key={h.id}>
-                  <td><b>{h.enunciado || '(sem enunciado)'}</b></td>
-                  <td><BadgeStatusHipotese status={h.status} /></td>
-                  <td>
-                    {evidenciasVinculadas}
-                    {!atingeMinimo && h.status !== 'refutada' && (
-                      <span style={{ color: 'var(--amber)', fontSize: 11 }}> (faltam {Math.max(0, DEFAULT_MIN_EVIDENCIAS - evidenciasVinculadas)} p/ validar)</span>
-                    )}
-                  </td>
-                  <td>
-                    <div className="row-actions">
-                      <button className="btn small secondary" onClick={() => setEditHip(h)}>Editar</button>
-                      <button className="btn small danger" onClick={async () => { if (confirm('Apagar hipótese? Evidências vinculadas serão desvinculadas.')) { await apagarHipotese(h.id); toast('Hipótese apagada'); } }}>×</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div className="alerta ok">
+        O funil hipótese → evidência → validação deste pilar fica na aba <b>Discovery</b>.
+        Aqui você gerencia os dados de campo: players, dores e evidências.
       </div>
 
       {/* RANKING DE DORES */}
@@ -217,7 +152,6 @@ export function LogisticoDados() {
         )}
       </div>
 
-      {editHip && <HipoteseModal hipotese={editHip} onFechar={() => setEditHip(null)} />}
       {editStk && <StakeholderModal stakeholder={editStk} onFechar={() => setEditStk(null)} />}
       {editEv && <EvidenciaModal evidencia={editEv} hipoteses={hipoteses} onFechar={() => setEditEv(null)} />}
     </div>
@@ -225,39 +159,6 @@ export function LogisticoDados() {
 }
 
 /* ── modais ───────────────────────────────────────────────────────────── */
-function HipoteseModal({ hipotese, onFechar }: { hipotese: Hipotese; onFechar: () => void }) {
-  const toast = useToast();
-  const [h, setH] = useState<Hipotese>(hipotese);
-  const [erro, setErro] = useState<string | null>(null);
-  async function salvar() {
-    if (!h.enunciado.trim()) { setErro('Escreva o enunciado da hipótese.'); return; }
-    try { await salvarHipotese(h); toast('Hipótese salva'); onFechar(); }
-    catch (e) { setErro(e instanceof RegraDominioError ? e.message : 'Erro ao salvar.'); }
-  }
-  return (
-    <div className="modal-backdrop" onClick={onFechar}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3 style={{ marginTop: 0 }}>{hipotese.enunciado ? 'Editar hipótese' : 'Nova hipótese'}</h3>
-        <label>Enunciado</label>
-        <textarea value={h.enunciado} onChange={(e) => setH({ ...h, enunciado: e.target.value })} />
-        <label>Critérios de validação</label>
-        <textarea value={h.criteriosValidacao} onChange={(e) => setH({ ...h, criteriosValidacao: e.target.value })} />
-        <label>Status</label>
-        <select value={h.status} onChange={(e) => setH({ ...h, status: e.target.value as StatusHipotese })}>
-          <option value="nao_validada">Não validada</option>
-          <option value="parcial">Parcial</option>
-          <option value="validada">Validada</option>
-          <option value="refutada">Refutada</option>
-        </select>
-        {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
-        <div className="row-actions" style={{ marginTop: 16 }}>
-          <button className="btn" onClick={salvar}>Salvar</button>
-          <button className="btn ghost" onClick={onFechar}>Cancelar</button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function StakeholderModal({ stakeholder, onFechar }: { stakeholder: Stakeholder; onFechar: () => void }) {
   const toast = useToast();

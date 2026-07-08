@@ -2,6 +2,35 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Fase corretiva — auditoria dos 3 itens — 2026-07-08
+
+Correção de 3 itens da SPEC.md que a auditoria apontou como ausentes/superficiais. Escopo travado.
+
+### Item 1 — Painel de Discovery por pilar
+- Nova aba **Discovery** em todos os diagnósticos (01–07): funil visual (hipóteses → com evidência →
+  parciais → validadas → refutadas), hipótese expansível mostrando TODAS as evidências e as entrevistas
+  (nome, data, dor, valorCitado), vínculo de evidências e botão de validar **desabilitado com tooltip**
+  até atingir o mínimo de evidências.
+- **Import do Hub agora alimenta o funil ponta a ponta**: cada player vira contato + evidência de
+  entrevista, vinculados à hipótese do Hub que ele sustenta (id de hipótese estável, sem duplicar em re-import).
+- Funil saiu da aba "Dados" do Logístico (evita duplicação); Dados agora foca em players/dores/evidências.
+
+### Item 2 — Onboarding didático (01–07)
+- Aba Onboarding reescrita com conteúdo real: o que responde, por que antes de investir, **coleta CAMPO
+  (presencial) vs DESK (Porto Alegre)** separadas visualmente, **checklist de discovery com progresso
+  persistido**, e critério de "pronto" em lista.
+- Onboarding abre na **primeira visita** ao módulo; depois abre em Dados, com botão **"?"** no cabeçalho.
+
+### Item 3 — Preview de import + Home
+- Import (ambos os formatos) mostra **preview com criados vs. atualizados** por entidade e opção
+  **mesclar ou substituir**; nada é gravado antes da confirmação.
+- Home: **% de preenchimento dos 12 módulos** e os **4 alertas automáticos** (pilar sem dados, hipótese
+  sem evidência, pendência jurídica, número sem fonte em business case).
+
+### Verificado (qa-reviewer, ver QA_CHECKLIST)
+- Os 4 critérios de pronto passaram no navegador; sem regressão; build strict e console limpos.
+- Limpeza: removido `ModuloShell` (código morto). `Tabs` agora suporta modo controlado.
+
 ## Fase 5 — Execução e governança — 2026-07-08
 
 Últimos dois módulos + mapa + polimento. **Os 12 módulos do Masterplan estão completos.**

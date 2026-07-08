@@ -34,6 +34,11 @@
 | `RoadmapView` / `GovernancaView` | `features/modulos/*/` | Módulos 11–12 (Fase 5). Governança usa `Tabs` (Papéis/Decision Log/KPIs). |
 | `Sparkline` | `components/Sparkline.tsx` | Mini-gráfico de linha em SVG puro (evolução de KPIs). |
 | `AtivosMapa` | `features/modulos/patrimonial/AtivosMapa.tsx` | Mapa Leaflet dos ativos; degrada para lista offline. |
+| `DiscoveryPanel` | `features/modulos/DiscoveryPanel.tsx` | Funil hipótese→evidência→validação por pilar; hipótese expansível com evidências e entrevistas; validar travado por regra. |
+| `OnboardingTab` | `features/modulos/DiagnosticoLayout.tsx` | Onboarding didático: campo/desk, checklist persistido, critério de pronto. |
+
+> `Tabs` agora aceita modo controlado (`ativa` + `aoMudar`), usado pelo `DiagnosticoLayout` para abrir no
+> Onboarding na 1ª visita e reabrir pelo botão "?". `DiagnosticoLayout` tem 4 abas: Onboarding/Dados/Discovery/Análise.
 
 ## Classes utilitárias (em `styles/global.css`)
 

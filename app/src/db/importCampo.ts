@@ -277,7 +277,28 @@ function importarHubV1(o: Record<string, unknown>): ResultadoImport {
     });
   }
 
-  // players[] → Stakeholder pilar logistico
+  // Registro de hipóteses do Hub, deduplicadas por enunciado (id estável para
+  // não duplicar em re-import). Vêm do campo `hipotese` de cada player.
+  const hipMap = new Map<string, Hipotese>();
+  const playerHip = new Map<string, string>(); // stakeholderId -> hipoteseId
+  function obterHipotese(enunciado: string): Hipotese {
+    const chave = enunciado.trim().toLowerCase();
+    let h = hipMap.get(chave);
+    if (!h) {
+      const slug = chave.normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+      h = {
+        id: 'hip_campo_' + (slug || Math.random().toString(36).slice(2, 8)),
+        createdAt: ts, updatedAt: ts,
+        enunciado: enunciado.trim(), pilar: 'logistico',
+        criteriosValidacao: '', status: 'nao_validada',
+      };
+      hipMap.set(chave, h);
+    }
+    return h;
+  }
+
+  // players[] → Stakeholder pilar logistico (+ vínculo a hipótese + evidência da dor)
   const players = Array.isArray(o.players) ? o.players : [];
   for (const raw of players) {
     const p = (raw ?? {}) as Record<string, unknown>;
@@ -293,11 +314,12 @@ function importarHubV1(o: Record<string, unknown>): ResultadoImport {
     }
     // dor: categoria + detalhe combinados sem perder nenhum
     const dorPartes = [str(p.dor), str(p.dordetalhe)].filter(Boolean);
-    // campos ricos do hub que não têm slot direto: preservar em camposNaoMapeados
-    for (const campo of ['oportunidade', 'concorrentes', 'riscos', 'freq', 'hipotese']) {
+    // campos ricos do hub sem slot direto: preservar em camposNaoMapeados
+    for (const campo of ['oportunidade', 'concorrentes', 'riscos', 'freq']) {
       if (p[campo]) extras[campo] = p[campo];
     }
-    stakeholders.push({
+
+    const stakeholder: Stakeholder = {
       id: p.id ? String(p.id) : novoId(),
       createdAt: ts,
       updatedAt: ts,
@@ -314,11 +336,40 @@ function importarHubV1(o: Record<string, unknown>): ResultadoImport {
       proximoPasso: str(p.proximo ?? p.proximoPasso),
       data: str(p.ts ?? p.data) || ts,
       origem: metaOrigem('campo_hub_v1', extras),
-    });
+    };
+
+    // vincula à hipótese do Hub (campo `hipotese` do player)
+    const hipTexto = str(p.hipotese).trim();
+    if (hipTexto) {
+      const h = obterHipotese(hipTexto);
+      stakeholder.hipoteseId = h.id;
+      playerHip.set(stakeholder.id, h.id);
+    }
+    stakeholders.push(stakeholder);
+
+    // a dor citada na entrevista vira uma Evidência vinculada à hipótese
+    if (stakeholder.dorOportunidade) {
+      const partes = [stakeholder.dorOportunidade];
+      if (stakeholder.valorCitado) partes.push(`Disposição a pagar: ${stakeholder.valorCitado}`);
+      evidencias.push({
+        id: 'ev_dor_' + stakeholder.id,
+        createdAt: ts, updatedAt: ts,
+        tipo: 'texto',
+        conteudo: partes.join(' · '),
+        pilar: 'logistico',
+        fonte: 'entrevista',
+        fonteDetalhe: `Entrevista de campo — ${stakeholder.nome}`,
+        data: stakeholder.data,
+        stakeholderId: stakeholder.id,
+        hipoteseId: stakeholder.hipoteseId,
+        confianca: 'media',
+        origem: metaOrigem('campo_hub_v1', {}),
+      });
+    }
   }
   if (players.length) {
     avisos.push(
-      'Campos do Hub sem lugar no modelo novo (oportunidade, concorrentes, riscos, hipótese-texto) foram preservados em "campos não mapeados" de cada stakeholder.'
+      'Cada player virou um contato + uma evidência de entrevista, vinculados à hipótese do Hub que ele sustenta. Campos extras (oportunidade, concorrentes, riscos) ficam em "campos não mapeados".'
     );
   }
 
@@ -356,6 +407,7 @@ function importarHubV1(o: Record<string, unknown>): ResultadoImport {
       .filter(Boolean)
       .join('\n');
     if (!conteudo) continue;
+    const stakeholderId = e.playerId ? String(e.playerId) : undefined;
     evidencias.push({
       id: e.id ? String(e.id) : novoId(),
       createdAt: ts,
@@ -366,13 +418,15 @@ function importarHubV1(o: Record<string, unknown>): ResultadoImport {
       fonte: 'entrevista',
       fonteDetalhe: 'Entrevista (Hub Logístico)',
       data: str(e.ts ?? e.quando) || ts,
-      stakeholderId: e.playerId ? String(e.playerId) : undefined,
+      stakeholderId,
+      hipoteseId: stakeholderId ? playerHip.get(stakeholderId) : undefined,
       confianca: 'media',
       origem: metaOrigem('campo_hub_v1', {}),
     });
   }
 
-  return { formato: 'campo_hub_v1', ativos, stakeholders, evidencias, hipoteses: [], avisos };
+  const hipoteses = [...hipMap.values()];
+  return { formato: 'campo_hub_v1', ativos, stakeholders, evidencias, hipoteses, avisos };
 }
 
 /** Ponto de entrada: recebe o objeto já parseado do JSON. */
@@ -382,6 +436,40 @@ export function importarCampo(dados: unknown): ResultadoImport {
   if (formato === 'sb_masterplan_v1') return importarMasterplanV1(o);
   if (formato === 'campo_hub_v1') return importarHubV1(o);
   return { formato: 'desconhecido', ativos: [], stakeholders: [], evidencias: [], hipoteses: [], avisos: [] };
+}
+
+/** Conjuntos de IDs já existentes no banco, por entidade. */
+export interface IdsExistentes {
+  ativos: Set<string>;
+  stakeholders: Set<string>;
+  evidencias: Set<string>;
+  hipoteses: Set<string>;
+}
+
+export interface AnaliseAplicacao {
+  ativos: { criar: number; atualizar: number };
+  stakeholders: { criar: number; atualizar: number };
+  evidencias: { criar: number; atualizar: number };
+  hipoteses: { criar: number; atualizar: number };
+}
+
+function contarCriarAtualizar(itens: { id: string }[], existentes: Set<string>) {
+  let atualizar = 0;
+  for (const it of itens) if (existentes.has(it.id)) atualizar++;
+  return { criar: itens.length - atualizar, atualizar };
+}
+
+/**
+ * Quantos registros serão criados vs. atualizados ao mesclar este import
+ * com os dados atuais (comparando IDs). Função pura — recebe os IDs existentes.
+ */
+export function analisarAplicacao(res: ResultadoImport, existentes: IdsExistentes): AnaliseAplicacao {
+  return {
+    ativos: contarCriarAtualizar(res.ativos, existentes.ativos),
+    stakeholders: contarCriarAtualizar(res.stakeholders, existentes.stakeholders),
+    evidencias: contarCriarAtualizar(res.evidencias, existentes.evidencias),
+    hipoteses: contarCriarAtualizar(res.hipoteses, existentes.hipoteses),
+  };
 }
 
 /** Preview (contagens + amostra) para exibir antes de confirmar. */

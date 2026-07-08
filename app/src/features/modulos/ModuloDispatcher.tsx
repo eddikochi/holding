@@ -1,7 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { moduloPorSlug } from '../../modulos';
 import { DiagnosticoLayout } from './DiagnosticoLayout';
-import { ModuloShell } from './ModuloShell';
 import { PatrimonialDados } from './patrimonial/PatrimonialDados';
 import { JuridicoDados } from './juridico/JuridicoDados';
 import { LogisticoDados } from './logistico/LogisticoDados';
@@ -67,5 +66,11 @@ export function ModuloDispatcher() {
   if (dados) {
     return <DiagnosticoLayout modulo={modulo} dados={dados} />;
   }
-  return <ModuloShell />;
+  // Todos os 12 slugs têm view ou dados; este ponto é inalcançável na prática.
+  return (
+    <div>
+      <PageHeader titulo={modulo.nome} />
+      <div className="panel"><EmptyState titulo="Módulo em construção">Volte para a <Link to="/">visão geral</Link>.</EmptyState></div>
+    </div>
+  );
 }

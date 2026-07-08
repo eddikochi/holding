@@ -2,6 +2,24 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Fase corretiva — auditoria dos 3 itens · 2026-07-08 · ✅ APROVADA
+
+Escopo travado: (1) painel Discovery por pilar, (2) onboarding didático 01–07, (3) preview de import + Home.
+
+| Critério de pronto | Resultado |
+|---|---|
+| **1.** Importar Hub → preview → confirmar → módulo 05 → funil de discovery com entrevistas reais vinculadas | ✅ funil 1 hip/1 com evidência; expandir mostra as 3 entrevistas com nome, dor e valorCitado (R$ 500) |
+| — validação: botão desabilitado com tooltip até 3 evidências | ✅ "Precisa de pelo menos 3 evidências (tem 0)"; com 3 valida e vai a "validada" |
+| **2.** Abrir módulo 01–07 pela 1ª vez → onboarding com conteúdo real + checklist funcional | ✅ 1ª visita abre no Onboarding; campo/desk separados; checklist persistido; aviso de advogado no 02 |
+| — 2ª visita abre em Dados; botão "?" reabre onboarding | ✅ |
+| **3.** Home: % de progresso dos 12 módulos + 4 tipos de alerta | ✅ 12 módulos com %; alertas: Pilar sem dados, Hipótese sem evidência, Pendência jurídica, Número sem fonte |
+| **4.** Sem regressão: backup/export, matriz de priorização, checklist jurídico | ✅ backup íntegro (hipóteses/análises/comparáveis); matriz e matriz jurídica ok |
+| Build strict + console limpo | ✅ 89 módulos, sem erros |
+
+Detalhe do import: preview mostra criados vs. atualizados por entidade e opção mesclar/substituir; nada gravado antes de confirmar. Removido `ModuloShell` (código morto).
+
+---
+
 ## Fase 5 — Execução e governança · 2026-07-08 · ✅ APROVADA (passada final)
 
 Escopo: módulos 11 Roadmap, 12 Governança (Decision Log + KPIs), mapa Leaflet, polimento.

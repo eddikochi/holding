@@ -66,6 +66,16 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 
 ## Histórico de decisões de schema
 
+### v3 (cont.) — 2026-07-08 — fase corretiva (auditoria dos 3 itens)
+- **Sem novas entidades.** Import do Hub agora cria `Hipotese` (id estável `hip_campo_<slug>` para
+  não duplicar em re-import) a partir do campo `hipotese` de cada player, vincula `Stakeholder.hipoteseId`
+  e gera uma `Evidencia` (fonte `entrevista`, com valorCitado no conteúdo) ligada à hipótese; entrevistas
+  herdam o vínculo via player. Isso alimenta o funil de discovery ponta a ponta.
+- Import passou a ser analisável antes de aplicar: `analisarAplicacao()` (puro) diz criados vs. atualizados
+  por entidade comparando IDs; modos **mesclar** (bulkPut) ou **substituir** (limparTudo + add).
+- Config: `onboarding_visto_<slug>` (1ª visita) e `discovery_checklist_<slug>` (checklist com progresso).
+- Cálculo puro `lib/calc/discovery.ts` (funil por pilar). `Tabs` agora suporta modo controlado.
+
 ### v3 (cont.) — 2026-07-08 — execução e governança (Fase 5)
 - Sem novas stores: `Tarefa`, `Decisao`, `KPI` (entidades 7–9) já existiam desde a Fase 1.
 - Governança em `Config`: `governanca_papeis` (`PapelFamiliar[]`), `governanca_ritos` (`Rito[]`),
