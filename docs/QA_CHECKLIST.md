@@ -2,6 +2,39 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Fase 5 — Execução e governança · 2026-07-08 · ✅ APROVADA (passada final)
+
+Escopo: módulos 11 Roadmap, 12 Governança (Decision Log + KPIs), mapa Leaflet, polimento.
+
+| # | Item | Resultado |
+|---|------|-----------|
+| 1 | Build `tsc && vite build` sem erros (strict) | ✅ 88 módulos |
+| 2 | 11: colunas por horizonte (0-12m/1-3a/3-5a/5-10a) | ✅ |
+| 3 | 11: dependência "bloqueado por" visível no card | ✅ |
+| 4 | 12: 3 abas (Papéis e ritos / Decision Log / KPIs) | ✅ |
+| 5 | 12: Decision Log grava decisão com vínculos, reversível, filtro | ✅ |
+| 6 | 12: KPI com medições + **sparkline SVG** renderizado | ✅ atual 14 / alvo 20 |
+| 7 | 01: **mapa Leaflet** monta (container, 12 tiles, marcador) online | ✅ |
+| 8 | 01: degradação para lista quando offline/sem tiles | ✅ (por código; online testado) |
+| 9 | Home: progresso 08–12 ("com dados"/"vazio") | ✅ 11/12 com dados |
+| 10 | Console sem erros | ✅ |
+| 11 | Responsivo (roadmap/governança/patrimonial) sem overflow em 375px | ✅ |
+
+### Passada final — todos os 12 módulos
+- Diagnósticos 01–07: onboarding + dados + análise (SWOT/leitura). ✅
+- Decisão 08–10: oportunidades, priorização (matriz+ranking), business cases. ✅
+- Execução 11–12: roadmap, governança/decision log/KPIs. ✅
+- Import de campo, backup JSON/CSV, persistência IndexedDB entre reloads. ✅ (Fases 1–4)
+- Regra de ouro (hipótese≠evidência≠decisão; validação ≥3 evidências) mantida. ✅
+- Estados vazios e onboarding em todos os módulos. ✅
+- HTML single-file abre por duplo-clique (file://). ✅
+
+### Ressalvas conhecidas (não bloqueiam)
+- Mapa depende de internet para os tiles; offline mostra lista (comportamento previsto na spec).
+- Recharts não foi introduzido: todos os gráficos (barras, funil, sparkline) em CSS/SVG puro — bundle menor e 100% offline.
+
+---
+
 ## Fase 4 — Decisão · 2026-07-08 · ✅ APROVADA
 
 Escopo: módulos 08 Oportunidades, 09 Priorização (matriz + ranking), 10 Business Cases.

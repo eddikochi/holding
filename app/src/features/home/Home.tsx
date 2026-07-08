@@ -9,13 +9,18 @@ import { contarPorPilar, progressoModulo } from '../../lib/calc/progresso';
 /** Home / Visão Geral: progresso dos 12 módulos, alertas e acessos rápidos. */
 export function Home() {
   const dados = useLiveQuery(async () => {
-    const [ativos, stakeholders, evidencias, hipoteses] = await Promise.all([
+    const [ativos, stakeholders, evidencias, hipoteses, oportunidades, businessCases, tarefas, decisoes, kpis] = await Promise.all([
       db.ativos.toArray(),
       db.stakeholders.toArray(),
       db.evidencias.toArray(),
       db.hipoteses.toArray(),
+      db.oportunidades.count(),
+      db.businessCases.count(),
+      db.tarefas.count(),
+      db.decisoes.count(),
+      db.kpis.count(),
     ]);
-    return { ativos, stakeholders, evidencias, hipoteses };
+    return { ativos, stakeholders, evidencias, hipoteses, oportunidades, businessCases, tarefas, decisoes, kpis };
   });
 
   if (!dados) {
@@ -88,17 +93,28 @@ export function Home() {
         <h2>Progresso dos 12 módulos</h2>
         <div className="grid-modulos" style={{ marginTop: 12 }}>
           {MODULOS.map((m) => {
-            const c = m.pilar
-              ? { ...porPilar[m.pilar], ativos: m.pilar === 'patrimonial' ? dados.ativos.length : porPilar[m.pilar].ativos }
-              : { ativos: 0, stakeholders: 0, evidencias: 0, hipoteses: 0 };
-            const pct = m.pilar ? progressoModulo(c) : 0;
+            let pct = 0;
+            if (m.pilar) {
+              const c = { ...porPilar[m.pilar], ativos: m.pilar === 'patrimonial' ? dados.ativos.length : porPilar[m.pilar].ativos };
+              pct = progressoModulo(c);
+            } else {
+              // módulos 08–12: presença de dados marca progresso
+              const temDado: Record<string, boolean> = {
+                oportunidades: dados.oportunidades > 0,
+                priorizacao: dados.oportunidades > 0,
+                'business-cases': dados.businessCases > 0,
+                roadmap: dados.tarefas > 0,
+                governanca: dados.decisoes + dados.kpis > 0,
+              };
+              pct = temDado[m.slug] ? 100 : 0;
+            }
             return (
               <Link className="modulo-card" to={`/modulo/${m.slug}`} key={m.slug}>
                 <div className="mnum">MÓDULO {m.num}</div>
                 <div className="mnome">{m.nome.replace('Diagnóstico ', '')}</div>
                 <div className="prog-track"><div className="prog-fill" style={{ width: `${pct}%` }} /></div>
                 <div style={{ fontSize: 11, color: 'var(--ink-soft)', marginTop: 4 }}>
-                  {m.pilar ? `${pct}% preenchido` : 'Fase posterior'}
+                  {pct > 0 ? 'com dados' : 'vazio'}
                 </div>
               </Link>
             );

@@ -4,6 +4,7 @@ import { db } from '../../../db/database';
 import { salvarAtivo, apagarAtivo, ativoEmBranco } from '../../../db/actions';
 import { EmptyState } from '../../../components/EmptyState';
 import { useToast } from '../../../components/Toast';
+import { AtivosMapa } from './AtivosMapa';
 import { PILARES } from '../../../models/types';
 import type { Ativo, TipoAtivo, Pilar } from '../../../models/types';
 
@@ -84,19 +85,8 @@ export function PatrimonialDados() {
 
       <div className="panel">
         <h2>Mapa dos ativos</h2>
-        <div className="alerta">
-          O mapa interativo (Leaflet) entra na Fase 5. Por enquanto, os ativos com coordenadas
-          aparecem na lista abaixo — cadastre lat/lng na ficha se quiser prepará-los.
-        </div>
-        {ativos.filter((a) => a.lat != null && a.lng != null).length === 0 ? (
-          <p style={{ color: 'var(--ink-soft)', fontSize: 13 }}>Nenhum ativo com coordenadas ainda.</p>
-        ) : (
-          <ul style={{ fontSize: 13 }}>
-            {ativos.filter((a) => a.lat != null).map((a) => (
-              <li key={a.id}><b>{a.nome}</b>: {a.lat}, {a.lng}</li>
-            ))}
-          </ul>
-        )}
+        <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>Ativos com lat/lng plotados sobre o OpenStreetMap. Sem internet, vira lista automaticamente.</p>
+        <AtivosMapa ativos={ativos} />
       </div>
 
       {edit && <AtivoModal ativo={edit} onFechar={() => setEdit(null)} />}

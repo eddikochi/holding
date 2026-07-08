@@ -12,6 +12,8 @@ import { TuristicoDados } from './turistico/TuristicoDados';
 import { OportunidadesView } from './oportunidades/OportunidadesView';
 import { PriorizacaoView } from './priorizacao/PriorizacaoView';
 import { BusinessCasesView } from './businesscases/BusinessCasesView';
+import { RoadmapView } from './roadmap/RoadmapView';
+import { GovernancaView } from './governanca/GovernancaView';
 import { PageHeader } from '../../components/PageHeader';
 import { EmptyState } from '../../components/EmptyState';
 import type { ReactNode } from 'react';
@@ -32,6 +34,8 @@ const VIEW_POR_MODULO: Record<string, ReactNode> = {
   oportunidades: <OportunidadesView />,
   priorizacao: <PriorizacaoView />,
   'business-cases': <BusinessCasesView />,
+  roadmap: <RoadmapView />,
+  governanca: <GovernancaView />,
 };
 
 /**

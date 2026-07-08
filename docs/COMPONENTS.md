@@ -30,6 +30,10 @@
 | `StakeholdersPanel` | `features/modulos/StakeholdersPanel.tsx` | Lista + CRUD de stakeholders de um pilar. Usado por 06. |
 | `SazonalidadeEditor` | `features/modulos/agroindustrial/` | Calendário anual de intensidade (clique cicla), salvo em Config. |
 | `ImobiliarioDados` / `EconomicoDados` / `AgroindustrialDados` / `TuristicoDados` | `features/modulos/*/` | Aba "Dados" dos módulos da Fase 3. |
+| `OportunidadesView` / `PriorizacaoView` / `BusinessCasesView` | `features/modulos/*/` | Módulos 08–10 (Fase 4), telas próprias sem 3 abas. |
+| `RoadmapView` / `GovernancaView` | `features/modulos/*/` | Módulos 11–12 (Fase 5). Governança usa `Tabs` (Papéis/Decision Log/KPIs). |
+| `Sparkline` | `components/Sparkline.tsx` | Mini-gráfico de linha em SVG puro (evolução de KPIs). |
+| `AtivosMapa` | `features/modulos/patrimonial/AtivosMapa.tsx` | Mapa Leaflet dos ativos; degrada para lista offline. |
 
 ## Classes utilitárias (em `styles/global.css`)
 

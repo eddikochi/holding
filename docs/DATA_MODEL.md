@@ -66,6 +66,13 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 
 ## Histórico de decisões de schema
 
+### v3 (cont.) — 2026-07-08 — execução e governança (Fase 5)
+- Sem novas stores: `Tarefa`, `Decisao`, `KPI` (entidades 7–9) já existiam desde a Fase 1.
+- Governança em `Config`: `governanca_papeis` (`PapelFamiliar[]`), `governanca_ritos` (`Rito[]`),
+  `governanca_modelo` (texto). KPI usa `historico: Medicao[]` (valor atual = última medição).
+- Nova dependência: `leaflet` (mapa do módulo 01), com `circleMarker` (sem imagens externas) para
+  funcionar no HTML single-file; degradação para lista quando offline ou sem tiles.
+
 ### v3 (cont.) — 2026-07-08 — módulos de decisão (Fase 4)
 - `BusinessCase.oportunidadeId` passou a ser **opcional** — um BC pode nascer da promoção de uma
   oportunidade ou ser criado avulso. Campo indexado opcional; sem migração de versão.

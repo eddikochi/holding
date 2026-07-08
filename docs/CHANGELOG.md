@@ -2,6 +2,31 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Fase 5 — Execução e governança — 2026-07-08
+
+Últimos dois módulos + mapa + polimento. **Os 12 módulos do Masterplan estão completos.**
+
+### Adicionado
+- **Módulo 11 Roadmap**: tarefas/marcos em **colunas por horizonte** (0-12m / 1-3a / 3-5a / 5-10a),
+  com pilar, business case relacionado e **dependências "bloqueado por"** visíveis. Sem lib de kanban.
+- **Módulo 12 Governança Familiar** (3 abas):
+  - Papéis familiares, modelo decisório e ritos (reuniões), salvos em Config.
+  - **Decision Log** filtrável — cada decisão com motivo, quem decidiu, reversibilidade e vínculos a
+    hipóteses/evidências.
+  - **KPIs** com histórico de medições e **mini-gráfico de evolução (sparkline SVG)**.
+- **Mapa Leaflet** no módulo 01 (OpenStreetMap), plotando ativos com lat/lng via `circleMarker`
+  (sem imagens externas, funciona no HTML single-file). **Degrada para lista** quando offline.
+- **Home**: barra de progresso agora cobre os 12 módulos (08–12 marcam "com dados"/"vazio").
+- Componente `Sparkline` (SVG puro). Nova dependência: `leaflet`.
+
+### Verificado (ver docs/QA_CHECKLIST.md — passada final)
+- Roadmap com dependências; Decision Log; KPI com sparkline; mapa Leaflet (12 tiles + marcador);
+  responsivo; console limpo. Todos os 12 módulos revisados de ponta a ponta.
+
+### Decisão de escopo mantida
+- Recharts não foi necessário: barras (CSS), funil e sparkline (SVG) cobrem as visualizações, mantendo
+  o bundle menor e o app 100% offline (exceto tiles do mapa).
+
 ## Fase 4 — Decisão — 2026-07-08
 
 Módulos 08 Oportunidades, 09 Priorização e 10 Business Cases. Fecha o caminho

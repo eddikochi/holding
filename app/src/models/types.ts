@@ -328,6 +328,20 @@ export interface SazonalidadeMes {
   nota: string;
 }
 
+/* ── Governança familiar (módulo 12) — guardada em Config ─────────────── */
+export interface PapelFamiliar {
+  id: ID;
+  nome: string;
+  papel: string;
+  responsabilidades: string;
+}
+export interface Rito {
+  id: ID;
+  nome: string;
+  frequencia: string;
+  pauta: string;
+}
+
 /* ── Config (store auxiliar, não é entidade de domínio) ───────────────── */
 export interface Config {
   chave: string;

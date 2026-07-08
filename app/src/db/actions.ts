@@ -15,8 +15,15 @@ import type {
   SazonalidadeMes,
   Oportunidade,
   BusinessCase,
+  Tarefa,
+  Decisao,
+  KPI,
+  Medicao,
+  PapelFamiliar,
+  Rito,
   Pilar,
   TipoAtivo,
+  Horizonte,
   ItemChecklistJuridico,
 } from '../models/types';
 
@@ -332,4 +339,120 @@ export async function obterPesos(): Promise<PesosPriorizacao> {
 
 export async function salvarPesos(p: PesosPriorizacao): Promise<void> {
   await db.config.put({ chave: PESOS_CHAVE, valor: p });
+}
+
+/* ── TAREFA / MARCO (módulo 11) ───────────────────────────────────────── */
+export function tarefaEmBranco(horizonte: Horizonte = 'h0_12m'): Tarefa {
+  const ts = agora();
+  return {
+    id: novoId(),
+    createdAt: ts,
+    updatedAt: ts,
+    titulo: '',
+    horizonte,
+    status: 'a_fazer',
+    dependenciasIds: [],
+    responsavel: '',
+  };
+}
+
+export async function salvarTarefa(t: Tarefa): Promise<void> {
+  t.updatedAt = agora();
+  await db.tarefas.put(t);
+}
+
+export async function apagarTarefa(id: string): Promise<void> {
+  // remove esta tarefa das dependências de outras
+  await db.transaction('rw', db.tarefas, async () => {
+    await db.tarefas.delete(id);
+    const comDep = await db.tarefas.filter((t) => t.dependenciasIds.includes(id)).toArray();
+    for (const t of comDep) {
+      await db.tarefas.update(t.id, { dependenciasIds: t.dependenciasIds.filter((d) => d !== id) });
+    }
+  });
+}
+
+/* ── DECISÃO (Decision Log, módulo 12) ────────────────────────────────── */
+export function decisaoEmBranco(): Decisao {
+  const ts = agora();
+  return {
+    id: novoId(),
+    createdAt: ts,
+    updatedAt: ts,
+    data: ts,
+    contexto: '',
+    decisao: '',
+    motivo: '',
+    quemDecidiu: '',
+    reversivel: true,
+    hipoteseIds: [],
+    evidenciaIds: [],
+  };
+}
+
+export async function salvarDecisao(d: Decisao): Promise<void> {
+  d.updatedAt = agora();
+  await db.decisoes.put(d);
+}
+
+export async function apagarDecisao(id: string): Promise<void> {
+  await db.decisoes.delete(id);
+}
+
+/* ── KPI (módulo 12) ──────────────────────────────────────────────────── */
+export function kpiEmBranco(): KPI {
+  const ts = agora();
+  return {
+    id: novoId(),
+    createdAt: ts,
+    updatedAt: ts,
+    nome: '',
+    unidade: '',
+    valorAlvo: null,
+    historico: [],
+  };
+}
+
+export async function salvarKPI(k: KPI): Promise<void> {
+  k.updatedAt = agora();
+  await db.kpis.put(k);
+}
+
+export async function apagarKPI(id: string): Promise<void> {
+  await db.kpis.delete(id);
+}
+
+/** Adiciona uma medição ao histórico do KPI (mantém ordenado por data). */
+export async function registrarMedicao(kpiId: string, medicao: Medicao): Promise<void> {
+  const k = await db.kpis.get(kpiId);
+  if (!k) return;
+  const historico = [...k.historico, medicao].sort((a, b) => (a.data < b.data ? -1 : 1));
+  await db.kpis.update(kpiId, { historico, updatedAt: agora() });
+}
+
+/* ── GOVERNANÇA (módulo 12) — em Config ───────────────────────────────── */
+const GOV_PAPEIS = 'governanca_papeis';
+const GOV_RITOS = 'governanca_ritos';
+const GOV_MODELO = 'governanca_modelo';
+
+export async function obterPapeis(): Promise<PapelFamiliar[]> {
+  const c = await db.config.get(GOV_PAPEIS);
+  return Array.isArray(c?.valor) ? (c!.valor as PapelFamiliar[]) : [];
+}
+export async function salvarPapeis(papeis: PapelFamiliar[]): Promise<void> {
+  await db.config.put({ chave: GOV_PAPEIS, valor: papeis });
+}
+export async function obterRitos(): Promise<Rito[]> {
+  const c = await db.config.get(GOV_RITOS);
+  return Array.isArray(c?.valor) ? (c!.valor as Rito[]) : [];
+}
+export async function salvarRitos(ritos: Rito[]): Promise<void> {
+  await db.config.put({ chave: GOV_RITOS, valor: ritos });
+}
+export async function obterModeloDecisorio(): Promise<string> {
+  const c = await db.config.get(GOV_MODELO);
+  return typeof c?.valor === 'string' ? c.valor : '';
+}
+export async function salvarModeloDecisorio(texto: string): Promise<void> {
+  await db.config.put({ chave: GOV_MODELO, valor: texto });
 }
