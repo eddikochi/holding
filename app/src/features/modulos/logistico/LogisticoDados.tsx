@@ -1,21 +1,19 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../db/database';
-import {
-  salvarStakeholder, apagarStakeholder, stakeholderEmBranco,
-  salvarEvidencia, evidenciaEmBranco, vincularEvidenciaAHipotese,
-} from '../../../db/actions';
+import { salvarEvidencia, evidenciaEmBranco, vincularEvidenciaAHipotese } from '../../../db/actions';
 import { rankingDeDores } from '../../../lib/calc/logistico';
 import { EmptyState } from '../../../components/EmptyState';
 import { BadgeConfianca } from '../../../components/Badge';
 import { useToast } from '../../../components/Toast';
 import { fmtData } from '../../../lib/datas';
-import type { Hipotese, Stakeholder, Evidencia } from '../../../models/types';
+import { StakeholdersPanel } from '../StakeholdersPanel';
+import type { Hipotese, Evidencia } from '../../../models/types';
 
 /**
  * Aba "Dados" do módulo 05 Logístico. Gerencia os dados de campo do pilar:
- * players, ranking de dores, evidências e o galpão. O funil de validação
- * (hipótese → evidência → validação) fica na aba Discovery (DiscoveryPanel).
+ * players (com roteiro de entrevista), ranking de dores, evidências e o galpão.
+ * O funil de validação fica na aba Discovery.
  */
 export function LogisticoDados() {
   const toast = useToast();
@@ -29,7 +27,6 @@ export function LogisticoDados() {
     return { stakeholders, hipoteses, evidencias, ativos };
   });
 
-  const [editStk, setEditStk] = useState<Stakeholder | null>(null);
   const [editEv, setEditEv] = useState<Evidencia | null>(null);
 
   if (!dados) return <div className="panel">Carregando…</div>;
@@ -45,12 +42,17 @@ export function LogisticoDados() {
         Aqui você gerencia os dados de campo: players, dores e evidências.
       </div>
 
-      {/* RANKING DE DORES */}
+      <StakeholdersPanel
+        pilar="logistico"
+        titulo="Players logísticos"
+        ajuda="Transportadoras, despachantes, empresas locais. Ao cadastrar, use o roteiro de entrevista do pilar."
+      />
+
       <div className="panel">
         <h2>Ranking de dores</h2>
         {dores.length === 0 ? (
           <EmptyState titulo="Sem dores registradas">
-            As dores vêm do campo "dor/oportunidade" dos players logísticos abaixo (ou do import).
+            As dores vêm do campo "dor/oportunidade" dos players (ou do import).
           </EmptyState>
         ) : (
           dores.map((d) => (
@@ -63,40 +65,6 @@ export function LogisticoDados() {
         )}
       </div>
 
-      {/* PLAYERS LOGÍSTICOS */}
-      <div className="panel">
-        <div className="row-actions" style={{ justifyContent: 'space-between' }}>
-          <h2 style={{ margin: 0 }}>Players logísticos ({stakeholders.length})</h2>
-          <button className="btn small" onClick={() => setEditStk(stakeholderEmBranco('logistico'))}>+ Novo player</button>
-        </div>
-        {stakeholders.length === 0 ? (
-          <EmptyState titulo="Nenhum player ainda">
-            Transportadoras, despachantes, empresas locais. Cadastre aqui ou importe da ferramenta de campo.
-          </EmptyState>
-        ) : (
-          <table>
-            <thead><tr><th>Nome</th><th>Segmento</th><th>Dor/Oportunidade</th><th>Hipótese</th><th></th></tr></thead>
-            <tbody>
-              {stakeholders.map((s) => (
-                <tr key={s.id}>
-                  <td><b>{s.nome}</b><br /><span style={{ color: 'var(--ink-soft)' }}>{s.local}</span></td>
-                  <td>{s.segmento}</td>
-                  <td>{s.dorOportunidade}</td>
-                  <td style={{ fontSize: 11, color: 'var(--ink-soft)' }}>{hipoteses.find((h) => h.id === s.hipoteseId)?.enunciado?.slice(0, 30) ?? '—'}</td>
-                  <td>
-                    <div className="row-actions">
-                      <button className="btn small secondary" onClick={() => setEditStk(s)}>Editar</button>
-                      <button className="btn small danger" onClick={async () => { if (confirm('Apagar player?')) { await apagarStakeholder(s.id); toast('Player apagado'); } }}>×</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {/* EVIDÊNCIAS */}
       <div className="panel">
         <div className="row-actions" style={{ justifyContent: 'space-between' }}>
           <h2 style={{ margin: 0 }}>Evidências ({evidencias.length})</h2>
@@ -104,8 +72,7 @@ export function LogisticoDados() {
         </div>
         {evidencias.length === 0 ? (
           <EmptyState titulo="Nenhuma evidência ainda">
-            Evidência é um fato coletado (entrevista, observação, dado). Vincule cada uma a uma
-            hipótese para alimentar o funil de validação.
+            Evidência é um fato coletado. Vincule cada uma a uma hipótese para alimentar o funil (aba Discovery).
           </EmptyState>
         ) : (
           <table>
@@ -134,7 +101,6 @@ export function LogisticoDados() {
         )}
       </div>
 
-      {/* diagnóstico do galpão (atalho informativo) */}
       <div className="panel">
         <h2>Diagnóstico do galpão</h2>
         {ativos.length === 0 ? (
@@ -152,48 +118,7 @@ export function LogisticoDados() {
         )}
       </div>
 
-      {editStk && <StakeholderModal stakeholder={editStk} onFechar={() => setEditStk(null)} />}
       {editEv && <EvidenciaModal evidencia={editEv} hipoteses={hipoteses} onFechar={() => setEditEv(null)} />}
-    </div>
-  );
-}
-
-/* ── modais ───────────────────────────────────────────────────────────── */
-
-function StakeholderModal({ stakeholder, onFechar }: { stakeholder: Stakeholder; onFechar: () => void }) {
-  const toast = useToast();
-  const [s, setS] = useState<Stakeholder>(stakeholder);
-  const [erro, setErro] = useState<string | null>(null);
-  async function salvar() {
-    if (!s.nome.trim()) { setErro('Preencha o nome.'); return; }
-    await salvarStakeholder(s); toast('Player salvo'); onFechar();
-  }
-  return (
-    <div className="modal-backdrop" onClick={onFechar}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h3 style={{ marginTop: 0 }}>{stakeholder.nome ? 'Editar player' : 'Novo player'}</h3>
-        <div className="form-grid">
-          <div><label>Nome</label><input type="text" value={s.nome} onChange={(e) => setS({ ...s, nome: e.target.value })} /></div>
-          <div><label>Segmento</label><input type="text" value={s.segmento} onChange={(e) => setS({ ...s, segmento: e.target.value })} /></div>
-          <div><label>Contato</label><input type="text" value={s.contato} onChange={(e) => setS({ ...s, contato: e.target.value })} /></div>
-          <div><label>Local</label><input type="text" value={s.local} onChange={(e) => setS({ ...s, local: e.target.value })} /></div>
-        </div>
-        <label>Dor / oportunidade</label>
-        <textarea value={s.dorOportunidade} onChange={(e) => setS({ ...s, dorOportunidade: e.target.value })} />
-        <div className="form-grid">
-          <div><label>Disposição de pagamento</label>
-            <select value={s.disposicao ?? ''} onChange={(e) => setS({ ...s, disposicao: (e.target.value || undefined) as Stakeholder['disposicao'] })}>
-              <option value="">—</option><option value="sim">Sim</option><option value="talvez">Talvez</option><option value="nao">Não</option><option value="nao_perguntado">Não perguntado</option>
-            </select>
-          </div>
-          <div><label>Valor citado</label><input type="text" value={s.valorCitado ?? ''} onChange={(e) => setS({ ...s, valorCitado: e.target.value })} /></div>
-        </div>
-        {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
-        <div className="row-actions" style={{ marginTop: 16 }}>
-          <button className="btn" onClick={salvar}>Salvar</button>
-          <button className="btn ghost" onClick={onFechar}>Cancelar</button>
-        </div>
-      </div>
     </div>
   );
 }

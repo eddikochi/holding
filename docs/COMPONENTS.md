@@ -40,6 +40,16 @@
 > `Tabs` agora aceita modo controlado (`ativa` + `aoMudar`), usado pelo `DiagnosticoLayout` para abrir no
 > Onboarding na 1ª visita e reabrir pelo botão "?". `DiagnosticoLayout` tem 4 abas: Onboarding/Dados/Discovery/Análise.
 
+## Conteúdo de discovery por pilar (fase corretiva final)
+
+- `content/discovery.ts` (`DISCOVERY_PILAR`): por pilar — `perguntasMestre` (Item 4, "o que descobrir"),
+  `tiposPlayers` (Item 3, "quem procurar"), `roteiro` (Item 2, entrevista) e `hipotesesIniciais?` (sugeridas).
+- `StakeholderModal` (em `StakeholdersPanel.tsx`, exportado): modal unificado de registro de contato — segmento
+  a partir dos `tiposPlayers` do pilar (+ "Outro"), roteiro de entrevista embutido; respostas viram evidências
+  vinculadas à hipótese. Usado por todos os pilares com players (Logístico, Agro, Educação, etc.).
+- `EducacaoDados`: aba Dados do 8º pilar (players estudantis + evidências).
+- Onboarding (`OnboardingTab`) agora abre com "O que estamos tentando descobrir" e inclui "Quem procurar em campo".
+
 ## Classes utilitárias (em `styles/global.css`)
 
 - Layout: `.app-shell`, `.sidebar`, `.content`, `.nav-link`, `.nav-sep`

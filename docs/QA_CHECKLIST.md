@@ -2,6 +2,26 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Fase corretiva final — 5 itens de estrutura · 2026-07-08 · ✅ APROVADA
+
+Escopo travado: (1) pilar Educação, (2) roteiro de entrevista por pilar, (3) tipos de players por pilar,
+(4) tela "o que descobrir" por pilar, (5) consolidação de design tokens.
+
+| Critério de pronto | Resultado |
+|---|---|
+| **1.** Educação aparece em navegação, Home, priorização e business cases, com onboarding/roteiro/tipos/"o que descobrir" reais | ✅ nav com 13 módulos; Home 13 com %; filtro de pilar em Oportunidades inclui Educação; onboarding completo |
+| **2.** Ao registrar stakeholder em qualquer pilar, vejo roteiro + lista de tipos de players | ✅ modal com roteiro do pilar e select de tipos (+ "Outro"); resposta do roteiro vira evidência vinculada |
+| **3.** Cada pilar abre mostrando "o que estamos tentando descobrir" antes dos formulários | ✅ 1º bloco do Onboarding = perguntas-mestre do pilar |
+| **4.** Todos os estilos vêm de um arquivo único de tokens; troco uma cor e muda no app | ✅ mudar `--blue` em runtime alterou o botão; mapa lê tokens via getComputedStyle |
+| **5.** Sem regressão: funil de discovery, import com preview, matriz de priorização, jurídico, backup | ✅ funil do Logístico via import (1 hip/1 evidência); backup íntegro (1 hip, 3 stk, 3 evid); matriz/jurídico ok |
+| Build strict + console limpo | ✅ 91 módulos, sem erros |
+
+Nota de escopo: o kickoff chamou Educação de "7º pilar (de 6 para 7)", mas o app já tinha 7 pilares —
+Educação entrou como **8º pilar / diagnóstico módulo 08**, e decisão/execução foram renumerados para **09–13**
+(slugs de rota inalterados). Reportado ao usuário.
+
+---
+
 ## Fase corretiva — auditoria dos 3 itens · 2026-07-08 · ✅ APROVADA
 
 Escopo travado: (1) painel Discovery por pilar, (2) onboarding didático 01–07, (3) preview de import + Home.

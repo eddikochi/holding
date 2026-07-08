@@ -18,11 +18,12 @@ export const MODULOS: Modulo[] = [
   { slug: 'logistico', num: '05', nome: 'Diagnóstico Logístico', pilar: 'logistico', grupo: 'diagnostico' },
   { slug: 'agroindustrial', num: '06', nome: 'Diagnóstico Agroindustrial', pilar: 'agroindustrial', grupo: 'diagnostico' },
   { slug: 'turistico', num: '07', nome: 'Diagnóstico Turístico', pilar: 'turistico', grupo: 'diagnostico' },
-  { slug: 'oportunidades', num: '08', nome: 'Oportunidades de Negócio', grupo: 'decisao' },
-  { slug: 'priorizacao', num: '09', nome: 'Priorização', grupo: 'decisao' },
-  { slug: 'business-cases', num: '10', nome: 'Business Cases', grupo: 'decisao' },
-  { slug: 'roadmap', num: '11', nome: 'Roadmap de Implantação', grupo: 'execucao' },
-  { slug: 'governanca', num: '12', nome: 'Governança Familiar', grupo: 'execucao' },
+  { slug: 'educacao', num: '08', nome: 'Diagnóstico Educação / Economia Estudantil', pilar: 'educacao', grupo: 'diagnostico' },
+  { slug: 'oportunidades', num: '09', nome: 'Oportunidades de Negócio', grupo: 'decisao' },
+  { slug: 'priorizacao', num: '10', nome: 'Priorização', grupo: 'decisao' },
+  { slug: 'business-cases', num: '11', nome: 'Business Cases', grupo: 'decisao' },
+  { slug: 'roadmap', num: '12', nome: 'Roadmap de Implantação', grupo: 'execucao' },
+  { slug: 'governanca', num: '13', nome: 'Governança Familiar', grupo: 'execucao' },
 ];
 
 export function moduloPorSlug(slug: string): Modulo | undefined {

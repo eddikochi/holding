@@ -8,6 +8,7 @@ import { ImobiliarioDados } from './imobiliario/ImobiliarioDados';
 import { EconomicoDados } from './economico/EconomicoDados';
 import { AgroindustrialDados } from './agroindustrial/AgroindustrialDados';
 import { TuristicoDados } from './turistico/TuristicoDados';
+import { EducacaoDados } from './educacao/EducacaoDados';
 import { OportunidadesView } from './oportunidades/OportunidadesView';
 import { PriorizacaoView } from './priorizacao/PriorizacaoView';
 import { BusinessCasesView } from './businesscases/BusinessCasesView';
@@ -26,6 +27,7 @@ const DADOS_POR_MODULO: Record<string, ReactNode> = {
   economico: <EconomicoDados />,
   agroindustrial: <AgroindustrialDados />,
   turistico: <TuristicoDados />,
+  educacao: <EducacaoDados />,
 };
 
 /** Módulos de decisão (08–10): telas próprias, sem o layout de 3 abas. */

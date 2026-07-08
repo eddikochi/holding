@@ -5,7 +5,7 @@ import type { SazonalidadeMes, IntensidadeSazonal } from '../../../models/types'
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 const INTENSIDADES: { v: IntensidadeSazonal; r: string; cor: string }[] = [
-  { v: 'nenhuma', r: 'Nenhuma', cor: '#f0f0ec' },
+  { v: 'nenhuma', r: 'Nenhuma', cor: 'var(--neutral-soft)' },
   { v: 'baixa', r: 'Baixa', cor: 'var(--blue-soft)' },
   { v: 'media', r: 'Média', cor: 'var(--amber-soft)' },
   { v: 'alta', r: 'Alta', cor: 'var(--green-soft)' },

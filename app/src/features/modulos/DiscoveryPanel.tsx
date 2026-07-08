@@ -5,6 +5,7 @@ import {
   salvarHipotese, apagarHipotese, hipoteseEmBranco, vincularEvidenciaAHipotese, RegraDominioError,
 } from '../../db/actions';
 import { funilDoPilar, evidenciasDaHipotese } from '../../lib/calc/discovery';
+import { DISCOVERY_PILAR } from '../../content/discovery';
 import { EmptyState } from '../../components/EmptyState';
 import { BadgeStatusHipotese, BadgeConfianca } from '../../components/Badge';
 import { useToast } from '../../components/Toast';
@@ -75,7 +76,18 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
         </div>
 
         {hipoteses.length === 0 ? (
-          <EmptyState titulo="Nenhuma hipótese ainda">
+          <EmptyState
+            titulo="Nenhuma hipótese ainda"
+            acao={DISCOVERY_PILAR[pilar]?.hipotesesIniciais ? (
+              <button className="btn secondary" onClick={async () => {
+                for (const enun of DISCOVERY_PILAR[pilar].hipotesesIniciais!) {
+                  const nh = hipoteseEmBranco(pilar); nh.enunciado = enun;
+                  await salvarHipotese(nh);
+                }
+                toast('Hipóteses iniciais adicionadas');
+              }}>+ Adicionar hipóteses iniciais sugeridas</button>
+            ) : undefined}
+          >
             Uma hipótese é uma aposta a testar. Cadastre as do pilar (no Logístico, elas vêm do import
             da ferramenta de campo) e vá acumulando evidências até validar ou refutar.
           </EmptyState>

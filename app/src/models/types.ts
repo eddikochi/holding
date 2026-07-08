@@ -23,7 +23,8 @@ export type Pilar =
   | 'economico'
   | 'logistico'
   | 'agroindustrial'
-  | 'turistico';
+  | 'turistico'
+  | 'educacao';
 
 export const PILARES: { chave: Pilar; rotulo: string }[] = [
   { chave: 'patrimonial', rotulo: 'Patrimonial' },
@@ -33,6 +34,7 @@ export const PILARES: { chave: Pilar; rotulo: string }[] = [
   { chave: 'logistico', rotulo: 'Logístico' },
   { chave: 'agroindustrial', rotulo: 'Agroindustrial' },
   { chave: 'turistico', rotulo: 'Turístico' },
+  { chave: 'educacao', rotulo: 'Educação' },
 ];
 
 /** Rastreabilidade de import — presente em entidades vindas da ferramenta de campo. */

@@ -32,7 +32,7 @@ export function contarPorPilar(
   const base = (): ContagensPorPilar => ({ ativos: 0, stakeholders: 0, evidencias: 0, hipoteses: 0 });
   const acc = {
     patrimonial: base(), juridico: base(), imobiliario: base(), economico: base(),
-    logistico: base(), agroindustrial: base(), turistico: base(),
+    logistico: base(), agroindustrial: base(), turistico: base(), educacao: base(),
   } as Record<Pilar, ContagensPorPilar>;
   for (const s of stakeholders) acc[s.pilar].stakeholders++;
   for (const e of evidencias) acc[e.pilar].evidencias++;

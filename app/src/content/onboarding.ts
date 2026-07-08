@@ -164,6 +164,33 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Demandas concretas identificadas com fonte',
     ],
   },
+  educacao: {
+    oQueResponde: 'São Borja é cidade universitária. Este diagnóstico investiga a economia estudantil — moradia, serviços e o fluxo de estudantes, inclusive o transfronteiriço com a Argentina — e o que os ativos da família poderiam atender aí.',
+    porQueImporta: 'Uma população estudantil grande e recorrente movimenta moradia, alimentação e serviços o ano todo. Se há demanda não atendida, pode ser uma das oportunidades mais estáveis — mas isso precisa ser validado em campo, não presumido.',
+    coletarCampo: [
+      'Conversar com estudantes sobre como resolveram moradia e o que falta',
+      'Observar oferta de kitnets/repúblicas perto dos campi e a ocupação',
+      'Ouvir comércio no entorno das instituições sobre a demanda estudantil',
+      'Investigar o fluxo de estudantes que cruzam a fronteira',
+    ],
+    coletarDesk: [
+      'Levantar nº de alunos das instituições (Unipampa, UERGS, IFFar, privadas, EAD) com fonte',
+      'Mapear o calendário acadêmico e os períodos de pico',
+      'Buscar dados oficiais sobre moradia estudantil e custo de vida local',
+    ],
+    checklist: [
+      'Instituições de ensino mapeadas com nº de alunos (fonte)',
+      'Estudantes entrevistados sobre moradia e serviços',
+      'Oferta atual de moradia estudantil levantada',
+      'Fluxo transfronteiriço investigado (hipótese, não fato)',
+      'Hipóteses do pilar com evidências vinculadas',
+    ],
+    criterioPronto: [
+      'Dá para dizer, com evidência, se há demanda não atendida por moradia',
+      'Serviços estudantis faltantes identificados',
+      'Relevância do fluxo transfronteiriço avaliada com dados',
+    ],
+  },
   turistico: {
     oQueResponde: 'Há potencial turístico ligado às Missões, ao patrimônio histórico, à Guerra do Paraguai e à identidade local? Inventaria atrativos e ideias de experiência/conteúdo.',
     porQueImporta: 'Turismo e história têm valor, mas seguem uma lógica diferente dos outros pilares. Este tende a virar um projeto à parte — registre aqui sem misturar com a decisão de investimento dos demais.',

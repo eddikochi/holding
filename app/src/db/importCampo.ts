@@ -175,7 +175,7 @@ function importarMasterplanV1(o: Record<string, unknown>): ResultadoImport {
     }
     const pilarRaw = str(s.pilar).toLowerCase() as Pilar;
     const pilar: Pilar = (
-      ['patrimonial', 'juridico', 'imobiliario', 'economico', 'logistico', 'agroindustrial', 'turistico']
+      ['patrimonial', 'juridico', 'imobiliario', 'economico', 'logistico', 'agroindustrial', 'turistico', 'educacao']
         .includes(pilarRaw) ? pilarRaw : 'logistico'
     ) as Pilar;
     return {
@@ -209,7 +209,7 @@ function importarMasterplanV1(o: Record<string, unknown>): ResultadoImport {
     }
     const pilarRaw = str(r.pilar).toLowerCase() as Pilar;
     const pilar: Pilar = (
-      ['patrimonial', 'juridico', 'imobiliario', 'economico', 'logistico', 'agroindustrial', 'turistico']
+      ['patrimonial', 'juridico', 'imobiliario', 'economico', 'logistico', 'agroindustrial', 'turistico', 'educacao']
         .includes(pilarRaw) ? pilarRaw : 'logistico'
     ) as Pilar;
     return {

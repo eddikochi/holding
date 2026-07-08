@@ -2,6 +2,35 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Fase corretiva final — 5 itens de estrutura — 2026-07-08
+
+Última fase de estrutura antes de identidade visual e preenchimento de dados. Escopo travado nos 5 itens.
+
+### Item 1 — 8º pilar: Educação / Economia Estudantil
+- Novo pilar `educacao` em todo o código (types, PILARES, contarPorPilar, validadores de import, modulos).
+  Entra como **diagnóstico módulo 08**; decisão/execução renumerados para **09–13** (13 módulos; slugs de rota
+  inalterados). Aparece na navegação, Home (progresso), priorização e business cases (oportunidades são multi-pilar).
+- Onboarding real (Unipampa, UERGS, IFFar, privadas/EAD; fluxo transfronteiriço tratado como hipótese a validar).
+  5 hipóteses iniciais sugeridas adicionáveis com um clique na aba Discovery.
+- **Nota:** o kickoff dizia "7º pilar (de 6 para 7)", mas o app já tinha 7 — este é o 8º. Reportado.
+
+### Itens 2, 3, 4 — Discovery guiado por pilar (`content/discovery.ts`)
+- **Item 4** — "O que estamos tentando descobrir": perguntas-mestre do pilar, primeiro bloco do onboarding.
+- **Item 3** — "Quem procurar em campo": tabela de tipos de player + o que investigar em cada um; o mesmo
+  vira a lista sugerida de tipo ao cadastrar um stakeholder (+ "Outro" livre).
+- **Item 2** — Roteiro de entrevista por pilar mostrado no modal de registro do stakeholder; cada resposta
+  preenchida vira uma **evidência** (fonte entrevista) vinculada à hipótese escolhida.
+- Logística usa as perguntas/tipos/roteiro do material de Discovery do projeto; demais pilares têm equivalentes.
+- StakeholderModal unificado (`StakeholdersPanel`), reusado por todos os pilares com players.
+
+### Item 5 — Design tokens consolidados
+- Todas as cores/tipografia/raios/espaçamentos centralizados em `tokens.css`; `global.css` e componentes só
+  usam `var(--…)`. O mapa Leaflet lê as cores via `getComputedStyle` (também via token).
+- Sem mudança de aparência. Documentado em **docs/DESIGN_TOKENS.md**. Trocar `--blue` reflete em todo o app.
+
+### Verificado (qa-reviewer) e limpeza
+- Os 5 critérios de pronto passaram no navegador; sem regressão; build strict e console limpos.
+
 ## Fase corretiva — auditoria dos 3 itens — 2026-07-08
 
 Correção de 3 itens da SPEC.md que a auditoria apontou como ausentes/superficiais. Escopo travado.

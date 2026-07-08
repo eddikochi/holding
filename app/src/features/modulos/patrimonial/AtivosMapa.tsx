@@ -36,11 +36,15 @@ export function AtivosMapa({ ativos }: { ativos: Ativo[] }) {
     tiles.on('tileerror', () => setTilesFalharam(true));
     tiles.addTo(map);
 
+    // cores vêm dos design tokens (trocar no tokens.css reflete aqui também)
+    const raiz = getComputedStyle(document.documentElement);
+    const corBorda = raiz.getPropertyValue('--blue').trim() || '#1e3a5f';
+    const corPreenche = raiz.getPropertyValue('--amber').trim() || '#c0762a';
     const pontos: L.LatLngExpression[] = [];
     for (const a of comCoord) {
       const ll: L.LatLngExpression = [a.lat!, a.lng!];
       pontos.push(ll);
-      L.circleMarker(ll, { radius: 8, color: '#1E3A5F', fillColor: '#C0762A', fillOpacity: 0.9, weight: 2 })
+      L.circleMarker(ll, { radius: 8, color: corBorda, fillColor: corPreenche, fillOpacity: 0.9, weight: 2 })
         .addTo(map)
         .bindPopup(`<b>${a.nome}</b><br>${a.endereco || ''}`);
     }

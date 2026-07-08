@@ -66,6 +66,16 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 
 ## Histórico de decisões de schema
 
+### v3 (cont.) — 2026-07-08 — 8º pilar Educação + roteiros (fase corretiva final)
+- **Novo pilar `educacao`** (Educação / Economia Estudantil) no enum `Pilar` e em `PILARES`.
+  São Borja é cidade universitária (Unipampa, UERGS, IFFar, privadas/EAD). Entra como diagnóstico
+  módulo **08**; os módulos de decisão/execução foram renumerados para **09–13** (13 módulos no total;
+  slugs de rota inalterados). Atualizados: `types.ts`, `progresso.contarPorPilar`, validadores do
+  `importCampo`, `modulos.ts`, skill `masterplan-domain`.
+- Sem nova entidade: Educação usa `Stakeholder`/`Evidencia`/`Hipotese`/`AnalisePilar` como os demais.
+  Oportunidades já são multi-pilar (`Oportunidade.pilares[]`) — Educação cruza com Econômico e Imobiliário.
+- Config novos: roteiro/tipos/perguntas ficam em código (`content/discovery.ts`), não no banco.
+
 ### v3 (cont.) — 2026-07-08 — fase corretiva (auditoria dos 3 itens)
 - **Sem novas entidades.** Import do Hub agora cria `Hipotese` (id estável `hip_campo_<slug>` para
   não duplicar em re-import) a partir do campo `hipotese` de cada player, vincula `Stakeholder.hipoteseId`

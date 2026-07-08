@@ -1,6 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Modulo } from '../../modulos';
+import type { Pilar } from '../../models/types';
 import { ONBOARDING } from '../../content/onboarding';
+import { DISCOVERY_PILAR } from '../../content/discovery';
 import {
   onboardingVisto, marcarOnboardingVisto,
   obterChecklistDiscovery, salvarChecklistDiscovery,
@@ -28,9 +30,20 @@ export function OnboardingTab({ slug }: { slug: string }) {
   }
   const feitos = marcados.filter(Boolean).length;
   const pct = onb.checklist.length ? Math.round((feitos / onb.checklist.length) * 100) : 0;
+  const disc = DISCOVERY_PILAR[slug as Pilar];
 
   return (
     <div>
+      {disc && (
+        <div className="panel" style={{ borderLeft: '4px solid var(--blue)' }}>
+          <h2>O que estamos tentando descobrir</h2>
+          <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>O enquadramento da investigação deste pilar. Leia antes de começar.</p>
+          <ol style={{ color: 'var(--ink)', margin: 0, paddingLeft: 18 }}>
+            {disc.perguntasMestre.map((q, i) => <li key={i} style={{ margin: '6px 0' }}>{q}</li>)}
+          </ol>
+        </div>
+      )}
+
       <div className="panel">
         <h2>O que este diagnóstico responde</h2>
         <p style={{ color: 'var(--ink-soft)' }}>{onb.oQueResponde}</p>
@@ -51,6 +64,21 @@ export function OnboardingTab({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
+
+      {disc && (
+        <div className="panel">
+          <h2>Quem procurar em campo</h2>
+          <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>Os tipos de contato a buscar neste pilar e a dor/oportunidade a investigar em cada um.</p>
+          <table>
+            <thead><tr><th>Tipo de player</th><th>O que investigar</th></tr></thead>
+            <tbody>
+              {disc.tiposPlayers.map((t, i) => (
+                <tr key={i}><td><b>{t.tipo}</b></td><td>{t.investigar}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="panel">
         <div className="row-actions" style={{ justifyContent: 'space-between' }}>

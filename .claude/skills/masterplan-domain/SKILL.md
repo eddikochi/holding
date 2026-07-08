@@ -1,6 +1,6 @@
 ---
 name: masterplan-domain
-description: Resumo do domínio do Masterplan São Borja — os 12 módulos, os 7 pilares, as 9 entidades do modelo de dados, a regra hipótese≠evidência≠decisão e os formatos de import da ferramenta de campo. Consultar antes de implementar qualquer módulo, texto ou migração de dados.
+description: Resumo do domínio do Masterplan São Borja — os 13 módulos, os 8 pilares, as 9 entidades do modelo de dados, a regra hipótese≠evidência≠decisão e os formatos de import da ferramenta de campo. Consultar antes de implementar qualquer módulo, texto ou migração de dados.
 ---
 
 # Domínio — Masterplan São Borja
@@ -15,13 +15,17 @@ Transformar os ativos físicos da família em São Borja/RS (galpão, terrenos, 
 
 diagnóstico → discovery → validação de hipóteses → priorização → business cases → roadmap
 
-## Os 12 módulos
+## Os 13 módulos
 
-01 Diagnóstico Patrimonial · 02 Jurídico · 03 Imobiliário · 04 Econômico · 05 Logístico (o mais maduro — absorve a ferramenta de campo do hub) · 06 Agroindustrial · 07 Turístico (tende a ser projeto separado; não misturar na priorização por default) · 08 Oportunidades · 09 Priorização · 10 Business Cases · 11 Roadmap · 12 Governança Familiar (inclui Decision Log e KPIs).
+01 Diagnóstico Patrimonial · 02 Jurídico · 03 Imobiliário · 04 Econômico · 05 Logístico (o mais maduro — absorve a ferramenta de campo do hub) · 06 Agroindustrial · 07 Turístico (tende a ser projeto separado; não misturar na priorização por default) · 08 Educação / Economia Estudantil · 09 Oportunidades · 10 Priorização · 11 Business Cases · 12 Roadmap · 13 Governança Familiar (inclui Decision Log e KPIs).
 
-## Os 7 pilares (enum `Pilar`)
+## Os 8 pilares (enum `Pilar`)
 
-`patrimonial | juridico | imobiliario | economico | logistico | agroindustrial | turistico`
+`patrimonial | juridico | imobiliario | economico | logistico | agroindustrial | turistico | educacao`
+
+`educacao` (Educação / Economia Estudantil) foi adicionado depois: São Borja é cidade universitária
+(Unipampa, UERGS, IFFar, privadas e EAD). Cruza com econômico e imobiliário. Diagnósticos vão de 01 a 08;
+decisão/execução de 09 a 13 (13 módulos no total).
 
 ## As 9 entidades (todas com id, createdAt, updatedAt)
 
