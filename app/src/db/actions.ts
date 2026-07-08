@@ -13,6 +13,8 @@ import type {
   AnalisePilar,
   ComparavelImobiliario,
   SazonalidadeMes,
+  Oportunidade,
+  BusinessCase,
   Pilar,
   TipoAtivo,
   ItemChecklistJuridico,
@@ -227,4 +229,107 @@ export async function obterSazonalidade(): Promise<SazonalidadeMes[]> {
 
 export async function salvarSazonalidade(meses: SazonalidadeMes[]): Promise<void> {
   await db.config.put({ chave: SAZONALIDADE_CHAVE, valor: meses });
+}
+
+/* ── OPORTUNIDADE (módulo 08) ─────────────────────────────────────────── */
+export function oportunidadeEmBranco(): Oportunidade {
+  const ts = agora();
+  return {
+    id: novoId(),
+    createdAt: ts,
+    updatedAt: ts,
+    nome: '',
+    pilares: [],
+    descricao: '',
+    hipoteseIds: [],
+    status: 'ideia',
+  };
+}
+
+export async function salvarOportunidade(o: Oportunidade): Promise<void> {
+  o.updatedAt = agora();
+  await db.oportunidades.put(o);
+}
+
+export async function apagarOportunidade(id: string): Promise<void> {
+  await db.oportunidades.delete(id);
+}
+
+/** Promove uma hipótese (idealmente validada) a oportunidade. */
+export async function promoverHipoteseParaOportunidade(hipoteseId: string): Promise<Oportunidade> {
+  const h = await db.hipoteses.get(hipoteseId);
+  const o = oportunidadeEmBranco();
+  if (h) {
+    o.nome = h.enunciado.slice(0, 80);
+    o.pilares = [h.pilar];
+    o.hipoteseIds = [h.id];
+    o.descricao = `Promovida da hipótese: ${h.enunciado}`;
+    o.status = 'em_avaliacao';
+  }
+  await salvarOportunidade(o);
+  return o;
+}
+
+/* ── BUSINESS CASE (módulo 10) ────────────────────────────────────────── */
+export function businessCaseEmBranco(nome = ''): BusinessCase {
+  const ts = agora();
+  return {
+    id: novoId(),
+    createdAt: ts,
+    updatedAt: ts,
+    nome,
+    resumoExecutivo: '',
+    modeloNegocio: '',
+    premissas: '',
+    capex: [],
+    opex: [],
+    receitas: [],
+    cenarios: {
+      pessimista: { receitaAnual: null, premissas: '' },
+      realista: { receitaAnual: null, premissas: '' },
+      otimista: { receitaAnual: null, premissas: '' },
+    },
+    riscos: '',
+  };
+}
+
+export async function salvarBusinessCase(bc: BusinessCase): Promise<void> {
+  bc.updatedAt = agora();
+  await db.businessCases.put(bc);
+}
+
+export async function apagarBusinessCase(id: string): Promise<void> {
+  await db.businessCases.delete(id);
+}
+
+/** Promove uma oportunidade priorizada a business case e marca a oportunidade. */
+export async function promoverOportunidadeParaBC(oportunidadeId: string): Promise<BusinessCase> {
+  const o = await db.oportunidades.get(oportunidadeId);
+  const bc = businessCaseEmBranco(o?.nome ?? 'Novo business case');
+  bc.oportunidadeId = oportunidadeId;
+  if (o) {
+    bc.resumoExecutivo = o.descricao;
+    await salvarOportunidade({ ...o, status: 'promovida' });
+  }
+  await salvarBusinessCase(bc);
+  return bc;
+}
+
+/* ── PESOS DE PRIORIZAÇÃO (módulo 09) — em Config ─────────────────────── */
+const PESOS_CHAVE = 'pesos_priorizacao';
+export interface PesosPriorizacao {
+  impacto: number;
+  investimento: number;
+  risco: number;
+}
+export const PESOS_PADRAO: PesosPriorizacao = { impacto: 1, investimento: 0.5, risco: 0.5 };
+
+export async function obterPesos(): Promise<PesosPriorizacao> {
+  const c = await db.config.get(PESOS_CHAVE);
+  const v = c?.valor as PesosPriorizacao | undefined;
+  return v && typeof v.impacto === 'number' ? v : { ...PESOS_PADRAO };
+}
+
+export async function salvarPesos(p: PesosPriorizacao): Promise<void> {
+  await db.config.put({ chave: PESOS_CHAVE, valor: p });
 }

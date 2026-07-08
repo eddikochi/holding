@@ -2,6 +2,28 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Fase 4 — Decisão — 2026-07-08
+
+Módulos 08 Oportunidades, 09 Priorização e 10 Business Cases. Fecha o caminho
+diagnóstico → discovery → validação → **priorização → business case → decisão**.
+
+### Adicionado
+- **Módulo 08 Oportunidades**: lista mestre com filtros (pilar/status), criação manual e
+  **promoção a partir de hipóteses validadas**; notas 1–5 de impacto/investimento/risco/esforço,
+  vínculo a pilares e hipóteses.
+- **Módulo 09 Priorização**: **matriz Impacto × Esforço** com cards arrastáveis nos 4 quadrantes
+  (quick wins / apostas grandes / preencher tempo / descartar), posição salva; **ranking por score
+  composto** com pesos ajustáveis; botão "Promover a Business Case".
+- **Módulo 10 Business Cases**: card por BC + editor por seções (resumo, modelo, premissas,
+  CAPEX/OPEX/receitas, cenários, riscos, decisão go/no-go/aguardar). **Tabelas financeiras com totais
+  automáticos**, campo fonte/premissa por número e **badge de alerta em número sem fonte**.
+  **Payback simplificado** calculado (CAPEX ÷ lucro mensal), em branco quando não se sustenta.
+- Cálculos puros: `lib/calc/priorizacao.ts` (score, quadrante) e `lib/calc/financeiro.ts` (totais, payback).
+- `BusinessCase.oportunidadeId` agora opcional (BC promovido ou avulso). Pesos de priorização em Config.
+
+### Verificado (ver docs/QA_CHECKLIST.md)
+- Fluxo completo hipótese→oportunidade→priorização→BC; score e payback corretos; persistência; sem erros no console.
+
 ## Fase 3 — Demais diagnósticos — 2026-07-07
 
 Módulos 03 Imobiliário, 04 Econômico, 06 Agroindustrial e 07 Turístico completos

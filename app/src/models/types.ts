@@ -222,7 +222,7 @@ export interface Cenario {
 export type DecisaoBC = 'go' | 'no_go' | 'aguardar';
 
 export interface BusinessCase extends BaseEntity {
-  oportunidadeId: ID;
+  oportunidadeId?: ID; // opcional: BC pode nascer da promoção de uma oportunidade ou avulso
   nome: string;
   resumoExecutivo: string;
   modeloNegocio: string;

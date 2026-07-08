@@ -66,6 +66,15 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 
 ## Histórico de decisões de schema
 
+### v3 (cont.) — 2026-07-08 — módulos de decisão (Fase 4)
+- `BusinessCase.oportunidadeId` passou a ser **opcional** — um BC pode nascer da promoção de uma
+  oportunidade ou ser criado avulso. Campo indexado opcional; sem migração de versão.
+- Sem novas stores: `Oportunidade` e `BusinessCase` (entidades 5 e 6) já existiam desde a Fase 1.
+- `Config`: `pesos_priorizacao` (pesos ajustáveis do score composto, default impacto 1 / investimento 0,5 / risco 0,5).
+- Fluxo de promoção implementado em `db/actions.ts`: hipótese → oportunidade → business case
+  (marca a oportunidade como `promovida`). Cálculos puros em `lib/calc/priorizacao.ts` (score, quadrante)
+  e `lib/calc/financeiro.ts` (totais, payback = CAPEX ÷ lucro mensal; null quando não se sustenta).
+
 ### v3 — 2026-07-07 — dados dos diagnósticos 03/04/06/07 (Fase 3)
 - Nova store `comparaveis` (`ComparavelImobiliario`) para o cálculo de R$/m² médio por tipo (módulo 03).
 - Campo opcional `Ativo.cenariosUso` (alugar/retrofit/desenvolvimento/venda, cada um com prós/contras).

@@ -2,6 +2,29 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Fase 4 — Decisão · 2026-07-08 · ✅ APROVADA
+
+Escopo: módulos 08 Oportunidades, 09 Priorização (matriz + ranking), 10 Business Cases.
+
+| # | Item | Resultado |
+|---|------|-----------|
+| 1 | Build `tsc && vite build` sem erros (strict) | ✅ 81 módulos |
+| 2 | 08: lista, filtros, criar, promover hipótese validada → oportunidade | ✅ |
+| 3 | 09: score composto correto (imp×1 − inv×0,5 − risco×0,5) | ✅ O1=2,5, O2=−1 |
+| 4 | 09: quadrante da matriz correto por impacto/esforço | ✅ quick_wins / apostas_grandes |
+| 5 | 09: matriz e ranking renderizam; ranking ordenado por score | ✅ Hub #1 |
+| 6 | 09: promover oportunidade → BC marca oportunidade "promovida" | ✅ |
+| 7 | 10: payback = CAPEX ÷ lucro mensal (120k ÷ 10k = 12 meses) | ✅ |
+| 8 | 10: totais automáticos + badge "sem fonte" em valor sem premissa | ✅ |
+| 9 | 10: **persiste após reload** (card mostra CAPEX/payback) | ✅ |
+| 10 | Console sem erros | ✅ |
+
+### Observações
+- Payback fica em branco (não zero) quando lucro mensal ≤ 0 ou CAPEX = 0 — não mostra número que não se sustenta.
+- Matriz usa drag nativo (sem lib), consistente com o SWOT.
+
+---
+
 ## Fase 3 — Demais diagnósticos · 2026-07-07 · ✅ APROVADA
 
 Escopo: módulos 03 Imobiliário, 04 Econômico, 06 Agroindustrial, 07 Turístico (onboarding + dados + análise).
