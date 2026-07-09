@@ -9,6 +9,10 @@ MASTERPLAN_SAO_BORJA.html
 MASTERPLAN_SAO_BORJA_v2.html
 *_backup*.html
 
+# Arquivos de kickoff/backlog (prompts de trabalho) — só no computador
+KICKOFF*.md
+BACKLOG*.md
+
 # helper de dev local (caminho específico da máquina)
 app/dev-server.cmd
 
