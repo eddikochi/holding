@@ -9,8 +9,20 @@ export interface OnboardingModulo {
   porQueImporta: string;
   coletarCampo: string[];
   coletarDesk: string[];
-  checklist: string[];
   criterioPronto: string[];
+}
+
+/**
+ * Itens padrão do checklist de discovery do pilar: os "quais dados coletar e onde"
+ * viram a base inicial (campo/desk) da lista marcável. Fonte única (Item 1 do kickoff).
+ */
+export function itensChecklistPadrao(slug: string): { texto: string; categoria: 'campo' | 'desk' }[] {
+  const o = ONBOARDING[slug];
+  if (!o) return [];
+  return [
+    ...o.coletarCampo.map((t) => ({ texto: t, categoria: 'campo' as const })),
+    ...o.coletarDesk.map((t) => ({ texto: t, categoria: 'desk' as const })),
+  ];
 }
 
 export const ONBOARDING: Record<string, OnboardingModulo> = {
@@ -27,13 +39,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Conferir endereços e número de matrícula de cada imóvel',
       'Levantar plantas ou croquis existentes',
       'Registrar quem usa/ocupa cada ativo hoje',
-    ],
-    checklist: [
-      'Todos os ativos da família listados',
-      'Cada ativo com tipo, endereço e metragem',
-      'Estado físico descrito por ativo',
-      'Coordenadas preenchidas (para o mapa)',
-      'Potencial por pilar anotado em cada ativo',
     ],
     criterioPronto: [
       'Nenhum imóvel da família falta no inventário',
@@ -54,12 +59,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Levantar licenciamento, situação ambiental e tributária',
       'Anotar o que o advogado/contador orientou em cada consulta',
     ],
-    checklist: [
-      'Os 9 itens do checklist avaliados em cada ativo',
-      'Pendências com responsável e prazo definidos',
-      'Matrícula de cada imóvel conferida',
-      'Prós e contras de holding/SPE anotados após consulta',
-    ],
     criterioPronto: [
       'Cada ativo com os 9 itens jurídicos classificados',
       'Toda pendência tem responsável e prazo',
@@ -77,12 +76,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Pesquisar anúncios (portais e imobiliárias) de imóveis comparáveis',
       'Registrar m², preço pedido, aluguel e a fonte de cada comparável',
       'Estimar custo de reforma/retrofit por cenário',
-    ],
-    checklist: [
-      'Ao menos 3 comparáveis por tipo de imóvel, com fonte',
-      'R$/m² médio calculado por tipo',
-      'Cenários de uso preenchidos para cada ativo',
-      'Prós e contras de cada cenário anotados',
     ],
     criterioPronto: [
       'Comparáveis suficientes para uma média confiável de R$/m²',
@@ -103,11 +96,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Levantar dados oficiais sobre o corredor bioceânico',
       'Registrar cada número com a fonte e a data — nunca inventar',
     ],
-    checklist: [
-      'Principais indicadores da região registrados com fonte',
-      'Incentivos municipais/estaduais mapeados',
-      'Contexto do corredor bioceânico separado em fato vs. especulação',
-    ],
     criterioPronto: [
       'Indicadores-chave da região com fonte e data',
       'Incentivos aplicáveis identificados',
@@ -127,13 +115,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Levantar volume e sazonalidade do fluxo de fronteira',
       'Mapear concorrentes e soluções logísticas já existentes',
     ],
-    checklist: [
-      'Players logísticos entrevistados e cadastrados',
-      'Dores ranqueadas por frequência',
-      'Hipóteses do Hub cadastradas',
-      'Evidências vinculadas a cada hipótese',
-      'Cada hipótese com status atualizado (aba Discovery)',
-    ],
     criterioPronto: [
       'Dá para ver o funil hipótese→evidência→validação com dados reais',
       'As hipóteses principais têm evidência suficiente para decidir',
@@ -151,12 +132,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
     coletarDesk: [
       'Consultar o calendário de safra das principais culturas locais',
       'Identificar possíveis parcerias no setor',
-    ],
-    checklist: [
-      'Players do agro mapeados',
-      'Demandas registradas com a fonte',
-      'Calendário de sazonalidade preenchido',
-      'Possíveis parcerias anotadas',
     ],
     criterioPronto: [
       'Principais players do agro mapeados',
@@ -178,13 +153,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Mapear o calendário acadêmico e os períodos de pico',
       'Buscar dados oficiais sobre moradia estudantil e custo de vida local',
     ],
-    checklist: [
-      'Instituições de ensino mapeadas com nº de alunos (fonte)',
-      'Estudantes entrevistados sobre moradia e serviços',
-      'Oferta atual de moradia estudantil levantada',
-      'Fluxo transfronteiriço investigado (hipótese, não fato)',
-      'Hipóteses do pilar com evidências vinculadas',
-    ],
     criterioPronto: [
       'Dá para dizer, com evidência, se há demanda não atendida por moradia',
       'Serviços estudantis faltantes identificados',
@@ -202,12 +170,6 @@ export const ONBOARDING: Record<string, OnboardingModulo> = {
       'Buscar dados oficiais de fluxo turístico (com fonte)',
       'Levantar calendário de eventos e roteiros regionais',
       'Reunir ideias de experiência e conteúdo audiovisual',
-    ],
-    checklist: [
-      'Atrativos inventariados',
-      'Fluxo turístico estimado, com a fonte',
-      'Ideias de experiência/conteúdo registradas',
-      'Pilar marcado como projeto separado',
     ],
     criterioPronto: [
       'Inventário de atrativos montado',

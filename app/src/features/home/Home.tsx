@@ -4,8 +4,10 @@ import { db } from '../../db/database';
 import { MODULOS } from '../../modulos';
 import { PageHeader } from '../../components/PageHeader';
 import { EmptyState } from '../../components/EmptyState';
-import { contarPorPilar, progressoModulo } from '../../lib/calc/progresso';
+import { contarPorPilar } from '../../lib/calc/progresso';
+import { progressoChecklist } from '../../db/actions';
 import { linhasSemFonte } from '../../lib/calc/financeiro';
+import type { ItemChecklistDiscovery } from '../../models/types';
 
 interface Alerta { tipo: string; texto: string; }
 
@@ -23,7 +25,8 @@ export function Home() {
       db.decisoes.count(),
       db.kpis.count(),
     ]);
-    return { ativos, stakeholders, evidencias, hipoteses, oportunidades, businessCases, tarefas, decisoes, kpis };
+    const config = await db.config.toArray();
+    return { ativos, stakeholders, evidencias, hipoteses, oportunidades, businessCases, tarefas, decisoes, kpis, config };
   });
 
   if (!dados) {
@@ -60,12 +63,14 @@ export function Home() {
   const bcSemFonte = dados.businessCases.filter((bc) => linhasSemFonte(bc.capex) + linhasSemFonte(bc.opex) + linhasSemFonte(bc.receitas) > 0).length;
   if (bcSemFonte > 0) alertas.push({ tipo: 'Número sem fonte', texto: `${bcSemFonte} business case(s) com número sem fonte/premissa.` });
 
-  // ── progresso por módulo (campos-chave preenchidos / total) ───────────
+  // ── progresso por módulo ──────────────────────────────────────────────
+  // Diagnósticos (01–08): % do checklist de discovery marcado (transparente).
+  // Decisão/execução (09–13): presença dos dados-chave.
   function progresso(slug: string, pilar?: string): number {
     if (pilar) {
-      const p = pilar as keyof typeof porPilar;
-      const c = { ...porPilar[p], ativos: pilar === 'patrimonial' ? dados!.ativos.length : porPilar[p].ativos };
-      return progressoModulo(c);
+      const cfg = dados!.config.find((c) => c.chave === 'discovery_checklist_v2_' + slug);
+      if (Array.isArray(cfg?.valor)) return progressoChecklist(cfg!.valor as ItemChecklistDiscovery[]);
+      return 0;
     }
     const mapa: Record<string, boolean[]> = {
       oportunidades: [dados!.oportunidades.length > 0],

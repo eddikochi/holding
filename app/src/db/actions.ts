@@ -25,6 +25,8 @@ import type {
   TipoAtivo,
   Horizonte,
   ItemChecklistJuridico,
+  ItemChecklistDiscovery,
+  CategoriaDiscovery,
 } from '../models/types';
 
 /** Erro de violação de regra de domínio (a UI mostra a mensagem). */
@@ -465,11 +467,36 @@ export async function onboardingVisto(slug: string): Promise<boolean> {
 export async function marcarOnboardingVisto(slug: string): Promise<void> {
   await db.config.put({ chave: 'onboarding_visto_' + slug, valor: true });
 }
-export async function obterChecklistDiscovery(slug: string, tamanho: number): Promise<boolean[]> {
-  const c = await db.config.get('discovery_checklist_' + slug);
-  const v = Array.isArray(c?.valor) ? (c!.valor as boolean[]) : [];
-  return Array.from({ length: tamanho }, (_, i) => v[i] === true);
+/**
+ * Checklist de discovery por pilar (Config, chave v2). Itens são marcáveis,
+ * editáveis, removíveis e extensíveis. Na 1ª vez, inicializa a partir dos
+ * itens padrão do onboarding (campo/desk); depois a lista persistida é a fonte.
+ */
+const CHK_DISCOVERY = (slug: string) => 'discovery_checklist_v2_' + slug;
+
+export async function obterChecklistDiscovery(
+  slug: string,
+  padrao: { texto: string; categoria: CategoriaDiscovery }[]
+): Promise<ItemChecklistDiscovery[]> {
+  const c = await db.config.get(CHK_DISCOVERY(slug));
+  if (Array.isArray(c?.valor)) return c!.valor as ItemChecklistDiscovery[];
+  const inicial: ItemChecklistDiscovery[] = padrao.map((d, i) => ({
+    id: 'def_' + i,
+    texto: d.texto,
+    categoria: d.categoria,
+    feito: false,
+    custom: false,
+  }));
+  await db.config.put({ chave: CHK_DISCOVERY(slug), valor: inicial });
+  return inicial;
 }
-export async function salvarChecklistDiscovery(slug: string, marcados: boolean[]): Promise<void> {
-  await db.config.put({ chave: 'discovery_checklist_' + slug, valor: marcados });
+
+export async function salvarChecklistDiscovery(slug: string, itens: ItemChecklistDiscovery[]): Promise<void> {
+  await db.config.put({ chave: CHK_DISCOVERY(slug), valor: itens });
+}
+
+/** Progresso do discovery = % de itens marcados. Função pura. */
+export function progressoChecklist(itens: ItemChecklistDiscovery[]): number {
+  if (!itens.length) return 0;
+  return Math.round((itens.filter((i) => i.feito).length / itens.length) * 100);
 }

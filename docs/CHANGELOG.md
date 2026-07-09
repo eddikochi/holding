@@ -2,6 +2,25 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Ajuste — checklist de discovery marcável e extensível — 2026-07-09
+
+Ajuste cirúrgico no checklist de discovery do onboarding (kickoff dedicado).
+
+### Mudado
+- **Unificação:** "Quais dados coletar e onde" (campo/desk) e "Checklist de discovery" viraram **uma só
+  lista** (componente `ChecklistDiscovery`). Cada item é marcável, editável, removível e categorizado
+  campo/desk.
+- **Persistência:** estado do checklist por pilar em `Config` (`discovery_checklist_v2_<slug>`), incluindo
+  itens marcados, editados e **customizados** ("+ Adicionar item" com categoria campo/desk).
+- **Base inicial preservada:** os itens padrão do onboarding (campo/desk) inicializam a lista; o usuário
+  marca e adiciona por cima sem perdê-los.
+- **Progresso na Home:** o progresso dos diagnósticos (01–08) agora é **% de itens do checklist marcados**
+  (transparente), alimentado pelo mesmo estado. Módulos 09–13 seguem por presença de dados.
+
+### Verificado (qa-reviewer)
+- Marcar item persiste após reload; item custom persiste; Home reflete o %; sem regressão no onboarding,
+  funil de discovery ou resto do pilar. Build strict; single-file compilado do zero (limpo).
+
 ## Fase corretiva final — 5 itens de estrutura — 2026-07-08
 
 Última fase de estrutura antes de identidade visual e preenchimento de dados. Escopo travado nos 5 itens.

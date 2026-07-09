@@ -344,6 +344,16 @@ export interface Rito {
   pauta: string;
 }
 
+/* ── Checklist de discovery por pilar (guardado em Config) ────────────── */
+export type CategoriaDiscovery = 'campo' | 'desk';
+export interface ItemChecklistDiscovery {
+  id: string;
+  texto: string;
+  categoria: CategoriaDiscovery;
+  feito: boolean;
+  custom: boolean; // true = adicionado pelo usuário; false = item padrão do onboarding
+}
+
 /* ── Config (store auxiliar, não é entidade de domínio) ───────────────── */
 export interface Config {
   chave: string;

@@ -223,6 +223,12 @@ input[type=text], input[type=file], select, textarea {
 .cd-campo { border-top-color: var(--amber); background: var(--amber-soft); }
 .cd-desk { border-top-color: var(--blue); background: var(--blue-soft); }
 
+/* checklist de discovery (itens marcáveis/editáveis) */
+.chk-item { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 13px; }
+.chk-item input[type=text] { flex: 1; font-size: 13px; padding: 6px 8px; }
+.chk-add { display: flex; gap: 6px; align-items: center; margin-top: var(--s2); flex-wrap: wrap; }
+.chk-add input[type=text] { flex: 1; min-width: 180px; }
+
 /* dialog simples */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: flex-start; justify-content: center; padding: 24px; z-index: 60; overflow-y: auto; }
 .modal { background: var(--panel); border-radius: var(--r-panel); padding: var(--s4); width: min(640px, 100%); }

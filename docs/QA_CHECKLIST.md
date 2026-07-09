@@ -2,6 +2,21 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Ajuste — checklist de discovery · 2026-07-09 · ✅ APROVADA
+
+| Critério de pronto | Resultado |
+|---|---|
+| **1.** Marco um item, fecho e reabro, o item continua marcado | ✅ item marcado persistiu após reload (Config v2) |
+| **2.** Adiciono item custom via "+", aparece, é marcável e persiste | ✅ "FIX item custom" persistido (custom=true) |
+| **3.** Progresso do módulo na Home reflete os itens marcados | ✅ checklist "1 de 6 · 17%" = card 03 "17% preenchido" |
+| **4.** Sem regressão no onboarding, funil de discovery e resto do pilar | ✅ perguntas-mestre + quem procurar + critério intactos; funil ok |
+| Build strict + single-file limpo | ✅ (erros de HMR intermediário durante edição não afetam o build) |
+
+Unificação: "quais dados coletar e onde" + "checklist" viraram uma lista só (campo/desk), marcável/editável/
+removível/extensível. Progresso dos diagnósticos na Home = % de itens marcados.
+
+---
+
 ## Fase corretiva final — 5 itens de estrutura · 2026-07-08 · ✅ APROVADA
 
 Escopo travado: (1) pilar Educação, (2) roteiro de entrevista por pilar, (3) tipos de players por pilar,

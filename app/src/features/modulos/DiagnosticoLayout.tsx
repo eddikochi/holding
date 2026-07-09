@@ -3,33 +3,17 @@ import type { Modulo } from '../../modulos';
 import type { Pilar } from '../../models/types';
 import { ONBOARDING } from '../../content/onboarding';
 import { DISCOVERY_PILAR } from '../../content/discovery';
-import {
-  onboardingVisto, marcarOnboardingVisto,
-  obterChecklistDiscovery, salvarChecklistDiscovery,
-} from '../../db/actions';
+import { onboardingVisto, marcarOnboardingVisto } from '../../db/actions';
 import { PageHeader } from '../../components/PageHeader';
 import { Tabs } from '../../components/Tabs';
 import { AnaliseTab } from './AnaliseTab';
 import { DiscoveryPanel } from './DiscoveryPanel';
+import { ChecklistDiscovery } from './ChecklistDiscovery';
 
-/** Aba de Onboarding didática: o que responde, porquê, campo vs desk, checklist, critério. */
+/** Aba de Onboarding didática: o que descobrir, porquê, quem procurar, checklist, critério. */
 export function OnboardingTab({ slug }: { slug: string }) {
   const onb = ONBOARDING[slug];
-  const [marcados, setMarcados] = useState<boolean[]>([]);
-
-  useEffect(() => {
-    if (onb) obterChecklistDiscovery(slug, onb.checklist.length).then(setMarcados);
-  }, [slug, onb]);
-
   if (!onb) return null;
-
-  function toggle(i: number) {
-    const prox = marcados.map((v, idx) => (idx === i ? !v : v));
-    setMarcados(prox);
-    salvarChecklistDiscovery(slug, prox);
-  }
-  const feitos = marcados.filter(Boolean).length;
-  const pct = onb.checklist.length ? Math.round((feitos / onb.checklist.length) * 100) : 0;
   const disc = DISCOVERY_PILAR[slug as Pilar];
 
   return (
@@ -51,20 +35,6 @@ export function OnboardingTab({ slug }: { slug: string }) {
         <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>{onb.porQueImporta}</p>
       </div>
 
-      <div className="panel">
-        <h2>Quais dados coletar, e onde</h2>
-        <div className="campo-desk">
-          <div className="cd-col cd-campo">
-            <h4>🧭 Campo <span>(presencial em São Borja)</span></h4>
-            <ul>{onb.coletarCampo.map((x, i) => <li key={i}>{x}</li>)}</ul>
-          </div>
-          <div className="cd-col cd-desk">
-            <h4>💻 Desk <span>(de Porto Alegre)</span></h4>
-            <ul>{onb.coletarDesk.map((x, i) => <li key={i}>{x}</li>)}</ul>
-          </div>
-        </div>
-      </div>
-
       {disc && (
         <div className="panel">
           <h2>Quem procurar em campo</h2>
@@ -80,19 +50,7 @@ export function OnboardingTab({ slug }: { slug: string }) {
         </div>
       )}
 
-      <div className="panel">
-        <div className="row-actions" style={{ justifyContent: 'space-between' }}>
-          <h2 style={{ margin: 0 }}>Checklist de discovery</h2>
-          <span className="note">{feitos} de {onb.checklist.length} · {pct}%</span>
-        </div>
-        <div className="prog-track" style={{ margin: '8px 0 12px' }}><div className="prog-fill" style={{ width: `${pct}%` }} /></div>
-        {onb.checklist.map((item, i) => (
-          <label key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start', fontWeight: 400, textTransform: 'none', margin: '6px 0', cursor: 'pointer' }}>
-            <input type="checkbox" checked={marcados[i] ?? false} onChange={() => toggle(i)} style={{ width: 'auto', marginTop: 2 }} />
-            <span style={{ textDecoration: marcados[i] ? 'line-through' : 'none', color: marcados[i] ? 'var(--ink-soft)' : 'var(--ink)' }}>{item}</span>
-          </label>
-        ))}
-      </div>
+      <ChecklistDiscovery slug={slug} />
 
       <div className="panel">
         <h2>Critério de "pronto"</h2>

@@ -66,6 +66,17 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 
 ## Histórico de decisões de schema
 
+### v3 (cont.) — 2026-07-09 — checklist de discovery marcável (Config)
+- Novo tipo `ItemChecklistDiscovery { id, texto, categoria: 'campo'|'desk', feito, custom }`.
+- Persistido em `Config`, chave **`discovery_checklist_v2_<slug>`** = `ItemChecklistDiscovery[]` (a chave v1
+  antiga, `discovery_checklist_<slug>` = boolean[], deixou de ser usada).
+- Inicializa na 1ª leitura a partir dos itens padrão do onboarding (`itensChecklistPadrao`, = coletarCampo
+  como categoria campo + coletarDesk como desk); depois a lista persistida é a fonte (itens custom, edições
+  e remoções ficam nela). Removido o campo `checklist[]` de `OnboardingModulo` (unificado com "quais dados
+  coletar e onde").
+- **Progresso do módulo na Home** dos diagnósticos passou a ser `progressoChecklist` (= % de itens marcados),
+  em vez da heurística de presença de dados.
+
 ### v3 (cont.) — 2026-07-08 — 8º pilar Educação + roteiros (fase corretiva final)
 - **Novo pilar `educacao`** (Educação / Economia Estudantil) no enum `Pilar` e em `PILARES`.
   São Borja é cidade universitária (Unipampa, UERGS, IFFar, privadas/EAD). Entra como diagnóstico
