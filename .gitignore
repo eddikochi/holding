@@ -5,6 +5,10 @@ app/dist/
 # HTML autocontido gerado pelo build (regenerável com: npm run build)
 MASTERPLAN_SAO_BORJA.html
 
+# Backups locais do app (ficam só no computador, fora do controle de versão)
+MASTERPLAN_SAO_BORJA_v2.html
+*_backup*.html
+
 # helper de dev local (caminho específico da máquina)
 app/dev-server.cmd
 
