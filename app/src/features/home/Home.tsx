@@ -4,10 +4,10 @@ import { db } from '../../db/database';
 import { MODULOS } from '../../modulos';
 import { PageHeader } from '../../components/PageHeader';
 import { EmptyState } from '../../components/EmptyState';
-import { contarPorPilar } from '../../lib/calc/progresso';
+import { contarPorPilar, sinaisDadosDiagnostico, progressoDiagnostico } from '../../lib/calc/progresso';
 import { progressoChecklist } from '../../db/actions';
 import { linhasSemFonte } from '../../lib/calc/financeiro';
-import type { ItemChecklistDiscovery } from '../../models/types';
+import type { ItemChecklistDiscovery, SazonalidadeMes } from '../../models/types';
 
 interface Alerta { tipo: string; texto: string; }
 
@@ -26,7 +26,8 @@ export function Home() {
       db.kpis.count(),
     ]);
     const config = await db.config.toArray();
-    return { ativos, stakeholders, evidencias, hipoteses, oportunidades, businessCases, tarefas, decisoes, kpis, config };
+    const comparaveis = await db.comparaveis.count();
+    return { ativos, stakeholders, evidencias, hipoteses, oportunidades, businessCases, tarefas, decisoes, kpis, config, comparaveis };
   });
 
   if (!dados) {
@@ -64,13 +65,26 @@ export function Home() {
   if (bcSemFonte > 0) alertas.push({ tipo: 'Número sem fonte', texto: `${bcSemFonte} business case(s) com número sem fonte/premissa.` });
 
   // ── progresso por módulo ──────────────────────────────────────────────
-  // Diagnósticos (01–08): % do checklist de discovery marcado (transparente).
-  // Decisão/execução (09–13): presença dos dados-chave.
+  // Diagnósticos (01–08): média 50/50 de (dados do módulo) + (checklist marcado).
+  // Decisão/execução (09–13): presença dos dados-chave. Ver docs/PROGRESSO.md.
+  const sazCfg = dados.config.find((c) => c.chave === 'sazonalidade_agro');
+  const sazonalidadeAtiva = Array.isArray(sazCfg?.valor)
+    && (sazCfg!.valor as SazonalidadeMes[]).some((m) => m.intensidade && m.intensidade !== 'nenhuma');
+  const resumo = {
+    ativos: dados.ativos.length,
+    ativosComJuridico: dados.ativos.filter((a) => (a.checklistJuridico ?? []).some((i) => i.status !== 'nao_iniciado')).length,
+    ativosComCenario: dados.ativos.filter((a) => a.cenariosUso && Object.values(a.cenariosUso).some((c) => c.pros || c.contras)).length,
+    comparaveis: dados.comparaveis,
+    sazonalidadeAtiva,
+    porPilar,
+  };
+  function checklistPctDe(slug: string): number {
+    const cfg = dados!.config.find((c) => c.chave === 'discovery_checklist_v2_' + slug);
+    return Array.isArray(cfg?.valor) ? progressoChecklist(cfg!.valor as ItemChecklistDiscovery[]) : 0;
+  }
   function progresso(slug: string, pilar?: string): number {
     if (pilar) {
-      const cfg = dados!.config.find((c) => c.chave === 'discovery_checklist_v2_' + slug);
-      if (Array.isArray(cfg?.valor)) return progressoChecklist(cfg!.valor as ItemChecklistDiscovery[]);
-      return 0;
+      return progressoDiagnostico(sinaisDadosDiagnostico(slug, resumo), checklistPctDe(slug));
     }
     const mapa: Record<string, boolean[]> = {
       oportunidades: [dados!.oportunidades.length > 0],
@@ -126,7 +140,7 @@ export function Home() {
       </div>
 
       <div className="panel">
-        <h2>Progresso dos 12 módulos</h2>
+        <h2>Progresso dos 13 módulos</h2>
         <div className="grid-modulos" style={{ marginTop: 12 }}>
           {MODULOS.map((m) => {
             const pct = progresso(m.slug, m.pilar);

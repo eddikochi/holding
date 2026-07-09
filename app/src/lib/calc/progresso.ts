@@ -23,6 +23,49 @@ export function progressoModulo(c: ContagensPorPilar): number {
   return Math.round((marcados / sinais.length) * 100);
 }
 
+/**
+ * Resumo dos dados usados no cálculo de progresso dos diagnósticos.
+ * Só campos que os módulos de fato usam (ver docs/PROGRESSO.md).
+ */
+export interface ResumoModulos {
+  ativos: number;
+  ativosComJuridico: number; // ativos com ≥1 item jurídico avaliado (status ≠ nao_iniciado)
+  ativosComCenario: number; // ativos com ≥1 cenário de uso preenchido
+  comparaveis: number;
+  sazonalidadeAtiva: boolean; // agro: ≥1 mês com intensidade ≠ nenhuma
+  porPilar: Record<Pilar, ContagensPorPilar>;
+}
+
+/**
+ * Sinais de "dados presentes" de um diagnóstico — só as entidades que o módulo usa.
+ * Cada sinal (true/false) vale uma fatia igual do componente "Dados".
+ */
+export function sinaisDadosDiagnostico(slug: string, r: ResumoModulos): boolean[] {
+  const p = r.porPilar;
+  switch (slug) {
+    case 'patrimonial': return [r.ativos > 0];
+    case 'juridico': return [r.ativosComJuridico > 0];
+    case 'imobiliario': return [r.comparaveis > 0, r.ativosComCenario > 0];
+    case 'economico': return [p.economico.evidencias > 0];
+    case 'logistico': return [p.logistico.stakeholders > 0, p.logistico.evidencias > 0, p.logistico.hipoteses > 0];
+    case 'agroindustrial': return [p.agroindustrial.stakeholders > 0, p.agroindustrial.evidencias > 0, r.sazonalidadeAtiva];
+    case 'turistico': return [p.turistico.evidencias > 0];
+    case 'educacao': return [p.educacao.stakeholders > 0, p.educacao.evidencias > 0, p.educacao.hipoteses > 0];
+    default: return [];
+  }
+}
+
+/**
+ * Progresso de um diagnóstico (0–100) = média de dois componentes:
+ *  - Dados: % dos tipos de dado do módulo que têm ao menos um registro.
+ *  - Checklist: % de itens do checklist de discovery marcados.
+ * Média 50/50, transparente e explicável (docs/PROGRESSO.md).
+ */
+export function progressoDiagnostico(sinaisDados: boolean[], checklistPct: number): number {
+  const dadosPct = sinaisDados.length ? (sinaisDados.filter(Boolean).length / sinaisDados.length) * 100 : 0;
+  return Math.round((dadosPct + checklistPct) / 2);
+}
+
 /** Agrupa contagens por pilar a partir de listas planas. */
 export function contarPorPilar(
   stakeholders: { pilar: Pilar }[],

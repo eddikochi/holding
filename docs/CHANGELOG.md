@@ -2,6 +2,30 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Correção — progresso do módulo reflete dados reais — 2026-07-09
+
+Correção de um bug introduzido no ajuste anterior + verificação de integridade do import.
+
+### Item 1 — Progresso do módulo (BUG corrigido)
+- **Bug:** após ligar o progresso ao checklist, os diagnósticos passaram a medir **só** o % do checklist
+  marcado — ignorando os dados do módulo. Com o app cheio de dados (auto-preenchimento), todos os cards
+  mostravam **0%**.
+- **Correção:** progresso do diagnóstico = **média 50/50** de (a) **Dados** (% dos tipos de dado *que o
+  módulo usa* com ao menos um registro) e (b) **Checklist** (% de itens marcados). Cada módulo conta só as
+  entidades que usa (não é penalizado pelas que não usa). Fórmula explicável documentada em **docs/PROGRESSO.md**.
+- Também corrigido o título "Progresso dos 12 módulos" → **13 módulos**.
+- Sem mudança de schema: o cálculo lê entidades e o checklist que já existem.
+
+### Item 2 — Integridade do import (verificado, sem bug)
+- Round-trip de backup (exportar → reimportar) mantém **todas as 12 stores com contagens idênticas** —
+  nenhuma entidade real é descartada.
+- "Imobiliário sem players" é **correto**: o módulo usa comparáveis + cenários, não stakeholders. As
+  entidades usadas por cada módulo foram documentadas em **docs/DATA_MODEL.md**. Nada alterado aqui.
+
+### Verificado (qa-reviewer)
+- Com auto-preenchimento carregado: Econômico 50%, Logístico 50%, Agroindustrial 33%, módulos sem dados 0%;
+  marcar o checklist do Logístico levou a 100%. Round-trip sem perda. Console limpo; build strict.
+
 ## Ajuste — checklist de discovery marcável e extensível — 2026-07-09
 
 Ajuste cirúrgico no checklist de discovery do onboarding (kickoff dedicado).

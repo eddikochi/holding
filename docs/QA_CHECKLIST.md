@@ -2,6 +2,21 @@
 
 > Dono: agente **qa-reviewer**. Uma seção por fase. Testes feitos no navegador real (preview), não por leitura de código.
 
+## Correção — progresso do módulo + integridade do import · 2026-07-09 · ✅ APROVADA
+
+| Critério de pronto | Resultado |
+|---|---|
+| **1.** App com dados reais: cards refletem o que cada módulo tem; módulo com dados NÃO fica 0% | ✅ Econômico 50%, Logístico 50%, Agroindustrial 33%; sem dados = 0% |
+| — checklist é componente do progresso (sobe ao marcar) | ✅ Logístico foi de 50% → 100% ao marcar todo o checklist |
+| **2.** Fórmula documentada e explicável | ✅ docs/PROGRESSO.md (média 50/50 dados+checklist, sinais por módulo) |
+| **3.** Tabela antes/depois do import prova zero perda | ✅ round-trip: 12 stores idênticas antes/depois |
+| **4.** Sem regressão em checklist, funil, onboarding, backup | ✅ typecheck + build ok; console limpo |
+
+Item 2 sem correção (não era bug): "Imobiliário sem players" é o desenho do módulo (usa comparáveis/cenários).
+Entidades por módulo documentadas em DATA_MODEL.md. Título corrigido: "12" → "13 módulos".
+
+---
+
 ## Ajuste — checklist de discovery · 2026-07-09 · ✅ APROVADA
 
 | Critério de pronto | Resultado |

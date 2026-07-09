@@ -58,6 +58,31 @@ BusinessCase 1──* Tarefa      (Tarefa.businessCaseId)
 Tarefa *──* Tarefa            (Tarefa.dependenciasIds[])
 ```
 
+## Entidades usadas por módulo (cada módulo usa um subconjunto)
+
+Isto explica por que o conteúdo difere entre módulos (ex.: Imobiliário não tem "players" — é o desenho,
+não perda de dado). Todos os diagnósticos também têm as abas Discovery (hipóteses/evidências) e Análise
+(`AnalisePilar`/SWOT).
+
+| Módulo | Entidades / dados que usa na aba Dados |
+|---|---|
+| 01 Patrimonial | `Ativo` (inventário, ficha, mapa) |
+| 02 Jurídico | `Ativo.checklistJuridico` (matriz ativo × item) + notas holding em `Config` |
+| 03 Imobiliário | `ComparavelImobiliario` + `Ativo.cenariosUso` — **não usa Stakeholder** |
+| 04 Econômico | `Evidencia` (pilar econômico) |
+| 05 Logístico | `Stakeholder` + `Evidencia` + `Hipotese` (funil) |
+| 06 Agroindustrial | `Stakeholder` + `Evidencia` + sazonalidade (`Config`) |
+| 07 Turístico | `Evidencia` (pilar turístico) |
+| 08 Educação | `Stakeholder` + `Evidencia` + `Hipotese` |
+| 09 Oportunidades | `Oportunidade` |
+| 10 Priorização | `Oportunidade` (impacto/esforço) + pesos (`Config`) |
+| 11 Business Cases | `BusinessCase` |
+| 12 Roadmap | `Tarefa` |
+| 13 Governança | `Decisao` + `KPI` + papéis/ritos/modelo (`Config`) |
+
+Verificado por round-trip de backup (exportar → reimportar): as contagens de todas as 12 stores ficam
+idênticas — o import **não descarta** entidade real. Ver docs/PROGRESSO.md para como o progresso lê essas entidades.
+
 ## Regra de ouro
 
 **Hipótese ≠ Evidência ≠ Decisão.** Entidades separadas, badges/cores distintas na UI.
