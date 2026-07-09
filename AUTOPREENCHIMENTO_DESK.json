@@ -1,0 +1,719 @@
+{
+  "app": "masterplan-sao-borja",
+  "schemaVersion": 3,
+  "exportadoEm": "2026-07-09T12:00:00.000Z",
+  "ativos": [],
+  "stakeholders": [
+    {
+      "id": "s_log_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "nome": "Segmento (perfil desk): Transportadora",
+      "pilar": "logistico",
+      "segmento": "Transportadora",
+      "contato": "",
+      "local": "",
+      "dorOportunidade": "Overflow, espera, transbordo, reorganização e armazenagem curta.",
+      "disposicao": "nao_perguntado",
+      "hipoteseId": "h_log_3",
+      "validacao": "nao_validado",
+      "proximoPasso": "Encontrar e entrevistar players reais deste segmento em campo.",
+      "data": "2026-07-09T12:00:00.000Z",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "s_log_2",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "nome": "Segmento (perfil desk): Empresa local",
+      "pilar": "logistico",
+      "segmento": "Empresa local",
+      "contato": "",
+      "local": "",
+      "dorOportunidade": "Estoque, sazonalidade, armazenamento terceirizado e overflow.",
+      "disposicao": "nao_perguntado",
+      "hipoteseId": "h_log_6",
+      "validacao": "nao_validado",
+      "proximoPasso": "Encontrar e entrevistar players reais deste segmento em campo.",
+      "data": "2026-07-09T12:00:00.000Z",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "s_log_3",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "nome": "Segmento (perfil desk): Ecommerce regional",
+      "pilar": "logistico",
+      "segmento": "Ecommerce regional",
+      "contato": "",
+      "local": "",
+      "dorOportunidade": "Fulfillment, embalagem, postagem, separação e mini estoque.",
+      "disposicao": "nao_perguntado",
+      "hipoteseId": "h_log_5",
+      "validacao": "nao_validado",
+      "proximoPasso": "Encontrar e entrevistar players reais deste segmento em campo.",
+      "data": "2026-07-09T12:00:00.000Z",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "s_log_4",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "nome": "Segmento (perfil desk): Despachante / fronteira",
+      "pilar": "logistico",
+      "segmento": "Despachante / fronteira",
+      "contato": "",
+      "local": "",
+      "dorOportunidade": "Gargalos operacionais aduaneiros.",
+      "disposicao": "nao_perguntado",
+      "hipoteseId": "h_log_8",
+      "validacao": "nao_validado",
+      "proximoPasso": "Encontrar e entrevistar players reais deste segmento em campo.",
+      "data": "2026-07-09T12:00:00.000Z",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "s_log_5",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "nome": "Segmento (perfil desk): Empresa argentina",
+      "pilar": "logistico",
+      "segmento": "Empresa argentina",
+      "contato": "",
+      "local": "",
+      "dorOportunidade": "Demanda por apoio operacional no lado brasileiro.",
+      "disposicao": "nao_perguntado",
+      "hipoteseId": "h_log_8",
+      "validacao": "nao_validado",
+      "proximoPasso": "Encontrar e entrevistar players reais deste segmento em campo.",
+      "data": "2026-07-09T12:00:00.000Z",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "s_agro_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "nome": "Segmento (perfil desk): Produtor rural",
+      "pilar": "agroindustrial",
+      "segmento": "Produtor rural",
+      "contato": "",
+      "local": "",
+      "dorOportunidade": "Armazenagem e sazonalidade (segmento de demanda a pesquisar).",
+      "disposicao": "nao_perguntado",
+      "validacao": "nao_validado",
+      "proximoPasso": "Encontrar e entrevistar players reais deste segmento em campo.",
+      "data": "2026-07-09T12:00:00.000Z",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Mapeamento_Logistico_Sao_Borja"
+        }
+      }
+    }
+  ],
+  "evidencias": [
+    {
+      "id": "e_log_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Tese estratégica: São Borja não deve competir com grandes hubs (Foz, Uruguaiana); a oportunidade está em operação modular flexível — armazenagem flexível, apoio operacional, cross docking leve, overflow, mini fulfillment, storage empresarial e apoio fronteiriço modular.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Discovery_Operacional_Completo_SaoBorja_v2",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_1",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "e_log_2",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "GAP analysis: baixa oferta de fulfillment moderno, baixa digitalização, ausência de storage empresarial flexível, carência de mini hubs regionais, pouca oferta de apoio operacional de fronteira e ausência de soluções flexíveis para pequenos ecommerces.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Benchmark_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_1",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Benchmark_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_log_3",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Benchmark regional: Uruguaiana é o mais consolidado; Foz do Iguaçu é referência de escala (porto seco); São Borja tem menor saturação e menor competição estruturada em serviços logísticos modernos.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_log_4",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "MVP recomendado: 'Espaço logístico flexível modular' (storage empresarial + overflow + apoio operacional + cross docking leve + armazenagem temporária) — baixo risco, baixo CAPEX, validação acelerada.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Discovery_Operacional_Completo_SaoBorja_v2",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_1",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "e_log_5",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Modelos de monetização mapeados: storage empresarial modular; cross docking leve; mini fulfillment regional; apoio operacional a transportadoras (pernoite/reorganização); overflow sazonal; base operacional híbrida.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_4",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_log_6",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Dores mapeadas em transportadoras (a validar): overflow, espera, transbordo, reorganização e armazenagem curta.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Discovery_Operacional_Completo_SaoBorja_v2",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_3",
+      "stakeholderId": "s_log_1",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Discovery_Operacional_Completo_SaoBorja_v2"
+        }
+      }
+    },
+    {
+      "id": "e_log_7",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Matriz competitiva (leitura estratégica): modelo São Borja com alta flexibilidade, atendimento PME muito alto e digitalização como diferencial possível frente a transportadoras locais e grandes hubs.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Benchmark_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_7",
+      "confianca": "baixa",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Benchmark_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_log_8",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Riscos críticos: começar grande demais; CAPEX elevado sem validação; dependência de poucos clientes; risco regulatório (evitar operação alfandegada complexa no início); risco tecnológico (sem processos digitais mínimos perde competitividade).",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_log_9",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Operadores locais com baixa automação, presença online limitada, pouca rastreabilidade e comunicação informal — oportunidade de diferenciação por digitalização básica eficiente.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_7",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_log_10",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Demanda binacional Brasil–Argentina e integração Mercosul aparecem como evolução FUTURA (MVP4 / tendência), não validada — tratar como especulação até o campo.",
+      "pilar": "logistico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Benchmark_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_log_8",
+      "confianca": "baixa",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Benchmark_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_eco_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "São Borja é cidade de fronteira com conexão binacional via Ponte Internacional da Integração (Santo Tomé) e Centro Unificado de Fronteira; posição no corredor Mercosul.",
+      "pilar": "economico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_eco_1",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_eco_2",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Mercado local ainda pouco explorado em digitalização logística e soluções modulares; menor saturação operacional que Foz/Uruguaiana.",
+      "pilar": "economico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_eco_3",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Tendências macro (contexto, não dado local validado): crescimento do ecommerce, logística descentralizada, mini hubs, dark stores, integração Mercosul.",
+      "pilar": "economico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Benchmark_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "baixa",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Benchmark_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_eco_4",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Ameaças de contexto: burocracia, tributação, oscilações econômicas e entrada de players maiores.",
+      "pilar": "economico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Mapeamento_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "baixa",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Mapeamento_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_jur_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Itens regulatórios a validar (desk + advogado): zoneamento, licenciamento, bombeiros, Receita Federal, seguros, CNAEs, operação de fronteira e compliance tributário.",
+      "pilar": "juridico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Mapeamento_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Mapeamento_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_jur_2",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Risco regulatório: evitar iniciar com operação alfandegada complexa; não confundir operação logística simples com operação alfandegada.",
+      "pilar": "juridico",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Relatorio_Completo_Hub_Logistico_SaoBorja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Relatorio_Completo_Hub_Logistico_SaoBorja"
+        }
+      }
+    },
+    {
+      "id": "e_imob_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Galpão multiuso / locação flexível para demandas sazonais e operacionais é uma das hipóteses de monetização.",
+      "pilar": "imobiliario",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Benchmark_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "hipoteseId": "h_imob_1",
+      "confianca": "media",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Benchmark_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_imob_2",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Pesquisa imobiliária a fazer (desk): comparar aluguel de galpões, storage, espaços comerciais e coworking empresarial — objetivo: maior retorno por m². OS DOCUMENTOS NÃO TRAZEM VALORES.",
+      "pilar": "imobiliario",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Mapeamento_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "confianca": "baixa",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Mapeamento_Logistico_Sao_Borja"
+        }
+      }
+    },
+    {
+      "id": "e_agro_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "tipo": "texto",
+      "conteudo": "Agronegócio citado como segmento de demanda a entrevistar (armazenagem, sazonalidade); pouca informação específica nos documentos — pesquisar em campo.",
+      "pilar": "agroindustrial",
+      "fonte": "pesquisa_desk",
+      "fonteDetalhe": "Documento: Mapeamento_Logistico_Sao_Borja",
+      "data": "2026-07-09T12:00:00.000Z",
+      "stakeholderId": "s_agro_1",
+      "confianca": "baixa",
+      "origem": {
+        "ferramenta": "autopreenchimento_desk",
+        "dataImport": "2026-07-09T12:00:00.000Z",
+        "camposNaoMapeados": {
+          "documento": "Mapeamento_Logistico_Sao_Borja"
+        }
+      }
+    }
+  ],
+  "hipoteses": [
+    {
+      "id": "h_log_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Existe demanda reprimida por armazenagem flexível em São Borja.",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_2",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Pequenos operadores logísticos precisam de apoio operacional.",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_3",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Transportadoras têm dores recorrentes de overflow, espera e transbordo.",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_4",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Há oportunidade em cross docking leve (recebimento, separação, redistribuição regional).",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_5",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "O ecommerce regional / pequenos sellers têm gargalo de fulfillment (separação, embalagem, expedição).",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_6",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Empresas precisam de armazenagem temporária / overflow operacional sazonal.",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_7",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Há baixa digitalização entre operadores locais — espaço para diferenciação por operação organizada.",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_log_8",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "Pode existir demanda binacional (Brasil–Argentina) por apoio operacional no lado brasileiro.",
+      "pilar": "logistico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_eco_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "O contexto de fronteira (ponte internacional, corredor Mercosul) sustenta demanda por operações de apoio ao fluxo aduaneiro.",
+      "pilar": "economico",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    },
+    {
+      "id": "h_imob_1",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "enunciado": "A locação flexível/multiuso do galpão pode ter retorno por m² competitivo frente ao uso único.",
+      "pilar": "imobiliario",
+      "criteriosValidacao": "Validar em campo por: frequência da dor, urgência, recorrência entre entrevistados, disposição de pagamento, simplicidade operacional e escalabilidade. Indício de padrão: a mesma dor citada por várias empresas diferentes.",
+      "status": "nao_validada"
+    }
+  ],
+  "oportunidades": [],
+  "businessCases": [],
+  "decisoes": [],
+  "tarefas": [],
+  "kpis": [],
+  "analises": [
+    {
+      "id": "an_logistico",
+      "createdAt": "2026-07-09T12:00:00.000Z",
+      "updatedAt": "2026-07-09T12:00:00.000Z",
+      "pilar": "logistico",
+      "swot": {
+        "forcas": [
+          {
+            "id": "sw_0",
+            "texto": "Localização estratégica de fronteira (ponte internacional)"
+          },
+          {
+            "id": "sw_1",
+            "texto": "Imóvel próprio"
+          },
+          {
+            "id": "sw_2",
+            "texto": "Potencial de baixo CAPEX inicial"
+          },
+          {
+            "id": "sw_3",
+            "texto": "Operação modular e flexível"
+          },
+          {
+            "id": "sw_4",
+            "texto": "Menor concorrência moderna direta"
+          }
+        ],
+        "fraquezas": [
+          {
+            "id": "sw_5",
+            "texto": "Menor densidade econômica regional"
+          },
+          {
+            "id": "sw_6",
+            "texto": "Necessidade de validação comercial"
+          },
+          {
+            "id": "sw_7",
+            "texto": "Necessidade de processos operacionais consistentes"
+          },
+          {
+            "id": "sw_8",
+            "texto": "Escala reduzida no início"
+          }
+        ],
+        "oportunidades": [
+          {
+            "id": "sw_9",
+            "texto": "Fulfillment regional"
+          },
+          {
+            "id": "sw_10",
+            "texto": "Apoio logístico de fronteira"
+          },
+          {
+            "id": "sw_11",
+            "texto": "Storage empresarial"
+          },
+          {
+            "id": "sw_12",
+            "texto": "Cross docking"
+          },
+          {
+            "id": "sw_13",
+            "texto": "Serviços sob demanda / apoio a transportadoras"
+          },
+          {
+            "id": "sw_14",
+            "texto": "Apoio Mercosul"
+          }
+        ],
+        "ameacas": [
+          {
+            "id": "sw_15",
+            "texto": "Competição informal"
+          },
+          {
+            "id": "sw_16",
+            "texto": "Oscilações regulatórias"
+          },
+          {
+            "id": "sw_17",
+            "texto": "Dependência de poucos clientes"
+          },
+          {
+            "id": "sw_18",
+            "texto": "Riscos operacionais e jurídicos"
+          },
+          {
+            "id": "sw_19",
+            "texto": "Volatilidade econômica"
+          }
+        ]
+      },
+      "leituraExecutiva": "Leitura de gabinete (desk), a validar em campo: a oportunidade mais inteligente não é um grande CD, e sim uma operação modular, flexível e enxuta (\"espaço logístico flexível modular\"), começando pequeno, gerando receita recorrente e expandindo conforme tração real. Fonte: benchmark e discovery do projeto. Nada aqui substitui validação de campo.",
+      "recomendacoes": "MVP inicial: depósito empresarial flexível + apoio a transportadoras. Evitar porto seco / operação alfandegada complexa / automação pesada no início."
+    }
+  ],
+  "comparaveis": [],
+  "config": []
+}
