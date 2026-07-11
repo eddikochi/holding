@@ -59,6 +59,19 @@
 ### Forma e foco
 `--r-input`=7px · `--r-panel`=10px · `--r-pill`=20px · `--toque-min`=40px · `--foco`=2px solid azul
 
+### Identidade Kochi Holding (logo + ações de tabela)
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `--logo-bg` | #171c26 | fundo escuro da área do logo |
+| `--logo-mark` | #20d9a3 | marca "K" (teal) |
+| `--logo-nome` | #ffffff | "Kochi" |
+| `--logo-holding` | #a0a9b8 | "HOLDING" |
+| `--acao-editar` | #20d9a3 | botão "Editar" em tabela (teal) |
+| `--acao-x` | #ef4444 | botão "×"/remover em tabela (vermelho vazado) |
+
+> Aplicados no logo da sidebar (`.brand`/`.logo-*` em global.css) e nos botões de ação dentro de `td`.
+> São o começo da identidade da holding; ao consolidar a identidade completa, ajustar por aqui.
+
 ## Verificação
 Trocar uma cor no `tokens.css` (ex.: `--blue`) muda navegação, botões primários, badges de hipótese,
 matriz e marcadores do mapa em todo o app — sem editar componentes.

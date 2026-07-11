@@ -2,6 +2,21 @@
 
 Formato: cada fase da spec vira uma entrada. Datas em ISO.
 
+## Ajustes visuais — logo Kochi, botões de tabela, abas — 2026-07-10
+
+Três ajustes visuais (sem lógica), início da identidade Kochi Holding.
+
+- **Logo:** barra lateral passou a mostrar o logo da holding — marca "K" (32px, teal) + "Kochi" (14px,
+  branco) + "HOLDING" (10px, cinza `#a0a9b8`, letras espaçadas), sobre um bloco escuro (para o texto claro
+  ficar legível). Substituiu o texto "Masterplan São Borja".
+- **Botões de ação em tabela:** "Editar" com fundo teal `#20d9a3`/texto branco e "×" vazado com borda
+  vermelha `#ef4444`, 32px, **lado a lado sem quebra** (`flex-wrap: nowrap` nas ações da tabela). Escopado
+  a botões dentro de `td`, sem afetar os demais botões do app.
+- **Abas:** barra de scroll da faixa de abas (Onboarding/Dados/Discovery/Análise) escondida
+  (`scrollbar-width: none` + `::-webkit-scrollbar { display:none }`).
+- Cores novas centralizadas em `tokens.css` (`--logo-*`, `--acao-editar`, `--acao-x`).
+- Verificado por screenshot (logo, botões lado a lado, abas limpas); console sem erros; build strict.
+
 ## Correção — progresso do módulo reflete dados reais — 2026-07-09
 
 Correção de um bug introduzido no ajuste anterior + verificação de integridade do import.

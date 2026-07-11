@@ -53,4 +53,12 @@
   /* ── alvos / foco ── */
   --toque-min: 40px;       /* altura mínima de botões/inputs */
   --foco: 2px solid var(--blue);
+
+  /* ── identidade Kochi Holding (logo + ações em tabela) ── */
+  --logo-bg: #171c26;      /* fundo escuro da área do logo (p/ texto branco) */
+  --logo-mark: #20d9a3;    /* marca "K" (teal) */
+  --logo-nome: #ffffff;    /* "Kochi" */
+  --logo-holding: #a0a9b8; /* "HOLDING" */
+  --acao-editar: #20d9a3;  /* botão Editar em tabela (teal) */
+  --acao-x: #ef4444;       /* botão X/remover em tabela (vermelho) */
 }

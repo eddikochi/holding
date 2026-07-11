@@ -13,8 +13,9 @@ export function App() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          Masterplan São Borja
-          <small>Desenvolvimento patrimonial — validar antes de investir</small>
+          <span className="logo-k">K</span>
+          <span className="logo-nome">Kochi</span>
+          <span className="logo-holding">HOLDING</span>
         </div>
 
         <nav className="nav-links-wrap">

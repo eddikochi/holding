@@ -30,8 +30,10 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
   padding: var(--s4) var(--s3);
   overflow-y: auto;
 }
-.sidebar .brand { font-weight: 800; font-size: 15px; color: var(--blue); margin-bottom: var(--s4); line-height: 1.2; }
-.sidebar .brand small { display: block; font-weight: 600; color: var(--ink-soft); font-size: 11px; }
+.sidebar .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; background: var(--logo-bg); border-radius: var(--r-panel); padding: 12px 14px; margin-bottom: var(--s4); }
+.logo-k { width: 32px; height: 32px; border-radius: 8px; background: var(--logo-mark); color: #fff; font-weight: 800; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.logo-nome { font-size: 14px; font-weight: 600; color: var(--logo-nome); line-height: 1; }
+.logo-holding { font-size: 10px; font-weight: 400; color: var(--logo-holding); letter-spacing: 0.35em; }
 .nav-link {
   display: flex; align-items: center; gap: var(--s2);
   padding: 8px 10px; border-radius: var(--r-input);
@@ -76,6 +78,13 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
 }
 
 .row-actions { display: flex; gap: var(--s2); flex-wrap: wrap; align-items: center; }
+
+/* ações em tabela (identidade Kochi): Editar teal · X vermelho vazado (32px) */
+td .row-actions { flex-wrap: nowrap; }
+td .btn.small.secondary { background: var(--acao-editar); color: #fff; border: none; height: 32px; padding: 0 10px; }
+td .btn.small.secondary:hover { filter: brightness(1.06); }
+td .btn.small.danger { background: transparent; border: 2px solid var(--acao-x); color: var(--acao-x); height: 32px; }
+td .btn.small.danger:hover { background: var(--red-soft); }
 
 /* tabelas */
 table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
@@ -136,7 +145,8 @@ input[type=text], input[type=file], select, textarea {
 }
 
 /* tabs */
-.tabs-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: var(--s4); overflow-x: auto; }
+.tabs-bar { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: var(--s4); overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.tabs-bar::-webkit-scrollbar { display: none; height: 0; }
 .tab-btn {
   background: none; border: none; padding: 10px 16px; font-size: 13.5px; font-weight: 600;
   color: var(--ink-soft); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
