@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { MODULOS, type Modulo } from './modulos';
+import { Logo } from './components/Logo';
 
 const GRUPOS: { chave: Modulo['grupo']; rotulo: string }[] = [
   { chave: 'diagnostico', rotulo: 'Diagnósticos' },
@@ -12,13 +13,7 @@ export function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="brand">
-          <span className="logo-k">K</span>
-          <div className="logo-text">
-            <span className="logo-holding">HOLDING</span>
-            <span className="logo-nome">Kochi</span>
-          </div>
-        </div>
+        <Logo />
 
         <nav className="nav-links-wrap">
           <NavLink to="/" end className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
