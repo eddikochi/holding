@@ -33,7 +33,7 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
 .sidebar .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; background: var(--logo-bg); border-radius: var(--r-panel); padding: 12px 14px; margin-bottom: var(--s4); }
 .logo-k { width: 32px; height: 32px; border-radius: 8px; background: var(--logo-mark); color: #fff; font-weight: 800; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
 .logo-nome { font-size: 14px; font-weight: 600; color: var(--logo-nome); line-height: 1; }
-.logo-holding { font-size: 10px; font-weight: 400; color: var(--logo-holding); letter-spacing: 0.35em; }
+.logo-holding { font-size: 10px; font-weight: 400; color: var(--logo-holding); letter-spacing: 0.32em; }
 .nav-link {
   display: flex; align-items: center; gap: var(--s2);
   padding: 8px 10px; border-radius: var(--r-input);
