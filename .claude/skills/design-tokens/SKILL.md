@@ -25,7 +25,7 @@ Toda a paleta deriva destes. Os nomes semânticos abaixo (`--bg`, `--panel`, …
 
 ### Famílias de ação (destaque — ajustadas para fundo escuro)
 - **Ação primária (botões)**: `--color-accent: #5DA790` (teal) com texto escuro `--color-bg`. Botões de ação usam teal, não azul.
-- **Navegação / hipótese**: `--blue: #5B8FC9` · fundo suave `--blue-soft: #1A2740` · borda `--blue-border: #33517A`
+- **Navegação / hipótese**: teal — `--blue: var(--color-accent)` (#5DA790) · fundo suave `--blue-soft: #163029` · borda `--blue-border: #3A6B5C`. O azul foi removido da paleta; o token `--blue` foi mantido só como nome legado e hoje aponta para o teal.
 - **Atenção / warning / pendência**: `--amber: #F59E0B` · fundo suave `--amber-soft: #362A12`
 - **Confirmação / validado**: `--green: #57C98A` · fundo suave `--green-soft: #163224`
 - **Perigo / refutado / erro / destrutivo**: `--red: #EF4444` · fundo suave `--red-soft: #3A1C1C`
@@ -37,7 +37,7 @@ Toda a paleta deriva destes. Os nomes semânticos abaixo (`--bg`, `--panel`, …
 
 ## Semântica fixa de badges (regra de ouro visível)
 
-- **Hipótese**: contorno azul, fundo `--blue-soft` — nunca verde enquanto não validada.
+- **Hipótese**: contorno teal (`--blue`, hoje = accent), fundo `--blue-soft`. Atenção: com o azul removido, hipótese (teal) e evidência/validado (verde) ficaram visualmente próximos — diferenciar pelo rótulo/estrutura do badge.
 - **Evidência**: fundo neutro com indicador de confiança — alta `--green`, média `--amber`, baixa `--red` (borda esquerda).
 - **Decisão**: fundo `--ink` (claro), texto escuro `--bg` — peso visual de registro definitivo.
 - **Status de hipótese**: não validada = neutro; parcial = âmbar; validada = verde; refutada = vermelho.

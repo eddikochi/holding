@@ -38,7 +38,7 @@ export function AtivosMapa({ ativos }: { ativos: Ativo[] }) {
 
     // cores vêm dos design tokens (trocar no tokens.css reflete aqui também)
     const raiz = getComputedStyle(document.documentElement);
-    const corBorda = raiz.getPropertyValue('--blue').trim() || '#5b8fc9';
+    const corBorda = raiz.getPropertyValue('--blue').trim() || '#5da790';
     const corPreenche = raiz.getPropertyValue('--amber').trim() || '#f59e0b';
     const pontos: L.LatLngExpression[] = [];
     for (const a of comCoord) {

@@ -29,9 +29,12 @@
   --neutral-soft: var(--color-surface-elevated);
 
   /* ── famílias de ação ── */
-  --blue: #5b8fc9;         /* hipótese / navegação (semântica fixa de badge) */
-  --blue-soft: #1a2740;
-  --blue-border: #33517a;  /* borda de badge azul (hipótese) */
+  /* "blue" foi substituído por teal (#5DA790): nav, links, KPI, badges de
+     hipótese, progresso, tabs etc. agora são teal. Nome do token mantido
+     para não quebrar as ~20 referências existentes. */
+  --blue: var(--color-accent);
+  --blue-soft: #163029;    /* teal escuro (fundo suave de badge/nav ativa) */
+  --blue-border: #3a6b5c;  /* borda teal */
   --amber: var(--color-warning);
   --amber-soft: #362a12;
   --green: #57c98a;        /* confirmação / validado */
