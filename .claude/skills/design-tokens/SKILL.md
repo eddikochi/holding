@@ -9,28 +9,34 @@ Implementação canônica: `src/styles/tokens.css` (CSS custom properties). Este
 
 ## Princípio
 
-Paleta neutra e sóbria, uma cor de destaque por **família de ação** (não uma cor por pilar). Tipografia de sistema. Nada decorativo. Contraste AA mínimo.
+Tema **escuro**, paleta neutra e sóbria, uma cor de destaque por **família de ação** (não uma cor por pilar). Tipografia de sistema. Nada decorativo. Contraste AA mínimo. Branco sempre suave (`#F2F4F5`), nunca `#FFFFFF` puro.
 
 ## Cores
 
-### Neutros (base da interface)
-- `--bg: #F7F7F4` — fundo geral
-- `--panel: #FFFFFF` — cartões e painéis
-- `--ink: #1B1B1A` — texto principal
-- `--ink-soft: #5B5B57` — texto secundário
-- `--line: #DCDAD2` — bordas e divisores
+### Neutros (base da interface — tema escuro)
+- `--bg: #0E1015` — fundo geral
+- `--panel: #151828` — superfície: cartões e painéis
+- `--panel-2: #1B212B` — superfície elevada (campos, toast, área do logo)
+- `--ink: #F2F4F5` — texto primário (branco suave)
+- `--ink-soft: #A0A9B8` — texto secundário
+- `--line: #283230` — bordas e divisores
 
-### Famílias de ação (destaque)
-- **Ação primária / navegação**: `--blue: #1E3A5F` · fundo suave `--blue-soft: #EAF0F6`
-- **Atenção / incerteza / pendência**: `--amber: #C0762A` · fundo suave `--amber-soft: #FBF0E2`
-- **Confirmação / validado**: `--green: #3B6E4E` · fundo suave `--green-soft: #EAF3EC`
-- **Perigo / refutado / destrutivo**: `--red: #9C3B2E` · fundo suave `--red-soft: #F7EAE7`
+### Famílias de ação (destaque — ajustadas para fundo escuro)
+- **Ação primária / navegação / hipótese**: `--blue: #5B8FC9` · fundo suave `--blue-soft: #1A2740` · borda `--blue-border: #33517A`
+- **Atenção / warning / pendência**: `--amber: #F59E0B` · fundo suave `--amber-soft: #362A12`
+- **Confirmação / validado**: `--green: #57C98A` · fundo suave `--green-soft: #163224`
+- **Perigo / refutado / erro / destrutivo**: `--red: #EF4444` · fundo suave `--red-soft: #3A1C1C`
+
+### Identidade Kochi Holding
+- `--logo-mark: #20D9A3` — teal vibrante da marca (o "K" do logo)
+- `--acao-editar: #5DA790` — accent teal do Design System (ex.: botão Editar em tabela)
+- Teal como **texto/ícone/borda** sobre fundo escuro passa AA (~6.7:1). Como **fundo de botão**, usar texto escuro (`--bg`), nunca texto claro — texto claro sobre teal falha AA.
 
 ## Semântica fixa de badges (regra de ouro visível)
 
 - **Hipótese**: contorno azul, fundo `--blue-soft` — nunca verde enquanto não validada.
 - **Evidência**: fundo neutro com indicador de confiança — alta `--green`, média `--amber`, baixa `--red` (borda esquerda).
-- **Decisão**: fundo `--ink`, texto claro — peso visual de registro definitivo.
+- **Decisão**: fundo `--ink` (claro), texto escuro `--bg` — peso visual de registro definitivo.
 - **Status de hipótese**: não validada = neutro; parcial = âmbar; validada = verde; refutada = vermelho.
 - **Número sem fonte**: badge âmbar "sem fonte".
 

@@ -83,7 +83,7 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
 
 /* ações em tabela (identidade Kochi): Editar teal · X vermelho vazado (32px) */
 td .row-actions { flex-wrap: nowrap; }
-td .btn.small.secondary { background: var(--acao-editar); color: #f2f4f5; border: none; height: 32px; padding: 0 10px; }
+td .btn.small.secondary { background: var(--acao-editar); color: var(--bg); border: none; height: 32px; padding: 0 10px; }
 td .btn.small.secondary:hover { filter: brightness(1.06); }
 td .btn.small.danger { background: transparent; border: 2px solid var(--acao-x); color: var(--acao-x); height: 32px; }
 td .btn.small.danger:hover { background: var(--red-soft); }
