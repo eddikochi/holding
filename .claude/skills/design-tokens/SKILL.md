@@ -13,16 +13,19 @@ Tema **escuro**, paleta neutra e sóbria, uma cor de destaque por **família de 
 
 ## Cores
 
-### Neutros (base da interface — tema escuro)
-- `--bg: #0E1015` — fundo geral
-- `--panel: #151828` — superfície: cartões e painéis
-- `--panel-2: #1B212B` — superfície elevada (campos, toast, área do logo)
-- `--ink: #F2F4F5` — texto primário (branco suave)
-- `--ink-soft: #A0A9B8` — texto secundário
-- `--line: #283230` — bordas e divisores
+### Tokens canônicos (fonte única de verdade, em `:root`)
+Toda a paleta deriva destes. Os nomes semânticos abaixo (`--bg`, `--panel`, …) são **aliases** destes; trocar a paleta = mudar aqui.
+- `--color-bg: #0E1015` · `--color-surface: #151828` · `--color-surface-elevated: #1B212B`
+- `--color-border: #283230` · `--color-text-primary: #F2F4F5` · `--color-text-secondary: #A0A9B8`
+- `--color-accent: #5DA790` (teal — accent/ação primária) · `--color-warning: #F59E0B` · `--color-error: #EF4444`
+
+### Neutros (aliases — base da interface, tema escuro)
+- `--bg` → fundo geral · `--panel` → superfície de cartões/painéis · `--panel-2` → superfície elevada
+- `--ink` → texto primário · `--ink-soft` → texto secundário · `--line` → bordas e divisores
 
 ### Famílias de ação (destaque — ajustadas para fundo escuro)
-- **Ação primária / navegação / hipótese**: `--blue: #5B8FC9` · fundo suave `--blue-soft: #1A2740` · borda `--blue-border: #33517A`
+- **Ação primária (botões)**: `--color-accent: #5DA790` (teal) com texto escuro `--color-bg`. Botões de ação usam teal, não azul.
+- **Navegação / hipótese**: `--blue: #5B8FC9` · fundo suave `--blue-soft: #1A2740` · borda `--blue-border: #33517A`
 - **Atenção / warning / pendência**: `--amber: #F59E0B` · fundo suave `--amber-soft: #362A12`
 - **Confirmação / validado**: `--green: #57C98A` · fundo suave `--green-soft: #163224`
 - **Perigo / refutado / erro / destrutivo**: `--red: #EF4444` · fundo suave `--red-soft: #3A1C1C`

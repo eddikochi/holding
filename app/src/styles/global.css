@@ -33,7 +33,7 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
 }
 .brand { display: flex; align-items: center; gap: 12px; background: var(--logo-bg); border-radius: var(--r-panel); padding: 12px 14px; }
 .sidebar .brand { margin-bottom: var(--s4); }
-.logo-k { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 8px; background: var(--logo-mark); color: #f2f4f5; font-weight: 800; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.logo-k { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 8px; background: var(--logo-mark); color: var(--color-text-primary); font-weight: 800; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
 .logo-text { display: flex; flex-direction: column; gap: 2px; }
 .logo-holding { font-size: 10px; font-weight: 400; color: var(--logo-holding); letter-spacing: 0.32em; }
 .logo-nome { font-size: 14px; font-weight: 600; color: var(--logo-nome); line-height: 1; }
@@ -65,15 +65,15 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
 /* botões */
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
-  background: var(--blue); color: var(--white); border: none;
+  background: var(--color-accent); color: var(--color-bg); border: none;
   padding: 10px 16px; border-radius: var(--r-input);
   font-size: 13.5px; font-weight: 600; cursor: pointer;
   font-family: inherit; min-height: 40px;
 }
 .btn:hover { filter: brightness(1.08); }
-.btn.secondary { background: var(--white); color: var(--blue); border: 1px solid var(--blue); }
-.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-.btn.danger { background: var(--white); color: var(--red); border: 1px solid var(--red); }
+.btn.secondary { background: transparent; color: var(--color-accent); border: 1px solid var(--color-accent); }
+.btn.ghost { background: transparent; color: var(--color-text-primary); border: 1px solid var(--color-border); }
+.btn.danger { background: transparent; color: var(--color-error); border: 1px solid var(--color-error); }
 .btn.small { min-height: 32px; padding: 6px 10px; font-size: 12px; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn:focus-visible, .nav-link:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {

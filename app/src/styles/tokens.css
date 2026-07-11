@@ -4,27 +4,39 @@
  * Nenhum componente deve ter cor/raio/tamanho hardcoded fora destes tokens.
  */
 :root {
-  /* ── cores neutras (Design System — tema escuro) ── */
-  --bg: #0e1015;          /* fundo geral */
-  --panel: #151828;        /* superfície: cartões e painéis */
-  --panel-2: #1b212b;      /* superfície elevada (campos, toast, brand) */
-  --ink: #f2f4f5;          /* texto primário */
-  --ink-soft: #a0a9b8;     /* texto secundário */
-  --line: #283230;         /* bordas e divisores */
-  --white: #f2f4f5;        /* texto/ícone claro sobre superfícies (branco suave) */
-  --bg-hover: #1b212b;     /* hover de linha de tabela */
-  --track: #283230;        /* trilho de barras de progresso/ranking */
-  --neutral-soft: #1b212b; /* fundo de badge/estado neutro */
+  /* ── Design System — tokens canônicos (fonte única de verdade) ──
+     Todos os tokens abaixo derivam destes. Trocar a paleta = mudar aqui. */
+  --color-bg: #0e1015;              /* fundo geral */
+  --color-surface: #151828;         /* superfície: cartões e painéis */
+  --color-surface-elevated: #1b212b;/* superfície elevada */
+  --color-border: #283230;          /* bordas e divisores */
+  --color-text-primary: #f2f4f5;    /* texto primário (branco suave) */
+  --color-text-secondary: #a0a9b8;  /* texto secundário */
+  --color-accent: #5da790;          /* teal — accent/ação primária (CRÍTICO) */
+  --color-warning: #f59e0b;         /* atenção / warning */
+  --color-error: #ef4444;           /* erro / perigo */
 
-  /* ── famílias de ação (ajustadas para fundo escuro) ── */
-  --blue: #5b8fc9;         /* ação primária / navegação / hipótese */
+  /* ── neutros (aliases dos tokens canônicos) ── */
+  --bg: var(--color-bg);
+  --panel: var(--color-surface);
+  --panel-2: var(--color-surface-elevated);
+  --ink: var(--color-text-primary);
+  --ink-soft: var(--color-text-secondary);
+  --line: var(--color-border);
+  --white: var(--color-text-primary); /* branco suave sobre superfícies */
+  --bg-hover: var(--color-surface-elevated);
+  --track: var(--color-border);
+  --neutral-soft: var(--color-surface-elevated);
+
+  /* ── famílias de ação ── */
+  --blue: #5b8fc9;         /* hipótese / navegação (semântica fixa de badge) */
   --blue-soft: #1a2740;
   --blue-border: #33517a;  /* borda de badge azul (hipótese) */
-  --amber: #f59e0b;        /* atenção / warning / pendência */
+  --amber: var(--color-warning);
   --amber-soft: #362a12;
   --green: #57c98a;        /* confirmação / validado */
   --green-soft: #163224;
-  --red: #ef4444;          /* perigo / refutado / erro / destrutivo */
+  --red: var(--color-error); /* perigo / refutado / erro / destrutivo */
   --red-soft: #3a1c1c;
 
   /* ── tipografia ── */
@@ -56,10 +68,10 @@
   --foco: 2px solid var(--blue);
 
   /* ── identidade Kochi Holding (logo + ações em tabela) ── */
-  --logo-bg: #1b212b;      /* fundo da área do logo (superfície elevada) */
+  --logo-bg: var(--color-surface-elevated); /* fundo da área do logo */
   --logo-mark: #20d9a3;    /* marca "K" (teal vibrante da marca) */
-  --logo-nome: #f2f4f5;    /* "Kochi" (branco suave) */
-  --logo-holding: #a0a9b8; /* "HOLDING" */
-  --acao-editar: #5da790;  /* accent teal do Design System (botão Editar) */
-  --acao-x: #ef4444;       /* botão X/remover em tabela (vermelho) */
+  --logo-nome: var(--color-text-primary);   /* "Kochi" (branco suave) */
+  --logo-holding: var(--color-text-secondary); /* "HOLDING" */
+  --acao-editar: var(--color-accent);  /* accent teal (botão Editar) */
+  --acao-x: var(--color-error);        /* botão X/remover em tabela */
 }
