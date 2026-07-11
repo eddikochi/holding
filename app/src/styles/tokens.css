@@ -4,27 +4,28 @@
  * Nenhum componente deve ter cor/raio/tamanho hardcoded fora destes tokens.
  */
 :root {
-  /* ── cores neutras ── */
-  --bg: #f7f7f4;          /* fundo geral */
-  --panel: #ffffff;        /* cartões e painéis */
-  --ink: #1b1b1a;          /* texto principal */
-  --ink-soft: #5b5b57;     /* texto secundário */
-  --line: #dcdad2;         /* bordas e divisores */
-  --white: #ffffff;        /* texto/ícone sobre superfícies escuras */
-  --bg-hover: #faf9f6;     /* hover de linha de tabela */
-  --track: #edece7;        /* trilho de barras de progresso/ranking */
-  --neutral-soft: #f0f0ec; /* fundo de badge/estado neutro */
+  /* ── cores neutras (Design System — tema escuro) ── */
+  --bg: #0e1015;          /* fundo geral */
+  --panel: #151828;        /* superfície: cartões e painéis */
+  --panel-2: #1b212b;      /* superfície elevada (campos, toast, brand) */
+  --ink: #f2f4f5;          /* texto primário */
+  --ink-soft: #a0a9b8;     /* texto secundário */
+  --line: #283230;         /* bordas e divisores */
+  --white: #f2f4f5;        /* texto/ícone claro sobre superfícies (branco suave) */
+  --bg-hover: #1b212b;     /* hover de linha de tabela */
+  --track: #283230;        /* trilho de barras de progresso/ranking */
+  --neutral-soft: #1b212b; /* fundo de badge/estado neutro */
 
-  /* ── famílias de ação ── */
-  --blue: #1e3a5f;         /* ação primária / navegação */
-  --blue-soft: #eaf0f6;
-  --blue-border: #cddcec;  /* borda de badge azul (hipótese) */
-  --amber: #c0762a;        /* atenção / incerteza / pendência */
-  --amber-soft: #fbf0e2;
-  --green: #3b6e4e;        /* confirmação / validado */
-  --green-soft: #eaf3ec;
-  --red: #9c3b2e;          /* perigo / refutado / destrutivo */
-  --red-soft: #f7eae7;
+  /* ── famílias de ação (ajustadas para fundo escuro) ── */
+  --blue: #5b8fc9;         /* ação primária / navegação / hipótese */
+  --blue-soft: #1a2740;
+  --blue-border: #33517a;  /* borda de badge azul (hipótese) */
+  --amber: #f59e0b;        /* atenção / warning / pendência */
+  --amber-soft: #362a12;
+  --green: #57c98a;        /* confirmação / validado */
+  --green-soft: #163224;
+  --red: #ef4444;          /* perigo / refutado / erro / destrutivo */
+  --red-soft: #3a1c1c;
 
   /* ── tipografia ── */
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -55,10 +56,10 @@
   --foco: 2px solid var(--blue);
 
   /* ── identidade Kochi Holding (logo + ações em tabela) ── */
-  --logo-bg: #171c26;      /* fundo escuro da área do logo (p/ texto branco) */
-  --logo-mark: #20d9a3;    /* marca "K" (teal) */
-  --logo-nome: #ffffff;    /* "Kochi" */
+  --logo-bg: #1b212b;      /* fundo da área do logo (superfície elevada) */
+  --logo-mark: #20d9a3;    /* marca "K" (teal vibrante da marca) */
+  --logo-nome: #f2f4f5;    /* "Kochi" (branco suave) */
   --logo-holding: #a0a9b8; /* "HOLDING" */
-  --acao-editar: #20d9a3;  /* botão Editar em tabela (teal) */
+  --acao-editar: #5da790;  /* accent teal do Design System (botão Editar) */
   --acao-x: #ef4444;       /* botão X/remover em tabela (vermelho) */
 }

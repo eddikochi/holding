@@ -14,8 +14,10 @@ export function App() {
       <aside className="sidebar">
         <div className="brand">
           <span className="logo-k">K</span>
-          <span className="logo-nome">Kochi</span>
-          <span className="logo-holding">HOLDING</span>
+          <div className="logo-text">
+            <span className="logo-holding">HOLDING</span>
+            <span className="logo-nome">Kochi</span>
+          </div>
         </div>
 
         <nav className="nav-links-wrap">

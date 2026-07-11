@@ -3,6 +3,7 @@
 * { box-sizing: border-box; }
 
 html, body, #root { height: 100%; }
+html { background: var(--bg); }
 
 body {
   margin: 0;
@@ -30,10 +31,11 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
   padding: var(--s4) var(--s3);
   overflow-y: auto;
 }
-.sidebar .brand { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; background: var(--logo-bg); border-radius: var(--r-panel); padding: 12px 14px; margin-bottom: var(--s4); }
-.logo-k { width: 32px; height: 32px; border-radius: 8px; background: var(--logo-mark); color: #fff; font-weight: 800; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
-.logo-nome { font-size: 14px; font-weight: 600; color: var(--logo-nome); line-height: 1; }
+.sidebar .brand { display: flex; align-items: center; gap: 12px; background: var(--logo-bg); border-radius: var(--r-panel); padding: 12px 14px; margin-bottom: var(--s4); }
+.logo-k { width: 32px; height: 32px; flex: 0 0 32px; border-radius: 8px; background: var(--logo-mark); color: #f2f4f5; font-weight: 800; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.logo-text { display: flex; flex-direction: column; gap: 2px; }
 .logo-holding { font-size: 10px; font-weight: 400; color: var(--logo-holding); letter-spacing: 0.32em; }
+.logo-nome { font-size: 14px; font-weight: 600; color: var(--logo-nome); line-height: 1; }
 .nav-link {
   display: flex; align-items: center; gap: var(--s2);
   padding: 8px 10px; border-radius: var(--r-input);
@@ -81,7 +83,7 @@ h3 { font-size: 14px; margin: 0 0 var(--s2); }
 
 /* ações em tabela (identidade Kochi): Editar teal · X vermelho vazado (32px) */
 td .row-actions { flex-wrap: nowrap; }
-td .btn.small.secondary { background: var(--acao-editar); color: #fff; border: none; height: 32px; padding: 0 10px; }
+td .btn.small.secondary { background: var(--acao-editar); color: #f2f4f5; border: none; height: 32px; padding: 0 10px; }
 td .btn.small.secondary:hover { filter: brightness(1.06); }
 td .btn.small.danger { background: transparent; border: 2px solid var(--acao-x); color: var(--acao-x); height: 32px; }
 td .btn.small.danger:hover { background: var(--red-soft); }
@@ -98,7 +100,7 @@ tr:hover td { background: var(--bg-hover); }
   font-size: 11px; font-weight: 700; border: 1px solid transparent;
 }
 .badge.hipotese { background: var(--blue-soft); color: var(--blue); border-color: var(--blue-border); }
-.badge.decisao { background: var(--ink); color: var(--white); }
+.badge.decisao { background: var(--ink); color: var(--bg); }
 .badge.conf-alta { background: var(--green-soft); color: var(--green); border-left: 3px solid var(--green); border-radius: 4px; }
 .badge.conf-media { background: var(--amber-soft); color: var(--amber); border-left: 3px solid var(--amber); border-radius: 4px; }
 .badge.conf-baixa { background: var(--red-soft); color: var(--red); border-left: 3px solid var(--red); border-radius: 4px; }
@@ -141,7 +143,7 @@ tr:hover td { background: var(--bg-hover); }
 label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); margin: 10px 0 4px; }
 input[type=text], input[type=file], select, textarea {
   width: 100%; padding: 9px 10px; border: 1px solid var(--line);
-  border-radius: var(--r-input); font-size: 14px; font-family: inherit; background: var(--white); color: var(--ink);
+  border-radius: var(--r-input); font-size: 14px; font-family: inherit; background: var(--panel-2); color: var(--ink);
 }
 
 /* tabs */
@@ -193,7 +195,7 @@ input[type=text], input[type=file], select, textarea {
 .jur-em_andamento { background: var(--blue-soft); color: var(--blue); }
 .jur-ok { background: var(--green-soft); color: var(--green); }
 .jur-pendencia { background: var(--red-soft); color: var(--red); }
-.jur-nao_se_aplica { background: var(--white); color: var(--ink-soft); border: 1px dashed var(--line); }
+.jur-nao_se_aplica { background: transparent; color: var(--ink-soft); border: 1px dashed var(--line); }
 
 /* form em grade */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
@@ -246,8 +248,9 @@ input[type=text], input[type=file], select, textarea {
 /* toast */
 .toast {
   position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-  background: var(--ink); color: var(--white); padding: 10px 16px; border-radius: 8px;
-  font-size: 13px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
+  padding: 10px 16px; border-radius: 8px;
+  font-size: 13px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.45);
 }
 
 /* responsivo */
