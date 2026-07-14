@@ -2,11 +2,20 @@
  * Backup completo (JSON) e export CSV por entidade.
  * Import de backup substitui os dados atuais após confirmação do chamador.
  */
-import { db, SCHEMA_VERSION } from './database';
+import { db } from './database';
 import { limparTudo } from './repository';
 import { agora } from '../lib/ids';
 import { montarCSV } from '../lib/csv';
 import type { BackupCompleto, Stakeholder, Ativo, Evidencia } from '../models/types';
+
+/**
+ * Versão do FORMATO do arquivo de backup (não confundir com a versão do schema
+ * Dexie, que segue nas chamadas .version() de database.ts e não mudou de store).
+ * v4: Ativo passou a carregar `unidades` embutidas + `statusVisita`/`ehSubdividido`;
+ *     Stakeholder e Evidencia ganharam `unidadeId`. Mudança de forma, retrocompatível
+ *     (todos os campos novos são opcionais). Backups v≤3 continuam importáveis.
+ */
+export const BACKUP_SCHEMA_VERSION = 4;
 
 export async function montarBackup(): Promise<BackupCompleto> {
   const [
@@ -28,7 +37,7 @@ export async function montarBackup(): Promise<BackupCompleto> {
   ]);
   return {
     app: 'masterplan-sao-borja',
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: BACKUP_SCHEMA_VERSION,
     exportadoEm: agora(),
     ativos, stakeholders, evidencias, hipoteses, oportunidades,
     businessCases, decisoes, tarefas, kpis, analises, comparaveis, config,

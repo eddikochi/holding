@@ -4,7 +4,7 @@ import { db } from '../../db/database';
 import { MODULOS } from '../../modulos';
 import { PageHeader } from '../../components/PageHeader';
 import { EmptyState } from '../../components/EmptyState';
-import { contarPorPilar, sinaisDadosDiagnostico, progressoDiagnostico } from '../../lib/calc/progresso';
+import { contarPorPilar, sinaisDadosDiagnostico, progressoDiagnostico, unidadePreenchida } from '../../lib/calc/progresso';
 import { progressoChecklist } from '../../db/actions';
 import { linhasSemFonte } from '../../lib/calc/financeiro';
 import type { ItemChecklistDiscovery, SazonalidadeMes } from '../../models/types';
@@ -70,12 +70,18 @@ export function Home() {
   const sazCfg = dados.config.find((c) => c.chave === 'sazonalidade_agro');
   const sazonalidadeAtiva = Array.isArray(sazCfg?.valor)
     && (sazCfg!.valor as SazonalidadeMes[]).some((m) => m.intensidade && m.intensidade !== 'nenhuma');
+  const subdivididos = dados.ativos.filter((a) => a.ehSubdividido);
+  const subdivididosPendentes = subdivididos.filter(
+    (a) => !(a.unidades?.length) || a.unidades.some((u) => !unidadePreenchida(u))
+  ).length;
   const resumo = {
     ativos: dados.ativos.length,
     ativosComJuridico: dados.ativos.filter((a) => (a.checklistJuridico ?? []).some((i) => i.status !== 'nao_iniciado')).length,
     ativosComCenario: dados.ativos.filter((a) => a.cenariosUso && Object.values(a.cenariosUso).some((c) => c.pros || c.contras)).length,
     comparaveis: dados.comparaveis,
     sazonalidadeAtiva,
+    subdivididos: subdivididos.length,
+    subdivididosPendentes,
     porPilar,
   };
   function checklistPctDe(slug: string): number {

@@ -3,7 +3,7 @@
  * Fase 1: heurística simples baseada em existência de dados por pilar.
  * Fases seguintes refinam por completude de campos.
  */
-import type { Pilar } from '../../models/types';
+import type { Pilar, Unidade } from '../../models/types';
 
 export interface ContagensPorPilar {
   ativos: number;
@@ -33,7 +33,27 @@ export interface ResumoModulos {
   ativosComCenario: number; // ativos com ≥1 cenário de uso preenchido
   comparaveis: number;
   sazonalidadeAtiva: boolean; // agro: ≥1 mês com intensidade ≠ nenhuma
+  subdivididos: number; // ativos marcados como subdivididos (ehSubdividido)
+  subdivididosPendentes: number; // subdivididos sem unidades OU com ≥1 unidade vazia
   porPilar: Record<Pilar, ContagensPorPilar>;
+}
+
+/**
+ * Uma unidade conta como "preenchida" se tem nome e ao menos um dado de negócio
+ * (locatário, estado físico, situação jurídica ou algum potencial por pilar).
+ * Serve para o progresso não marcar um prédio subdividido como completo enquanto
+ * suas unidades ainda estão vazias. Função pura.
+ */
+export function unidadePreenchida(u: Unidade): boolean {
+  const temNome = (u.nome ?? '').trim() !== '';
+  const temPotencial = !!u.potencialPorPilar
+    && Object.values(u.potencialPorPilar).some((v) => (v ?? '').trim() !== '');
+  const temNegocio =
+    (u.locatario ?? '').trim() !== '' ||
+    (u.estadoFisico ?? '').trim() !== '' ||
+    (u.situacaoJuridicaResumo ?? '').trim() !== '' ||
+    temPotencial;
+  return temNome && temNegocio;
 }
 
 /**
@@ -43,7 +63,9 @@ export interface ResumoModulos {
 export function sinaisDadosDiagnostico(slug: string, r: ResumoModulos): boolean[] {
   const p = r.porPilar;
   switch (slug) {
-    case 'patrimonial': return [r.ativos > 0];
+    // Patrimonial: tem ativo E nenhum prédio subdividido com unidades por preencher.
+    // Sem ativos subdivididos, subdivididosPendentes = 0 → sinal sempre true (retrocompatível).
+    case 'patrimonial': return [r.ativos > 0, r.subdivididosPendentes === 0];
     case 'juridico': return [r.ativosComJuridico > 0];
     case 'imobiliario': return [r.comparaveis > 0, r.ativosComCenario > 0];
     case 'economico': return [p.economico.evidencias > 0];

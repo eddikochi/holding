@@ -101,6 +101,51 @@ export interface CenariosUso {
   venda: { pros: string; contras: string };
 }
 
+/**
+ * Status de visita de campo.
+ * Ativo aceita 'parcial' (subdividido com só parte das unidades visitadas);
+ * Unidade só é 'a_visitar' ou 'visitado' (não há meio-termo numa loja só).
+ */
+export type StatusVisitaAtivo = 'a_visitar' | 'visitado' | 'parcial';
+export type StatusVisitaUnidade = 'a_visitar' | 'visitado';
+
+/** Tipo de relação física entre duas unidades do mesmo ativo. */
+export type TipoRelacaoUnidade = 'agua' | 'energia' | 'acesso' | 'outro';
+
+/**
+ * Relação física entre unidades de um ativo subdividido.
+ * Ex.: { tipo: 'energia', alvoUnidadeId: <U3>, descricao: 'U2 recebe energia da U3' }.
+ * `alvoUnidadeId` é opcional — a relação pode ser genérica ("água unificada do prédio").
+ */
+export interface RelacaoUnidade {
+  tipo: TipoRelacaoUnidade;
+  alvoUnidadeId?: ID; // outra unidade envolvida (id de Unidade dentro do mesmo Ativo)
+  descricao: string;
+}
+
+/**
+ * Unidade locável dentro de um Ativo subdividido (ex.: 1 das 3 lojas de um prédio).
+ * Vive embutida em `Ativo.unidades` (Opção A — sem store separada).
+ * Todo campo específico de negócio é opcional, exceto identidade e status de visita.
+ */
+export interface Unidade {
+  id: ID;
+  nome: string;
+  locatario?: string;
+  contato?: string;
+  estadoFisico?: string;
+  statusVisita: StatusVisitaUnidade;
+  metragens?: {
+    construidaM2?: number;
+    peDireitoM?: number;
+  };
+  situacaoJuridicaResumo?: string;
+  /** Potencial por pilar da unidade (2º nível). Independe do potencial do prédio. */
+  potencialPorPilar?: Partial<Record<Pilar, string>>;
+  relacoes?: RelacaoUnidade[];
+  origem?: OrigemImportacao;
+}
+
 export interface Ativo extends BaseEntity {
   nome: string;
   tipo: TipoAtivo;
@@ -118,6 +163,12 @@ export interface Ativo extends BaseEntity {
   situacaoJuridicaResumo: string;
   checklistJuridico: ItemChecklistJuridico[]; // sempre os 9 itens
   cenariosUso?: CenariosUso; // módulo 03 (opcional, preenchido sob demanda)
+  /** Status de visita do prédio (novo, opcional — ativos antigos ficam undefined). */
+  statusVisita?: StatusVisitaAtivo;
+  /** true = prédio subdividido em unidades locáveis. Ausente/false = bloco único. */
+  ehSubdividido?: boolean;
+  /** Unidades filhas (embutidas). Ausente/[] = ativo de bloco único (retrocompatível). */
+  unidades?: Unidade[];
   origem?: OrigemImportacao;
 }
 
@@ -133,6 +184,8 @@ export interface Stakeholder extends BaseEntity {
   contato: string;
   local: string;
   ativoId?: ID;
+  /** Vínculo a uma unidade específica de um ativo subdividido (opcional). */
+  unidadeId?: ID;
   dorOportunidade: string;
   urgencia?: Urgencia;
   disposicao?: Disposicao;
@@ -164,6 +217,8 @@ export interface Evidencia extends BaseEntity {
   fonteDetalhe?: string;
   data: ISODate;
   ativoId?: ID;
+  /** Vínculo a uma unidade específica de um ativo subdividido (opcional). */
+  unidadeId?: ID;
   stakeholderId?: ID;
   hipoteseId?: ID;
   confianca: Confianca;

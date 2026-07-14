@@ -243,15 +243,16 @@ input[type=text], input[type=file], select, textarea {
 .chk-add input[type=text] { flex: 1; min-width: 180px; }
 
 /* dialog simples */
-.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: flex-start; justify-content: center; padding: 24px; z-index: 60; overflow-y: auto; }
-.modal { background: var(--panel); border-radius: var(--r-panel); padding: var(--s4); width: min(640px, 100%); }
+/* z-index acima dos panes/controles do Leaflet (~1000), senão o mapa fura o modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: flex-start; justify-content: center; padding: 24px; z-index: 1100; overflow-y: auto; }
+.modal { position: relative; z-index: 1101; background: var(--panel); border-radius: var(--r-panel); padding: var(--s4); width: min(640px, 100%); }
 
 /* toast */
 .toast {
   position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
   background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
   padding: 10px 16px; border-radius: 8px;
-  font-size: 13px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.45);
+  font-size: 13px; z-index: 1300; box-shadow: 0 4px 16px rgba(0,0,0,.45);
 }
 
 /* responsivo */
