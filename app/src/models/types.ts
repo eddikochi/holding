@@ -142,6 +142,25 @@ export interface ProprietarioAtivo {
   percentual?: number;
 }
 
+export type TipoDocumento =
+  | 'matricula'
+  | 'certidao'
+  | 'planta'
+  | 'contrato'
+  | 'foto'
+  | 'inventario'
+  | 'outro';
+
+/**
+ * Referência a um documento externo — apenas link (título + URL). O arquivo mora
+ * fora do app (Drive/nuvem); NÃO é upload nem substitui `fotos: FotoRef[]`.
+ */
+export interface DocumentoRef {
+  titulo: string;
+  url: string;
+  tipo?: TipoDocumento;
+}
+
 /**
  * Unidade locável dentro de um Ativo subdividido (ex.: 1 das 3 lojas de um prédio).
  * Vive embutida em `Ativo.unidades` (Opção A — sem store separada).
@@ -165,6 +184,8 @@ export interface Unidade {
   situacaoJuridicaResumo?: string;
   /** Identificação registral própria da unidade (loja pode ter matrícula separada). */
   registro?: RegistroImovel;
+  /** Links para documentos externos da unidade (Drive/nuvem). Opcional. */
+  documentos?: DocumentoRef[];
   /** Potencial por pilar da unidade (2º nível). Independe do potencial do prédio. */
   potencialPorPilar?: Partial<Record<Pilar, string>>;
   relacoes?: RelacaoUnidade[];
@@ -194,6 +215,18 @@ export interface Ativo extends BaseEntity {
   registro?: RegistroImovel;
   /** Titularidade e participação de cada proprietário. Opcional. */
   proprietarios?: ProprietarioAtivo[];
+  /** Links para documentos externos do imóvel (Drive/nuvem). Opcional. */
+  documentos?: DocumentoRef[];
+  /** Imóvel foreiro (sujeito a enfiteuse). Opcional. */
+  foreiro?: boolean;
+  /** Titular do domínio direto (senhorio), quando foreiro. Opcional. */
+  enfiteuta?: string;
+  /** Valor atribuído na partilha (R$). Opcional — vazio quando não informado. */
+  valorPartilha?: number;
+  /** Valor de avaliação fiscal / venal (R$). Opcional — vazio quando não informado. */
+  valorAvaliacaoFiscal?: number;
+  /** Fonte/observação dos valores acima (texto livre). Opcional. */
+  fonteValores?: string;
   checklistJuridico: ItemChecklistJuridico[]; // sempre os 9 itens
   cenariosUso?: CenariosUso; // módulo 03 (opcional, preenchido sob demanda)
   /** Status de visita do prédio (novo, opcional — ativos antigos ficam undefined). */

@@ -15,9 +15,11 @@ import type { BackupCompleto, Stakeholder, Ativo, Evidencia } from '../models/ty
  *     Stakeholder e Evidencia ganharam `unidadeId`.
  * v5: Ativo e Unidade ganharam `registro` (matrícula/cartório/inscrição), `ocupacao`
  *     e `valorAluguel`; Ativo ganhou `proprietarios`. Tudo embutido e opcional.
- * Sempre retrocompatível: campos novos são opcionais e backups v≤4 continuam importáveis.
+ * v6: Ativo e Unidade ganharam `documentos` (links externos); Ativo ganhou `foreiro`,
+ *     `enfiteuta`, `valorPartilha`, `valorAvaliacaoFiscal` e `fonteValores`. Embutido e opcional.
+ * Sempre retrocompatível: campos novos são opcionais e backups antigos continuam importáveis.
  */
-export const BACKUP_SCHEMA_VERSION = 5;
+export const BACKUP_SCHEMA_VERSION = 6;
 
 export async function montarBackup(): Promise<BackupCompleto> {
   const [

@@ -11,6 +11,7 @@ import type {
   Ativo, TipoAtivo, Pilar, Unidade, RelacaoUnidade,
   StatusVisitaAtivo, StatusVisitaUnidade, TipoRelacaoUnidade,
   RegistroImovel, ProprietarioAtivo, OcupacaoImovel,
+  DocumentoRef, TipoDocumento,
 } from '../../../models/types';
 
 const TIPOS: { v: TipoAtivo; r: string }[] = [
@@ -30,6 +31,11 @@ const TIPOS_RELACAO: { v: TipoRelacaoUnidade; r: string }[] = [
 const OCUPACOES: { v: OcupacaoImovel; r: string }[] = [
   { v: 'locado', r: 'Locado' }, { v: 'vago', r: 'Vago' }, { v: 'uso_proprio', r: 'Uso próprio' },
   { v: 'cedido', r: 'Cedido' }, { v: 'irregular', r: 'Irregular' },
+];
+const TIPOS_DOC: { v: TipoDocumento; r: string }[] = [
+  { v: 'matricula', r: 'Matrícula' }, { v: 'certidao', r: 'Certidão' }, { v: 'planta', r: 'Planta' },
+  { v: 'contrato', r: 'Contrato' }, { v: 'foto', r: 'Foto' }, { v: 'inventario', r: 'Inventário' },
+  { v: 'outro', r: 'Outro' },
 ];
 
 /** Lê texto (vírgula ou ponto) para número; vazio/ inválido → undefined (nunca 0). */
@@ -188,6 +194,23 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
         <RegistroFields valor={a.registro} onChange={(registro) => setA({ ...a, registro })} />
         <label style={{ marginTop: 16 }}>Proprietários</label>
         <ProprietariosEditor proprietarios={a.proprietarios} onChange={(proprietarios) => setA({ ...a, proprietarios })} />
+        <label style={{ marginTop: 16 }}>Documentos (links)</label>
+        <DocumentosEditor documentos={a.documentos} onChange={(documentos) => setA({ ...a, documentos })} />
+        <label style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
+          <input type="checkbox" checked={!!a.foreiro} onChange={(e) => setA({ ...a, foreiro: e.target.checked || undefined })} style={{ width: 'auto' }} />
+          Imóvel foreiro (enfiteuse)
+        </label>
+        {a.foreiro && (
+          <div><label>Enfiteuta (a quem se paga o foro)</label>
+            <input type="text" placeholder="ex.: Município de São Borja" value={a.enfiteuta ?? ''} onChange={(e) => setA({ ...a, enfiteuta: e.target.value || undefined })} />
+          </div>
+        )}
+        <div className="form-grid">
+          <div><label>Valor de partilha (R$)</label><input type="text" value={a.valorPartilha ?? ''} onChange={(e) => setA({ ...a, valorPartilha: parseValor(e.target.value) })} /></div>
+          <div><label>Avaliação fiscal / venal (R$)</label><input type="text" value={a.valorAvaliacaoFiscal ?? ''} onChange={(e) => setA({ ...a, valorAvaliacaoFiscal: parseValor(e.target.value) })} /></div>
+        </div>
+        <label>Fonte dos valores</label>
+        <input type="text" value={a.fonteValores ?? ''} onChange={(e) => setA({ ...a, fonteValores: e.target.value || undefined })} />
         <div className="form-grid">
           <div><label>Status de visita</label>
             <select value={a.statusVisita ?? 'a_visitar'} onChange={(e) => setA({ ...a, statusVisita: e.target.value as StatusVisitaAtivo })}>
@@ -336,6 +359,8 @@ function UnidadeCard({
       <input type="text" value={u.situacaoJuridicaResumo ?? ''} onChange={(e) => onChange({ situacaoJuridicaResumo: e.target.value || undefined })} />
       <label style={{ marginTop: 12 }}>Registro da unidade (se tiver matrícula própria)</label>
       <RegistroFields valor={u.registro} onChange={(registro) => onChange({ registro })} />
+      <label style={{ marginTop: 12 }}>Documentos (links)</label>
+      <DocumentosEditor documentos={u.documentos} onChange={(documentos) => onChange({ documentos })} />
       <label style={{ marginTop: 12 }}>Potencial por pilar da unidade (deixe em branco se não se aplica)</label>
       <div className="form-grid">
         {PILARES.map((p) => (
@@ -424,6 +449,46 @@ function ProprietariosEditor({ proprietarios, onChange }: { proprietarios?: Prop
             Soma: {soma}%{soma !== 100 ? ' (≠ 100)' : ''}
           </span>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** Lista editável de documentos externos (título + URL + tipo). Reutilizado no ativo e na unidade. */
+function DocumentosEditor({ documentos, onChange }: { documentos?: DocumentoRef[]; onChange: (d: DocumentoRef[]) => void }) {
+  const lista = documentos ?? [];
+  function atualizar(i: number, patch: Partial<DocumentoRef>) {
+    onChange(lista.map((d, idx) => (idx === i ? { ...d, ...patch } : d)));
+  }
+  function remover(i: number) { onChange(lista.filter((_, idx) => idx !== i)); }
+  function adicionar() { onChange([...lista, { titulo: '', url: '' }]); }
+
+  return (
+    <div>
+      {lista.length === 0 && (
+        <p style={{ color: 'var(--ink-soft)', fontSize: 13, marginTop: 4 }}>
+          Nenhum documento vinculado. Adicione um link (Drive/nuvem) — o arquivo mora fora do app.
+        </p>
+      )}
+      {lista.map((d, i) => (
+        <div key={i} style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-panel)', padding: 'var(--s3)', marginTop: 'var(--s2)' }}>
+          <div className="form-grid">
+            <div><label style={{ fontWeight: 400, textTransform: 'none' }}>Título</label><input type="text" value={d.titulo} onChange={(e) => atualizar(i, { titulo: e.target.value })} /></div>
+            <div><label style={{ fontWeight: 400, textTransform: 'none' }}>Tipo</label>
+              <select value={d.tipo ?? ''} onChange={(e) => atualizar(i, { tipo: e.target.value ? e.target.value as TipoDocumento : undefined })}>
+                <option value="">— tipo —</option>
+                {TIPOS_DOC.map((t) => <option key={t.v} value={t.v}>{t.r}</option>)}
+              </select>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'end' }}>
+            <div style={{ flex: 1 }}><label style={{ fontWeight: 400, textTransform: 'none' }}>URL (link do arquivo)</label><input type="text" placeholder="https://…" value={d.url} onChange={(e) => atualizar(i, { url: e.target.value })} /></div>
+            <button type="button" className="btn small danger" onClick={() => remover(i)}>×</button>
+          </div>
+        </div>
+      ))}
+      <div style={{ marginTop: 8 }}>
+        <button type="button" className="btn small secondary" onClick={adicionar}>+ Documento</button>
       </div>
     </div>
   );
