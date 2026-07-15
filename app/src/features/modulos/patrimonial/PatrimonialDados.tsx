@@ -133,6 +133,12 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
     if (!a.nome.trim()) { setErro('Preencha o nome do ativo.'); return; }
     await salvarAtivo(a); toast('Ativo salvo'); onFechar();
   }
+  /** Fecha a ficha; se há alterações não salvas, pede confirmação antes de descartar. */
+  const sujo = JSON.stringify(a) !== JSON.stringify(ativo);
+  function tentarFechar() {
+    if (sujo && !confirm('Você tem alterações não salvas nesta ficha. Fechar agora descarta tudo. Deseja sair mesmo assim?')) return;
+    onFechar();
+  }
   function setMetragem(campo: 'terrenoM2' | 'construidaM2' | 'peDireitoM', v: string) {
     const n = v === '' ? undefined : parseFloat(v.replace(',', '.'));
     setA({ ...a, metragens: { ...a.metragens, [campo]: isNaN(n as number) ? undefined : n } });
@@ -142,7 +148,7 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
   }
 
   return (
-    <div className="modal-backdrop" onClick={onFechar}>
+    <div className="modal-backdrop" onClick={tentarFechar}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h3 style={{ marginTop: 0 }}>{ativo.nome ? 'Editar ativo' : 'Novo ativo'}</h3>
         <div className="form-grid">
@@ -155,9 +161,9 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
         </div>
         <label>Endereço</label><input type="text" value={a.endereco} onChange={(e) => setA({ ...a, endereco: e.target.value })} />
         <div className="form-grid">
-          <div><label>Terreno (m²)</label><input type="text" value={a.metragens.terrenoM2 ?? ''} onChange={(e) => setMetragem('terrenoM2', e.target.value)} /></div>
-          <div><label>Construída (m²)</label><input type="text" value={a.metragens.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
-          <div><label>Pé direito (m)</label><input type="text" value={a.metragens.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
+          <div><label>Terreno (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.terrenoM2 ?? ''} onChange={(e) => setMetragem('terrenoM2', e.target.value)} /></div>
+          <div><label>Construída (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
+          <div><label>Pé direito (m)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
           <div><label>Lat, Lng (opcional)</label>
             <input type="text" placeholder="-28.66, -56.00"
               value={a.lat != null ? `${a.lat}, ${a.lng ?? ''}` : ''}
@@ -210,7 +216,7 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
         {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
         <div className="row-actions" style={{ marginTop: 16 }}>
           <button className="btn" onClick={salvar}>Salvar</button>
-          <button className="btn ghost" onClick={onFechar}>Cancelar</button>
+          <button className="btn ghost" onClick={tentarFechar}>Cancelar</button>
         </div>
       </div>
     </div>
@@ -243,6 +249,9 @@ function UnidadesEditor({ unidades, onChange }: { unidades: Unidade[]; onChange:
         <label style={{ margin: 0 }}>Unidades ({unidades.length})</label>
         <button type="button" className="btn small secondary" onClick={adicionar}>+ Adicionar unidade</button>
       </div>
+      <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '4px 0 0' }}>
+        As unidades só são gravadas quando você clica em Salvar no final desta ficha.
+      </p>
       {unidades.length === 0 && (
         <p style={{ color: 'var(--ink-soft)', fontSize: 13, marginTop: 6 }}>
           Nenhuma unidade ainda. Adicione as lojas/salas locáveis deste prédio.
@@ -289,12 +298,18 @@ function UnidadeCard({
   function removerRelacao(idx: number) {
     onChange({ relacoes: relacoes.filter((_, i) => i !== idx) });
   }
+  const nomeExibicao = u.nome.trim() || `Unidade ${indice + 1}`;
+  function confirmarRemover() {
+    if (confirm(`Remover a unidade "${nomeExibicao}"? Locatário, contato, estado e relações desta unidade serão apagados. Esta ação não pode ser desfeita.`)) {
+      onRemover();
+    }
+  }
 
   return (
     <div style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-panel)', padding: 'var(--s3)', marginTop: 'var(--s2)' }}>
       <div className="row-actions" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <b style={{ fontSize: 13 }}>{u.nome.trim() || `Unidade ${indice + 1}`}</b>
-        <button type="button" className="btn small danger" onClick={onRemover}>Remover</button>
+        <b style={{ fontSize: 13 }}>{nomeExibicao}</b>
+        <button type="button" className="btn small danger" onClick={confirmarRemover}>Remover</button>
       </div>
       <div className="form-grid">
         <div><label>Nome</label><input type="text" value={u.nome} onChange={(e) => onChange({ nome: e.target.value })} /></div>
@@ -312,8 +327,8 @@ function UnidadeCard({
           </select>
         </div>
         <div><label>Valor de aluguel (R$)</label><input type="text" value={u.valorAluguel ?? ''} onChange={(e) => onChange({ valorAluguel: parseValor(e.target.value) })} /></div>
-        <div><label>Construída (m²)</label><input type="text" value={u.metragens?.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
-        <div><label>Pé direito (m)</label><input type="text" value={u.metragens?.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
+        <div><label>Construída (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={u.metragens?.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
+        <div><label>Pé direito (m)</label><input type="text" placeholder="deixe em branco se não souber" value={u.metragens?.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
       </div>
       <label>Estado físico</label>
       <textarea value={u.estadoFisico ?? ''} onChange={(e) => onChange({ estadoFisico: e.target.value || undefined })} />

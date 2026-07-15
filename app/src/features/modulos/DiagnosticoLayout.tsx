@@ -10,6 +10,15 @@ import { AnaliseTab } from './AnaliseTab';
 import { DiscoveryPanel } from './DiscoveryPanel';
 import { ChecklistDiscovery } from './ChecklistDiscovery';
 
+/** Linha introdutória no topo de cada aba do diagnóstico (o que fazer ali e por quê). */
+function AbaIntro({ children }: { children: ReactNode }) {
+  return (
+    <p style={{ color: 'var(--ink-soft)', fontSize: 13, lineHeight: 1.5, margin: '0 0 14px', paddingLeft: 12, borderLeft: '3px solid var(--blue)' }}>
+      {children}
+    </p>
+  );
+}
+
 /** Aba de Onboarding didática: o que descobrir, porquê, quem procurar, checklist, critério. */
 export function OnboardingTab({ slug }: { slug: string }) {
   const onb = ONBOARDING[slug];
@@ -92,10 +101,31 @@ export function DiagnosticoLayout({ modulo, dados }: { modulo: Modulo; dados: Re
           ativa={aba}
           aoMudar={setAba}
           abas={[
-            { id: 'onboarding', rotulo: 'Onboarding', conteudo: <OnboardingTab slug={modulo.slug} /> },
-            { id: 'dados', rotulo: 'Dados', conteudo: dados },
-            { id: 'discovery', rotulo: 'Discovery', conteudo: modulo.pilar ? <DiscoveryPanel pilar={modulo.pilar} /> : null },
-            { id: 'analise', rotulo: 'Análise', conteudo: modulo.pilar ? <AnaliseTab pilar={modulo.pilar} /> : null },
+            { id: 'onboarding', rotulo: 'Onboarding', conteudo: (
+              <>
+                <AbaIntro>Comece aqui. Explica o que este diagnóstico responde e o que procurar em campo. Não se preenche nada nesta aba — é leitura.</AbaIntro>
+                <AbaIntro>Ordem de uso: Onboarding (entender o que buscar) → Dados (registrar o que existe) → Discovery (testar as apostas com evidência) → Análise (concluir).</AbaIntro>
+                <OnboardingTab slug={modulo.slug} />
+              </>
+            ) },
+            { id: 'dados', rotulo: 'Dados', conteudo: (
+              <>
+                <AbaIntro>Os fatos do imóvel: onde fica, tamanho, estado, situação jurídica. Só o que é verificável. Interpretação e conclusões vão na aba Análise; o que você observou ou ouviu de alguém vai na Discovery, como evidência.</AbaIntro>
+                {dados}
+              </>
+            ) },
+            { id: 'discovery', rotulo: 'Discovery', conteudo: modulo.pilar ? (
+              <>
+                <AbaIntro>Onde você testa as apostas. Registre hipóteses e as evidências que as sustentam ou derrubam — conversas, visitas, documentos. Uma hipótese só é dada como validada com pelo menos 3 evidências vinculadas.</AbaIntro>
+                <DiscoveryPanel pilar={modulo.pilar} />
+              </>
+            ) : null },
+            { id: 'analise', rotulo: 'Análise', conteudo: modulo.pilar ? (
+              <>
+                <AbaIntro>Sua leitura do que os dados dizem. SWOT, conclusões e recomendações. Aqui é interpretação — o fato bruto fica em Dados.</AbaIntro>
+                <AnaliseTab pilar={modulo.pilar} />
+              </>
+            ) : null },
           ]}
         />
       )}

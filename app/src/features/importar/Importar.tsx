@@ -101,6 +101,14 @@ export function Importar() {
         descricao="Traga o JSON exportado pela ferramenta de campo offline. O formato é detectado automaticamente e nada é gravado antes de você confirmar."
       />
 
+      <div className="panel" style={{ borderLeft: '4px solid var(--blue)' }}>
+        <p style={{ margin: 0, color: 'var(--ink-soft)', fontSize: 13, lineHeight: 1.5 }}>
+          Esta tela é para o JSON gerado pela ferramenta de campo — traz imóveis e contatos. Não serve para
+          restaurar um backup do app: evidências e hipóteses do arquivo seriam ignoradas. Quer restaurar um
+          backup do próprio app? Vá em Backup → Importar backup.
+        </p>
+      </div>
+
       <div className="panel">
         <label htmlFor="arquivo-campo">Arquivo JSON da ferramenta de campo</label>
         <input id="arquivo-campo" type="file" accept=".json,application/json" onChange={aoEscolherArquivo} />

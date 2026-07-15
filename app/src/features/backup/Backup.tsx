@@ -86,6 +86,14 @@ export function Backup() {
         descricao="Seus dados vivem só neste navegador. Exporte um backup com frequência — é a sua rede de segurança e a forma de levar os dados para outro dispositivo."
       />
 
+      <div className="panel" style={{ borderLeft: '4px solid var(--blue)' }}>
+        <p style={{ margin: 0, color: 'var(--ink-soft)', fontSize: 13, lineHeight: 1.5 }}>
+          Aqui você exporta tudo que está no app (imóveis, unidades, contatos, evidências, hipóteses) para um
+          arquivo, e restaura um arquivo exportado antes. Restaurar substitui todos os dados atuais — não mescla.
+          Trazendo dados da ferramenta de campo? Use Importar campo.
+        </p>
+      </div>
+
       <div className="panel">
         <h2>Backup completo (JSON)</h2>
         <p style={{ color: 'var(--ink-soft)' }}>
