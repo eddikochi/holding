@@ -10,6 +10,7 @@ import { PILARES } from '../../../models/types';
 import type {
   Ativo, TipoAtivo, Pilar, Unidade, RelacaoUnidade,
   StatusVisitaAtivo, StatusVisitaUnidade, TipoRelacaoUnidade,
+  RegistroImovel, ProprietarioAtivo, OcupacaoImovel,
 } from '../../../models/types';
 
 const TIPOS: { v: TipoAtivo; r: string }[] = [
@@ -26,6 +27,17 @@ const STATUS_UNIDADE: { v: StatusVisitaUnidade; r: string }[] = [
 const TIPOS_RELACAO: { v: TipoRelacaoUnidade; r: string }[] = [
   { v: 'agua', r: 'Água' }, { v: 'energia', r: 'Energia' }, { v: 'acesso', r: 'Acesso' }, { v: 'outro', r: 'Outro' },
 ];
+const OCUPACOES: { v: OcupacaoImovel; r: string }[] = [
+  { v: 'locado', r: 'Locado' }, { v: 'vago', r: 'Vago' }, { v: 'uso_proprio', r: 'Uso próprio' },
+  { v: 'cedido', r: 'Cedido' }, { v: 'irregular', r: 'Irregular' },
+];
+
+/** Lê texto (vírgula ou ponto) para número; vazio/ inválido → undefined (nunca 0). */
+function parseValor(v: string): number | undefined {
+  if (v.trim() === '') return undefined;
+  const n = parseFloat(v.replace(',', '.'));
+  return isNaN(n) ? undefined : n;
+}
 
 function unidadeEmBranco(): Unidade {
   return { id: novoId(), nome: '', statusVisita: 'a_visitar' };
@@ -156,7 +168,20 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
           </div>
         </div>
         <label>Estado físico</label><textarea value={a.estadoFisico} onChange={(e) => setA({ ...a, estadoFisico: e.target.value })} />
+        <div className="form-grid">
+          <div><label>Ocupação</label>
+            <select value={a.ocupacao ?? ''} onChange={(e) => setA({ ...a, ocupacao: e.target.value ? e.target.value as OcupacaoImovel : undefined })}>
+              <option value="">— não informado —</option>
+              {OCUPACOES.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}
+            </select>
+          </div>
+          <div><label>Valor de aluguel (R$)</label><input type="text" value={a.valorAluguel ?? ''} onChange={(e) => setA({ ...a, valorAluguel: parseValor(e.target.value) })} /></div>
+        </div>
         <label>Situação jurídica (resumo)</label><input type="text" value={a.situacaoJuridicaResumo} onChange={(e) => setA({ ...a, situacaoJuridicaResumo: e.target.value })} />
+        <label style={{ marginTop: 16 }}>Registro do imóvel</label>
+        <RegistroFields valor={a.registro} onChange={(registro) => setA({ ...a, registro })} />
+        <label style={{ marginTop: 16 }}>Proprietários</label>
+        <ProprietariosEditor proprietarios={a.proprietarios} onChange={(proprietarios) => setA({ ...a, proprietarios })} />
         <div className="form-grid">
           <div><label>Status de visita</label>
             <select value={a.statusVisita ?? 'a_visitar'} onChange={(e) => setA({ ...a, statusVisita: e.target.value as StatusVisitaAtivo })}>
@@ -280,6 +305,13 @@ function UnidadeCard({
         </div>
         <div><label>Locatário</label><input type="text" value={u.locatario ?? ''} onChange={(e) => onChange({ locatario: e.target.value || undefined })} /></div>
         <div><label>Contato</label><input type="text" value={u.contato ?? ''} onChange={(e) => onChange({ contato: e.target.value || undefined })} /></div>
+        <div><label>Ocupação</label>
+          <select value={u.ocupacao ?? ''} onChange={(e) => onChange({ ocupacao: e.target.value ? e.target.value as OcupacaoImovel : undefined })}>
+            <option value="">— não informado —</option>
+            {OCUPACOES.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}
+          </select>
+        </div>
+        <div><label>Valor de aluguel (R$)</label><input type="text" value={u.valorAluguel ?? ''} onChange={(e) => onChange({ valorAluguel: parseValor(e.target.value) })} /></div>
         <div><label>Construída (m²)</label><input type="text" value={u.metragens?.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
         <div><label>Pé direito (m)</label><input type="text" value={u.metragens?.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
       </div>
@@ -287,6 +319,8 @@ function UnidadeCard({
       <textarea value={u.estadoFisico ?? ''} onChange={(e) => onChange({ estadoFisico: e.target.value || undefined })} />
       <label>Situação jurídica (resumo)</label>
       <input type="text" value={u.situacaoJuridicaResumo ?? ''} onChange={(e) => onChange({ situacaoJuridicaResumo: e.target.value || undefined })} />
+      <label style={{ marginTop: 12 }}>Registro da unidade (se tiver matrícula própria)</label>
+      <RegistroFields valor={u.registro} onChange={(registro) => onChange({ registro })} />
       <label style={{ marginTop: 12 }}>Potencial por pilar da unidade (deixe em branco se não se aplica)</label>
       <div className="form-grid">
         {PILARES.map((p) => (
@@ -324,6 +358,58 @@ function UnidadeCard({
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/** Trio de campos de identificação registral, reutilizado no ativo e na unidade. */
+function RegistroFields({ valor, onChange }: { valor?: RegistroImovel; onChange: (r: RegistroImovel) => void }) {
+  const r = valor ?? {};
+  const set = (campo: keyof RegistroImovel, v: string) => onChange({ ...r, [campo]: v || undefined });
+  return (
+    <div className="form-grid">
+      <div><label style={{ fontWeight: 400, textTransform: 'none' }}>Matrícula</label><input type="text" value={r.matricula ?? ''} onChange={(e) => set('matricula', e.target.value)} /></div>
+      <div><label style={{ fontWeight: 400, textTransform: 'none' }}>Cartório / RI</label><input type="text" value={r.cartorio ?? ''} onChange={(e) => set('cartorio', e.target.value)} /></div>
+      <div><label style={{ fontWeight: 400, textTransform: 'none' }}>Inscrição imobiliária (IPTU)</label><input type="text" value={r.inscricaoImobiliaria ?? ''} onChange={(e) => set('inscricaoImobiliaria', e.target.value)} /></div>
+    </div>
+  );
+}
+
+/** Lista editável de proprietários (nome + % de participação). Só no ativo. */
+function ProprietariosEditor({ proprietarios, onChange }: { proprietarios?: ProprietarioAtivo[]; onChange: (p: ProprietarioAtivo[]) => void }) {
+  const lista = proprietarios ?? [];
+  function atualizar(i: number, patch: Partial<ProprietarioAtivo>) {
+    onChange(lista.map((p, idx) => (idx === i ? { ...p, ...patch } : p)));
+  }
+  function remover(i: number) { onChange(lista.filter((_, idx) => idx !== i)); }
+  function adicionar() { onChange([...lista, { nome: '' }]); }
+  function setPercentual(i: number, v: string) {
+    const n = v === '' ? undefined : parseFloat(v.replace(',', '.'));
+    atualizar(i, { percentual: isNaN(n as number) ? undefined : n });
+  }
+  const soma = lista.reduce((s, p) => s + (p.percentual ?? 0), 0);
+  return (
+    <div>
+      {lista.length === 0 && (
+        <p style={{ color: 'var(--ink-soft)', fontSize: 13, marginTop: 4 }}>
+          Nenhum proprietário informado. Adicione quem detém o imóvel e, se souber, o percentual.
+        </p>
+      )}
+      {lista.map((p, i) => (
+        <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'end', marginTop: 6 }}>
+          <div style={{ flex: 1 }}><label style={{ fontWeight: 400, textTransform: 'none' }}>Nome</label><input type="text" value={p.nome} onChange={(e) => atualizar(i, { nome: e.target.value })} /></div>
+          <div style={{ width: 120 }}><label style={{ fontWeight: 400, textTransform: 'none' }}>Participação (%)</label><input type="text" value={p.percentual ?? ''} onChange={(e) => setPercentual(i, e.target.value)} /></div>
+          <button type="button" className="btn small danger" onClick={() => remover(i)}>×</button>
+        </div>
+      ))}
+      <div className="row-actions" style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+        <button type="button" className="btn small secondary" onClick={adicionar}>+ Proprietário</button>
+        {lista.length > 0 && (
+          <span style={{ fontSize: 12, color: soma === 100 ? 'var(--ink-soft)' : 'var(--amber)' }}>
+            Soma: {soma}%{soma !== 100 ? ' (≠ 100)' : ''}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

@@ -12,10 +12,12 @@ import type { BackupCompleto, Stakeholder, Ativo, Evidencia } from '../models/ty
  * Versão do FORMATO do arquivo de backup (não confundir com a versão do schema
  * Dexie, que segue nas chamadas .version() de database.ts e não mudou de store).
  * v4: Ativo passou a carregar `unidades` embutidas + `statusVisita`/`ehSubdividido`;
- *     Stakeholder e Evidencia ganharam `unidadeId`. Mudança de forma, retrocompatível
- *     (todos os campos novos são opcionais). Backups v≤3 continuam importáveis.
+ *     Stakeholder e Evidencia ganharam `unidadeId`.
+ * v5: Ativo e Unidade ganharam `registro` (matrícula/cartório/inscrição), `ocupacao`
+ *     e `valorAluguel`; Ativo ganhou `proprietarios`. Tudo embutido e opcional.
+ * Sempre retrocompatível: campos novos são opcionais e backups v≤4 continuam importáveis.
  */
-export const BACKUP_SCHEMA_VERSION = 4;
+export const BACKUP_SCHEMA_VERSION = 5;
 
 export async function montarBackup(): Promise<BackupCompleto> {
   const [

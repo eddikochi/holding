@@ -109,6 +109,9 @@ export interface CenariosUso {
 export type StatusVisitaAtivo = 'a_visitar' | 'visitado' | 'parcial';
 export type StatusVisitaUnidade = 'a_visitar' | 'visitado';
 
+/** Situação de ocupação de um imóvel ou unidade. */
+export type OcupacaoImovel = 'locado' | 'vago' | 'uso_proprio' | 'cedido' | 'irregular';
+
 /** Tipo de relação física entre duas unidades do mesmo ativo. */
 export type TipoRelacaoUnidade = 'agua' | 'energia' | 'acesso' | 'outro';
 
@@ -124,6 +127,22 @@ export interface RelacaoUnidade {
 }
 
 /**
+ * Identificação registral de um imóvel (Ativo, ou Unidade com matrícula própria).
+ * Todos os campos opcionais — nem todo imóvel tem tudo levantado.
+ */
+export interface RegistroImovel {
+  matricula?: string; // número da matrícula no Registro de Imóveis
+  cartorio?: string; // cartório / RI onde está registrada
+  inscricaoImobiliaria?: string; // inscrição imobiliária municipal (IPTU)
+}
+
+/** Titular de um Ativo e sua participação. `percentual` em % (0–100), opcional. */
+export interface ProprietarioAtivo {
+  nome: string;
+  percentual?: number;
+}
+
+/**
  * Unidade locável dentro de um Ativo subdividido (ex.: 1 das 3 lojas de um prédio).
  * Vive embutida em `Ativo.unidades` (Opção A — sem store separada).
  * Todo campo específico de negócio é opcional, exceto identidade e status de visita.
@@ -133,6 +152,10 @@ export interface Unidade {
   nome: string;
   locatario?: string;
   contato?: string;
+  /** Situação de ocupação da unidade. Opcional. */
+  ocupacao?: OcupacaoImovel;
+  /** Valor do aluguel (R$). Opcional — vazio quando não informado, nunca 0. */
+  valorAluguel?: number;
   estadoFisico?: string;
   statusVisita: StatusVisitaUnidade;
   metragens?: {
@@ -140,6 +163,8 @@ export interface Unidade {
     peDireitoM?: number;
   };
   situacaoJuridicaResumo?: string;
+  /** Identificação registral própria da unidade (loja pode ter matrícula separada). */
+  registro?: RegistroImovel;
   /** Potencial por pilar da unidade (2º nível). Independe do potencial do prédio. */
   potencialPorPilar?: Partial<Record<Pilar, string>>;
   relacoes?: RelacaoUnidade[];
@@ -158,9 +183,17 @@ export interface Ativo extends BaseEntity {
     peDireitoM?: number;
   };
   estadoFisico: string;
+  /** Situação de ocupação do imóvel. Opcional. */
+  ocupacao?: OcupacaoImovel;
+  /** Valor do aluguel (R$). Opcional — vazio quando não informado, nunca 0. */
+  valorAluguel?: number;
   fotos: FotoRef[];
   potencialPorPilar: Partial<Record<Pilar, string>>;
   situacaoJuridicaResumo: string;
+  /** Identificação registral do imóvel (matrícula, cartório, inscrição). Opcional. */
+  registro?: RegistroImovel;
+  /** Titularidade e participação de cada proprietário. Opcional. */
+  proprietarios?: ProprietarioAtivo[];
   checklistJuridico: ItemChecklistJuridico[]; // sempre os 9 itens
   cenariosUso?: CenariosUso; // módulo 03 (opcional, preenchido sob demanda)
   /** Status de visita do prédio (novo, opcional — ativos antigos ficam undefined). */
