@@ -32,7 +32,16 @@ export function OnboardingTab({ slug }: { slug: string }) {
           <h2>O que estamos tentando descobrir</h2>
           <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>O enquadramento da investigação deste pilar. Leia antes de começar.</p>
           <ol style={{ color: 'var(--ink)', margin: 0, paddingLeft: 18 }}>
-            {disc.perguntasMestre.map((q, i) => <li key={i} style={{ margin: '6px 0' }}>{q}</li>)}
+            {disc.perguntasMestre.map((q, i) => (
+              <li key={i} style={{ margin: '6px 0' }}>
+                {q.p}
+                {q.onde && (
+                  <span style={{ display: 'block', color: 'var(--ink-soft)', fontSize: 12, marginTop: 2 }}>
+                    Onde responder: {q.onde}
+                  </span>
+                )}
+              </li>
+            ))}
           </ol>
         </div>
       )}
