@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../db/database';
 import { salvarAtivo, apagarAtivo, ativoEmBranco } from '../../../db/actions';
@@ -47,6 +47,46 @@ function parseValor(v: string): number | undefined {
 
 function unidadeEmBranco(): Unidade {
   return { id: novoId(), nome: '', statusVisita: 'a_visitar' };
+}
+
+/** Verdadeiro se o registro tem qualquer campo preenchido (usado p/ derivar toggles). */
+function registroTemValor(r?: RegistroImovel): boolean {
+  return !!(r && (r.matricula || r.cartorio || r.inscricaoImobiliaria));
+}
+
+/**
+ * Seção colapsável da ficha. Cabeçalho clicável + corpo. Estado aberto/fechado é
+ * efêmero (não persiste). `resumo` aparece atenuado quando fechada (ajuda no mobile).
+ */
+function Secao({ titulo, resumo, defaultAberta = false, children }: {
+  titulo: string; resumo?: string; defaultAberta?: boolean; children: ReactNode;
+}) {
+  const [aberta, setAberta] = useState(defaultAberta);
+  return (
+    <div style={{ border: '1px solid var(--line)', borderRadius: 'var(--r-panel)', marginTop: 'var(--s3)' }}>
+      <button
+        type="button"
+        onClick={() => setAberta((v) => !v)}
+        aria-expanded={aberta}
+        style={{
+          width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--s2)',
+          background: 'transparent', border: 'none', padding: 'var(--s3)', cursor: 'pointer',
+          color: 'var(--ink)', font: 'inherit', textAlign: 'left',
+        }}
+      >
+        <span style={{ fontWeight: 600, fontSize: 14 }}>{titulo}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink-soft)', fontSize: 12, minWidth: 0 }}>
+          {!aberta && resumo && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{resumo}</span>}
+          <span aria-hidden style={{ flex: 'none' }}>{aberta ? '▾' : '▸'}</span>
+        </span>
+      </button>
+      {aberta && (
+        <div style={{ padding: '0 var(--s3) var(--s3)', borderTop: '1px solid var(--line)' }}>
+          <div style={{ marginTop: 'var(--s3)' }}>{children}</div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /** Aba "Dados" do módulo 01 Patrimonial — inventário de ativos + ficha + potencial por pilar. */
@@ -157,85 +197,103 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
     <div className="modal-backdrop" onClick={tentarFechar}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h3 style={{ marginTop: 0 }}>{ativo.nome ? 'Editar ativo' : 'Novo ativo'}</h3>
-        <div className="form-grid">
-          <div><label>Nome</label><input type="text" value={a.nome} onChange={(e) => setA({ ...a, nome: e.target.value })} /></div>
-          <div><label>Tipo</label>
-            <select value={a.tipo} onChange={(e) => setA({ ...a, tipo: e.target.value as TipoAtivo })}>
-              {TIPOS.map((t) => <option key={t.v} value={t.v}>{t.r}</option>)}
-            </select>
-          </div>
-        </div>
-        <label>Endereço</label><input type="text" value={a.endereco} onChange={(e) => setA({ ...a, endereco: e.target.value })} />
-        <div className="form-grid">
-          <div><label>Terreno (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.terrenoM2 ?? ''} onChange={(e) => setMetragem('terrenoM2', e.target.value)} /></div>
-          <div><label>Construída (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
-          <div><label>Pé direito (m)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
-          <div><label>Lat, Lng (opcional)</label>
-            <input type="text" placeholder="-28.66, -56.00"
-              value={a.lat != null ? `${a.lat}, ${a.lng ?? ''}` : ''}
-              onChange={(e) => {
-                const [la, ln] = e.target.value.split(',').map((x) => parseFloat(x.trim()));
-                setA({ ...a, lat: isNaN(la) ? undefined : la, lng: isNaN(ln) ? undefined : ln });
-              }} />
-          </div>
-        </div>
-        <label>Estado físico</label><textarea value={a.estadoFisico} onChange={(e) => setA({ ...a, estadoFisico: e.target.value })} />
-        <div className="form-grid">
-          <div><label>Ocupação</label>
-            <select value={a.ocupacao ?? ''} onChange={(e) => setA({ ...a, ocupacao: e.target.value ? e.target.value as OcupacaoImovel : undefined })}>
-              <option value="">— não informado —</option>
-              {OCUPACOES.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}
-            </select>
-          </div>
-          <div><label>Valor de aluguel (R$)</label><input type="text" value={a.valorAluguel ?? ''} onChange={(e) => setA({ ...a, valorAluguel: parseValor(e.target.value) })} /></div>
-        </div>
-        <label>Situação jurídica (resumo)</label><input type="text" value={a.situacaoJuridicaResumo} onChange={(e) => setA({ ...a, situacaoJuridicaResumo: e.target.value })} />
-        <label style={{ marginTop: 16 }}>Registro do imóvel</label>
-        <RegistroFields valor={a.registro} onChange={(registro) => setA({ ...a, registro })} />
-        <label style={{ marginTop: 16 }}>Proprietários</label>
-        <ProprietariosEditor proprietarios={a.proprietarios} onChange={(proprietarios) => setA({ ...a, proprietarios })} />
-        <label style={{ marginTop: 16 }}>Documentos (links)</label>
-        <DocumentosEditor documentos={a.documentos} onChange={(documentos) => setA({ ...a, documentos })} />
-        <label style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
-          <input type="checkbox" checked={!!a.foreiro} onChange={(e) => setA({ ...a, foreiro: e.target.checked || undefined })} style={{ width: 'auto' }} />
-          Imóvel foreiro (enfiteuse)
-        </label>
-        {a.foreiro && (
-          <div><label>Enfiteuta (a quem se paga o foro)</label>
-            <input type="text" placeholder="ex.: Município de São Borja" value={a.enfiteuta ?? ''} onChange={(e) => setA({ ...a, enfiteuta: e.target.value || undefined })} />
-          </div>
-        )}
-        <div className="form-grid">
-          <div><label>Valor de partilha (R$)</label><input type="text" value={a.valorPartilha ?? ''} onChange={(e) => setA({ ...a, valorPartilha: parseValor(e.target.value) })} /></div>
-          <div><label>Avaliação fiscal / venal (R$)</label><input type="text" value={a.valorAvaliacaoFiscal ?? ''} onChange={(e) => setA({ ...a, valorAvaliacaoFiscal: parseValor(e.target.value) })} /></div>
-        </div>
-        <label>Fonte dos valores</label>
-        <input type="text" value={a.fonteValores ?? ''} onChange={(e) => setA({ ...a, fonteValores: e.target.value || undefined })} />
-        <div className="form-grid">
-          <div><label>Status de visita</label>
-            <select value={a.statusVisita ?? 'a_visitar'} onChange={(e) => setA({ ...a, statusVisita: e.target.value as StatusVisitaAtivo })}>
-              {STATUS_ATIVO.map((s) => <option key={s.v} value={s.v}>{s.r}</option>)}
-            </select>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
-              <input type="checkbox" checked={!!a.ehSubdividido} onChange={(e) => setA({ ...a, ehSubdividido: e.target.checked })} style={{ width: 'auto' }} />
-              Prédio subdividido em unidades locáveis
-            </label>
-          </div>
-        </div>
-        {a.ehSubdividido && (
-          <UnidadesEditor unidades={a.unidades ?? []} onChange={(unidades) => setA({ ...a, unidades })} />
-        )}
-        <label style={{ marginTop: 16 }}>Potencial por pilar (deixe em branco se não se aplica)</label>
-        <div className="form-grid">
-          {PILARES.map((p) => (
-            <div key={p.chave}>
-              <label style={{ fontWeight: 400, textTransform: 'none' }}>{p.rotulo}</label>
-              <input type="text" value={a.potencialPorPilar[p.chave] ?? ''} onChange={(e) => setPotencial(p.chave, e.target.value)} />
+        <Secao titulo="Identificação" defaultAberta>
+          <div className="form-grid">
+            <div><label>Nome</label><input type="text" value={a.nome} onChange={(e) => setA({ ...a, nome: e.target.value })} /></div>
+            <div><label>Tipo</label>
+              <select value={a.tipo} onChange={(e) => setA({ ...a, tipo: e.target.value as TipoAtivo })}>
+                {TIPOS.map((t) => <option key={t.v} value={t.v}>{t.r}</option>)}
+              </select>
             </div>
-          ))}
-        </div>
+          </div>
+          <label>Endereço</label><input type="text" value={a.endereco} onChange={(e) => setA({ ...a, endereco: e.target.value })} />
+          <div className="form-grid">
+            <div><label>Terreno (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.terrenoM2 ?? ''} onChange={(e) => setMetragem('terrenoM2', e.target.value)} /></div>
+            <div><label>Construída (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
+            <div><label>Pé direito (m)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
+            <div><label>Lat, Lng (opcional)</label>
+              <input type="text" placeholder="-28.66, -56.00"
+                value={a.lat != null ? `${a.lat}, ${a.lng ?? ''}` : ''}
+                onChange={(e) => {
+                  const [la, ln] = e.target.value.split(',').map((x) => parseFloat(x.trim()));
+                  setA({ ...a, lat: isNaN(la) ? undefined : la, lng: isNaN(ln) ? undefined : ln });
+                }} />
+            </div>
+          </div>
+          <label>Estado físico</label><textarea value={a.estadoFisico} onChange={(e) => setA({ ...a, estadoFisico: e.target.value })} />
+          <div className="form-grid">
+            <div><label>Status de visita</label>
+              <select value={a.statusVisita ?? 'a_visitar'} onChange={(e) => setA({ ...a, statusVisita: e.target.value as StatusVisitaAtivo })}>
+                {STATUS_ATIVO.map((s) => <option key={s.v} value={s.v}>{s.r}</option>)}
+              </select>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
+                <input type="checkbox" checked={!!a.ehSubdividido} onChange={(e) => setA({ ...a, ehSubdividido: e.target.checked })} style={{ width: 'auto' }} />
+                Prédio subdividido em unidades locáveis
+              </label>
+            </div>
+          </div>
+        </Secao>
+
+        <Secao titulo="Ocupação" defaultAberta>
+          <div className="form-grid">
+            <div><label>Ocupação</label>
+              <select value={a.ocupacao ?? ''} onChange={(e) => setA({ ...a, ocupacao: e.target.value ? e.target.value as OcupacaoImovel : undefined })}>
+                <option value="">— não informado —</option>
+                {OCUPACOES.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}
+              </select>
+            </div>
+            <div><label>Valor de aluguel (R$)</label><input type="text" value={a.valorAluguel ?? ''} onChange={(e) => setA({ ...a, valorAluguel: parseValor(e.target.value) })} /></div>
+          </div>
+          <label>Situação jurídica (resumo)</label><input type="text" value={a.situacaoJuridicaResumo} onChange={(e) => setA({ ...a, situacaoJuridicaResumo: e.target.value })} />
+        </Secao>
+
+        <Secao titulo="Registro &amp; valores" resumo={a.registro?.matricula ? `matrícula ${a.registro.matricula}` : 'vazio'}>
+          <label style={{ marginTop: 0 }}>Registro do imóvel</label>
+          <RegistroFields valor={a.registro} onChange={(registro) => setA({ ...a, registro })} />
+          <label style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
+            <input type="checkbox" checked={!!a.foreiro} onChange={(e) => setA({ ...a, foreiro: e.target.checked || undefined })} style={{ width: 'auto' }} />
+            Imóvel foreiro (enfiteuse)
+          </label>
+          {a.foreiro && (
+            <div><label>Senhorio / titular do domínio direto (a quem se paga o foro)</label>
+              <input type="text" placeholder="ex.: Município de São Borja" value={a.enfiteuta ?? ''} onChange={(e) => setA({ ...a, enfiteuta: e.target.value || undefined })} />
+            </div>
+          )}
+          <div className="form-grid">
+            <div><label>Valor de partilha (R$)</label><input type="text" value={a.valorPartilha ?? ''} onChange={(e) => setA({ ...a, valorPartilha: parseValor(e.target.value) })} /></div>
+            <div><label>Avaliação fiscal / venal (R$)</label><input type="text" value={a.valorAvaliacaoFiscal ?? ''} onChange={(e) => setA({ ...a, valorAvaliacaoFiscal: parseValor(e.target.value) })} /></div>
+          </div>
+          <label>Fonte dos valores</label>
+          <input type="text" value={a.fonteValores ?? ''} onChange={(e) => setA({ ...a, fonteValores: e.target.value || undefined })} />
+        </Secao>
+
+        <Secao titulo={`Proprietários${a.proprietarios && a.proprietarios.length ? ` (${a.proprietarios.length})` : ''}`}>
+          <ProprietariosEditor proprietarios={a.proprietarios} onChange={(proprietarios) => setA({ ...a, proprietarios })} />
+        </Secao>
+
+        <Secao titulo={`Documentos${a.documentos && a.documentos.length ? ` (${a.documentos.length})` : ''}`}>
+          <DocumentosEditor documentos={a.documentos} onChange={(documentos) => setA({ ...a, documentos })} />
+        </Secao>
+
+        {a.ehSubdividido && (
+          <Secao titulo={`Unidades (${(a.unidades ?? []).length})`}>
+            <UnidadesEditor unidades={a.unidades ?? []} onChange={(unidades) => setA({ ...a, unidades })} />
+          </Secao>
+        )}
+
+        <Secao titulo="Potencial por pilar">
+          <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '0 0 8px' }}>Deixe em branco se não se aplica.</p>
+          <div className="form-grid">
+            {PILARES.map((p) => (
+              <div key={p.chave}>
+                <label style={{ fontWeight: 400, textTransform: 'none' }}>{p.rotulo}</label>
+                <input type="text" value={a.potencialPorPilar[p.chave] ?? ''} onChange={(e) => setPotencial(p.chave, e.target.value)} />
+              </div>
+            ))}
+          </div>
+        </Secao>
         {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
         <div className="row-actions" style={{ marginTop: 16 }}>
           <button className="btn" onClick={salvar}>Salvar</button>
@@ -267,9 +325,8 @@ function UnidadesEditor({ unidades, onChange }: { unidades: Unidade[]; onChange:
   }
 
   return (
-    <div style={{ marginTop: 16 }}>
-      <div className="row-actions" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <label style={{ margin: 0 }}>Unidades ({unidades.length})</label>
+    <div>
+      <div className="row-actions" style={{ justifyContent: 'flex-end', alignItems: 'center' }}>
         <button type="button" className="btn small secondary" onClick={adicionar}>+ Adicionar unidade</button>
       </div>
       <p style={{ color: 'var(--ink-soft)', fontSize: 12, margin: '4px 0 0' }}>
@@ -304,6 +361,8 @@ function UnidadeCard({
   onChange: (patch: Partial<Unidade>) => void;
   onRemover: () => void;
 }) {
+  // Toggle derivado: começa ligado se a unidade já tem algum dado de registro.
+  const [registroAberto, setRegistroAberto] = useState(() => registroTemValor(u.registro));
   function setMetragem(campo: 'construidaM2' | 'peDireitoM', v: string) {
     const n = v === '' ? undefined : parseFloat(v.replace(',', '.'));
     onChange({ metragens: { ...u.metragens, [campo]: isNaN(n as number) ? undefined : n } });
@@ -355,49 +414,67 @@ function UnidadeCard({
       </div>
       <label>Estado físico</label>
       <textarea value={u.estadoFisico ?? ''} onChange={(e) => onChange({ estadoFisico: e.target.value || undefined })} />
-      <label>Situação jurídica (resumo)</label>
-      <input type="text" value={u.situacaoJuridicaResumo ?? ''} onChange={(e) => onChange({ situacaoJuridicaResumo: e.target.value || undefined })} />
-      <label style={{ marginTop: 12 }}>Registro da unidade (se tiver matrícula própria)</label>
-      <RegistroFields valor={u.registro} onChange={(registro) => onChange({ registro })} />
-      <label style={{ marginTop: 12 }}>Documentos (links)</label>
-      <DocumentosEditor documentos={u.documentos} onChange={(documentos) => onChange({ documentos })} />
-      <label style={{ marginTop: 12 }}>Potencial por pilar da unidade (deixe em branco se não se aplica)</label>
-      <div className="form-grid">
-        {PILARES.map((p) => (
-          <div key={p.chave}>
-            <label style={{ fontWeight: 400, textTransform: 'none' }}>{p.rotulo}</label>
-            <input type="text" value={u.potencialPorPilar?.[p.chave] ?? ''} onChange={(e) => setPotencial(p.chave, e.target.value)} />
+      <label style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
+        <input
+          type="checkbox"
+          checked={registroAberto}
+          onChange={(e) => {
+            if (e.target.checked) { setRegistroAberto(true); }
+            else { setRegistroAberto(false); onChange({ registro: undefined }); }
+          }}
+          style={{ width: 'auto' }}
+        />
+        Esta unidade tem matrícula própria
+      </label>
+      {registroAberto && (
+        <>
+          <label style={{ fontWeight: 400, textTransform: 'none' }}>Registro da unidade</label>
+          <RegistroFields valor={u.registro} onChange={(registro) => onChange({ registro })} />
+        </>
+      )}
+      <Secao titulo="Avançado (jurídico, documentos, potencial, relações)">
+        <label style={{ marginTop: 0 }}>Situação jurídica (resumo)</label>
+        <input type="text" value={u.situacaoJuridicaResumo ?? ''} onChange={(e) => onChange({ situacaoJuridicaResumo: e.target.value || undefined })} />
+        <label style={{ marginTop: 12 }}>Documentos (links)</label>
+        <DocumentosEditor documentos={u.documentos} onChange={(documentos) => onChange({ documentos })} />
+        <label style={{ marginTop: 12 }}>Potencial por pilar da unidade (deixe em branco se não se aplica)</label>
+        <div className="form-grid">
+          {PILARES.map((p) => (
+            <div key={p.chave}>
+              <label style={{ fontWeight: 400, textTransform: 'none' }}>{p.rotulo}</label>
+              <input type="text" value={u.potencialPorPilar?.[p.chave] ?? ''} onChange={(e) => setPotencial(p.chave, e.target.value)} />
+            </div>
+          ))}
+        </div>
+        <div className="row-actions" style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+          <label style={{ margin: 0 }}>Relações físicas com outras unidades</label>
+          <button type="button" className="btn small secondary" onClick={addRelacao}>+ Relação</button>
+        </div>
+        {relacoes.length === 0 && (
+          <p style={{ color: 'var(--ink-soft)', fontSize: 12, marginTop: 6 }}>
+            Ex.: “recebe energia da U3”, “água unificada do prédio”, “transição vedada com parede”.
+          </p>
+        )}
+        {relacoes.map((r, idx) => (
+          <div key={idx} className="form-grid" style={{ alignItems: 'end' }}>
+            <div><label>Tipo</label>
+              <select value={r.tipo} onChange={(e) => setRelacao(idx, { tipo: e.target.value as TipoRelacaoUnidade })}>
+                {TIPOS_RELACAO.map((t) => <option key={t.v} value={t.v}>{t.r}</option>)}
+              </select>
+            </div>
+            <div><label>Unidade alvo (opcional)</label>
+              <select value={r.alvoUnidadeId ?? ''} onChange={(e) => setRelacao(idx, { alvoUnidadeId: e.target.value || undefined })}>
+                <option value="">— prédio / genérica —</option>
+                {outras.map((o) => <option key={o.id} value={o.id}>{o.nome.trim() || 'Unidade sem nome'}</option>)}
+              </select>
+            </div>
+            <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, alignItems: 'end' }}>
+              <div style={{ flex: 1 }}><label>Descrição</label><input type="text" value={r.descricao} onChange={(e) => setRelacao(idx, { descricao: e.target.value })} /></div>
+              <button type="button" className="btn small danger" onClick={() => removerRelacao(idx)}>×</button>
+            </div>
           </div>
         ))}
-      </div>
-      <div className="row-actions" style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
-        <label style={{ margin: 0 }}>Relações físicas com outras unidades</label>
-        <button type="button" className="btn small secondary" onClick={addRelacao}>+ Relação</button>
-      </div>
-      {relacoes.length === 0 && (
-        <p style={{ color: 'var(--ink-soft)', fontSize: 12, marginTop: 6 }}>
-          Ex.: “recebe energia da U3”, “água unificada do prédio”, “transição vedada com parede”.
-        </p>
-      )}
-      {relacoes.map((r, idx) => (
-        <div key={idx} className="form-grid" style={{ alignItems: 'end' }}>
-          <div><label>Tipo</label>
-            <select value={r.tipo} onChange={(e) => setRelacao(idx, { tipo: e.target.value as TipoRelacaoUnidade })}>
-              {TIPOS_RELACAO.map((t) => <option key={t.v} value={t.v}>{t.r}</option>)}
-            </select>
-          </div>
-          <div><label>Unidade alvo (opcional)</label>
-            <select value={r.alvoUnidadeId ?? ''} onChange={(e) => setRelacao(idx, { alvoUnidadeId: e.target.value || undefined })}>
-              <option value="">— prédio / genérica —</option>
-              {outras.map((o) => <option key={o.id} value={o.id}>{o.nome.trim() || 'Unidade sem nome'}</option>)}
-            </select>
-          </div>
-          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 8, alignItems: 'end' }}>
-            <div style={{ flex: 1 }}><label>Descrição</label><input type="text" value={r.descricao} onChange={(e) => setRelacao(idx, { descricao: e.target.value })} /></div>
-            <button type="button" className="btn small danger" onClick={() => removerRelacao(idx)}>×</button>
-          </div>
-        </div>
-      ))}
+      </Secao>
     </div>
   );
 }
