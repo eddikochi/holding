@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../../db/database';
 import { salvarAtivo, apagarAtivo, ativoEmBranco } from '../../../db/actions';
 import { EmptyState } from '../../../components/EmptyState';
+import { CampoNumero } from '../../../components/CampoNumero';
 import { useToast } from '../../../components/Toast';
 import { AtivosMapa } from './AtivosMapa';
 import { novoId } from '../../../lib/ids';
@@ -37,13 +38,6 @@ const TIPOS_DOC: { v: TipoDocumento; r: string }[] = [
   { v: 'contrato', r: 'Contrato' }, { v: 'foto', r: 'Foto' }, { v: 'inventario', r: 'Inventário' },
   { v: 'outro', r: 'Outro' },
 ];
-
-/** Lê texto (vírgula ou ponto) para número; vazio/ inválido → undefined (nunca 0). */
-function parseValor(v: string): number | undefined {
-  if (v.trim() === '') return undefined;
-  const n = parseFloat(v.replace(',', '.'));
-  return isNaN(n) ? undefined : n;
-}
 
 function unidadeEmBranco(): Unidade {
   return { id: novoId(), nome: '', statusVisita: 'a_visitar' };
@@ -185,9 +179,8 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
     if (sujo && !confirm('Você tem alterações não salvas nesta ficha. Fechar agora descarta tudo. Deseja sair mesmo assim?')) return;
     onFechar();
   }
-  function setMetragem(campo: 'terrenoM2' | 'construidaM2' | 'peDireitoM', v: string) {
-    const n = v === '' ? undefined : parseFloat(v.replace(',', '.'));
-    setA({ ...a, metragens: { ...a.metragens, [campo]: isNaN(n as number) ? undefined : n } });
+  function setMetragem(campo: 'terrenoM2' | 'construidaM2' | 'peDireitoM', v: number | undefined) {
+    setA({ ...a, metragens: { ...a.metragens, [campo]: v } });
   }
   function setPotencial(p: Pilar, v: string) {
     setA({ ...a, potencialPorPilar: { ...a.potencialPorPilar, [p]: v } });
@@ -208,9 +201,9 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
           </div>
           <label>Endereço</label><input type="text" value={a.endereco} onChange={(e) => setA({ ...a, endereco: e.target.value })} />
           <div className="form-grid">
-            <div><label>Terreno (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.terrenoM2 ?? ''} onChange={(e) => setMetragem('terrenoM2', e.target.value)} /></div>
-            <div><label>Construída (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
-            <div><label>Pé direito (m)</label><input type="text" placeholder="deixe em branco se não souber" value={a.metragens.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
+            <div><label>Terreno (m²)</label><CampoNumero placeholder="deixe em branco se não souber" value={a.metragens.terrenoM2} vazio={undefined} onChange={(v) => setMetragem('terrenoM2', v)} /></div>
+            <div><label>Construída (m²)</label><CampoNumero placeholder="deixe em branco se não souber" value={a.metragens.construidaM2} vazio={undefined} onChange={(v) => setMetragem('construidaM2', v)} /></div>
+            <div><label>Pé direito (m)</label><CampoNumero placeholder="deixe em branco se não souber" value={a.metragens.peDireitoM} vazio={undefined} onChange={(v) => setMetragem('peDireitoM', v)} /></div>
             <div><label>Lat, Lng (opcional)</label>
               <input type="text" placeholder="-28.66, -56.00"
                 value={a.lat != null ? `${a.lat}, ${a.lng ?? ''}` : ''}
@@ -244,7 +237,7 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
                 {OCUPACOES.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}
               </select>
             </div>
-            <div><label>Valor de aluguel (R$)</label><input type="text" value={a.valorAluguel ?? ''} onChange={(e) => setA({ ...a, valorAluguel: parseValor(e.target.value) })} /></div>
+            <div><label>Valor de aluguel (R$)</label><CampoNumero value={a.valorAluguel} vazio={undefined} casas={2} onChange={(v) => setA({ ...a, valorAluguel: v })} /></div>
           </div>
           <label>Situação jurídica (resumo)</label><input type="text" value={a.situacaoJuridicaResumo} onChange={(e) => setA({ ...a, situacaoJuridicaResumo: e.target.value })} />
         </Secao>
@@ -262,8 +255,8 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
             </div>
           )}
           <div className="form-grid">
-            <div><label>Valor de partilha (R$)</label><input type="text" value={a.valorPartilha ?? ''} onChange={(e) => setA({ ...a, valorPartilha: parseValor(e.target.value) })} /></div>
-            <div><label>Avaliação fiscal / venal (R$)</label><input type="text" value={a.valorAvaliacaoFiscal ?? ''} onChange={(e) => setA({ ...a, valorAvaliacaoFiscal: parseValor(e.target.value) })} /></div>
+            <div><label>Valor de partilha (R$)</label><CampoNumero value={a.valorPartilha} vazio={undefined} casas={2} onChange={(v) => setA({ ...a, valorPartilha: v })} /></div>
+            <div><label>Avaliação fiscal / venal (R$)</label><CampoNumero value={a.valorAvaliacaoFiscal} vazio={undefined} casas={2} onChange={(v) => setA({ ...a, valorAvaliacaoFiscal: v })} /></div>
           </div>
           <label>Fonte dos valores</label>
           <input type="text" value={a.fonteValores ?? ''} onChange={(e) => setA({ ...a, fonteValores: e.target.value || undefined })} />
@@ -363,9 +356,8 @@ function UnidadeCard({
 }) {
   // Toggle derivado: começa ligado se a unidade já tem algum dado de registro.
   const [registroAberto, setRegistroAberto] = useState(() => registroTemValor(u.registro));
-  function setMetragem(campo: 'construidaM2' | 'peDireitoM', v: string) {
-    const n = v === '' ? undefined : parseFloat(v.replace(',', '.'));
-    onChange({ metragens: { ...u.metragens, [campo]: isNaN(n as number) ? undefined : n } });
+  function setMetragem(campo: 'construidaM2' | 'peDireitoM', v: number | undefined) {
+    onChange({ metragens: { ...u.metragens, [campo]: v } });
   }
   function setPotencial(p: Pilar, v: string) {
     onChange({ potencialPorPilar: { ...u.potencialPorPilar, [p]: v } });
@@ -408,9 +400,9 @@ function UnidadeCard({
             {OCUPACOES.map((o) => <option key={o.v} value={o.v}>{o.r}</option>)}
           </select>
         </div>
-        <div><label>Valor de aluguel (R$)</label><input type="text" value={u.valorAluguel ?? ''} onChange={(e) => onChange({ valorAluguel: parseValor(e.target.value) })} /></div>
-        <div><label>Construída (m²)</label><input type="text" placeholder="deixe em branco se não souber" value={u.metragens?.construidaM2 ?? ''} onChange={(e) => setMetragem('construidaM2', e.target.value)} /></div>
-        <div><label>Pé direito (m)</label><input type="text" placeholder="deixe em branco se não souber" value={u.metragens?.peDireitoM ?? ''} onChange={(e) => setMetragem('peDireitoM', e.target.value)} /></div>
+        <div><label>Valor de aluguel (R$)</label><CampoNumero value={u.valorAluguel} vazio={undefined} casas={2} onChange={(v) => onChange({ valorAluguel: v })} /></div>
+        <div><label>Construída (m²)</label><CampoNumero placeholder="deixe em branco se não souber" value={u.metragens?.construidaM2} vazio={undefined} onChange={(v) => setMetragem('construidaM2', v)} /></div>
+        <div><label>Pé direito (m)</label><CampoNumero placeholder="deixe em branco se não souber" value={u.metragens?.peDireitoM} vazio={undefined} onChange={(v) => setMetragem('peDireitoM', v)} /></div>
       </div>
       <label>Estado físico</label>
       <textarea value={u.estadoFisico ?? ''} onChange={(e) => onChange({ estadoFisico: e.target.value || undefined })} />
@@ -500,9 +492,8 @@ function ProprietariosEditor({ proprietarios, onChange }: { proprietarios?: Prop
   }
   function remover(i: number) { onChange(lista.filter((_, idx) => idx !== i)); }
   function adicionar() { onChange([...lista, { nome: '' }]); }
-  function setPercentual(i: number, v: string) {
-    const n = v === '' ? undefined : parseFloat(v.replace(',', '.'));
-    atualizar(i, { percentual: isNaN(n as number) ? undefined : n });
+  function setPercentual(i: number, v: number | undefined) {
+    atualizar(i, { percentual: v });
   }
   const soma = lista.reduce((s, p) => s + (p.percentual ?? 0), 0);
   return (
@@ -515,7 +506,7 @@ function ProprietariosEditor({ proprietarios, onChange }: { proprietarios?: Prop
       {lista.map((p, i) => (
         <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'end', marginTop: 6 }}>
           <div style={{ flex: 1 }}><label style={{ fontWeight: 400, textTransform: 'none' }}>Nome</label><input type="text" value={p.nome} onChange={(e) => atualizar(i, { nome: e.target.value })} /></div>
-          <div style={{ width: 120 }}><label style={{ fontWeight: 400, textTransform: 'none' }}>Participação (%)</label><input type="text" value={p.percentual ?? ''} onChange={(e) => setPercentual(i, e.target.value)} /></div>
+          <div style={{ width: 120 }}><label style={{ fontWeight: 400, textTransform: 'none' }}>Participação (%)</label><CampoNumero value={p.percentual} vazio={undefined} onChange={(v) => setPercentual(i, v)} /></div>
           <button type="button" className="btn small danger" onClick={() => remover(i)}>×</button>
         </div>
       ))}

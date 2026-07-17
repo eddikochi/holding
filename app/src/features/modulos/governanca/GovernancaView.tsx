@@ -8,6 +8,7 @@ import {
 } from '../../../db/actions';
 import { PageHeader } from '../../../components/PageHeader';
 import { EmptyState } from '../../../components/EmptyState';
+import { CampoNumero } from '../../../components/CampoNumero';
 import { BadgeDecisao } from '../../../components/Badge';
 import { Sparkline } from '../../../components/Sparkline';
 import { Tabs } from '../../../components/Tabs';
@@ -280,7 +281,7 @@ function KPIModal({ kpi, onFechar }: { kpi: KPI; onFechar: () => void }) {
         <label>Nome</label><input type="text" value={k.nome} onChange={(e) => setK({ ...k, nome: e.target.value })} />
         <div className="form-grid">
           <div><label>Unidade</label><input type="text" value={k.unidade} onChange={(e) => setK({ ...k, unidade: e.target.value })} placeholder="ex.: R$, %, un." /></div>
-          <div><label>Valor alvo</label><input type="text" value={k.valorAlvo ?? ''} onChange={(e) => { const v = e.target.value === '' ? null : parseFloat(e.target.value.replace(',', '.')); setK({ ...k, valorAlvo: isNaN(v as number) ? null : v }); }} /></div>
+          <div><label>Valor alvo</label><CampoNumero value={k.valorAlvo} vazio={null} onChange={(v) => setK({ ...k, valorAlvo: v })} /></div>
         </div>
         {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
         <div className="row-actions" style={{ marginTop: 16 }}>

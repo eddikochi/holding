@@ -7,6 +7,7 @@ import {
 import { resumoFinanceiro, linhasSemFonte } from '../../../lib/calc/financeiro';
 import { PageHeader } from '../../../components/PageHeader';
 import { EmptyState } from '../../../components/EmptyState';
+import { CampoNumero } from '../../../components/CampoNumero';
 import { BadgeSemFonte } from '../../../components/Badge';
 import { novoId } from '../../../lib/ids';
 import type { BusinessCase, LinhaFinanceira, DecisaoBC } from '../../../models/types';
@@ -132,7 +133,7 @@ function BusinessCaseEditor({ bc, onVoltar }: { bc: BusinessCase; onVoltar: () =
             <b style={{ textTransform: 'capitalize' }}>{c}</b>
             <div className="form-grid">
               <div><label>Receita anual (R$)</label>
-                <input type="text" value={b.cenarios[c].receitaAnual ?? ''} onChange={(e) => { const v = e.target.value === '' ? null : parseFloat(e.target.value.replace(',', '.')); setB({ ...b, cenarios: { ...b.cenarios, [c]: { ...b.cenarios[c], receitaAnual: isNaN(v as number) ? null : v } } }); }} onBlur={() => salvar(b)} />
+                <CampoNumero value={b.cenarios[c].receitaAnual} vazio={null} casas={2} onChange={(v) => setB({ ...b, cenarios: { ...b.cenarios, [c]: { ...b.cenarios[c], receitaAnual: v } } })} onBlur={() => salvar(b)} />
               </div>
               <div><label>Premissas</label>
                 <input type="text" value={b.cenarios[c].premissas} onChange={(e) => setB({ ...b, cenarios: { ...b.cenarios, [c]: { ...b.cenarios[c], premissas: e.target.value } } })} onBlur={() => salvar(b)} />
@@ -180,7 +181,7 @@ function TabelaFinanceira({ titulo, linhas, add, upd, del }: {
             {linhas.map((l) => (
               <tr key={l.id}>
                 <td><input type="text" value={l.descricao} onChange={(e) => upd(l.id, { descricao: e.target.value })} /></td>
-                <td><input type="text" value={l.valor ?? ''} onChange={(e) => { const v = e.target.value === '' ? null : parseFloat(e.target.value.replace(',', '.')); upd(l.id, { valor: isNaN(v as number) ? null : v }); }} style={{ width: 110 }} /></td>
+                <td><CampoNumero value={l.valor} vazio={null} casas={2} onChange={(v) => upd(l.id, { valor: v })} style={{ width: 110 }} /></td>
                 <td>
                   <input type="text" value={l.fontePremissa} onChange={(e) => upd(l.id, { fontePremissa: e.target.value })} placeholder="de onde vem esse número?" />
                   {l.valor != null && !l.fontePremissa.trim() && <div style={{ marginTop: 2 }}><BadgeSemFonte /></div>}

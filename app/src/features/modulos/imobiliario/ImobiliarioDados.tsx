@@ -4,6 +4,7 @@ import { db } from '../../../db/database';
 import { salvarComparavel, apagarComparavel, comparavelEmBranco, salvarAtivo } from '../../../db/actions';
 import { mediasPorTipo } from '../../../lib/calc/imobiliario';
 import { EmptyState } from '../../../components/EmptyState';
+import { CampoNumero } from '../../../components/CampoNumero';
 import { BadgeSemFonte } from '../../../components/Badge';
 import { useToast } from '../../../components/Toast';
 import { fmtData } from '../../../lib/datas';
@@ -124,7 +125,6 @@ function ComparavelModal({ comparavel, onFechar }: { comparavel: ComparavelImobi
   const toast = useToast();
   const [c, setC] = useState<ComparavelImobiliario>(comparavel);
   const [erro, setErro] = useState<string | null>(null);
-  const numOr = (v: string) => v === '' ? undefined : (isNaN(parseFloat(v.replace(',', '.'))) ? undefined : parseFloat(v.replace(',', '.')));
   async function salvar() {
     if (!c.descricao.trim()) { setErro('Dê uma descrição ao comparável.'); return; }
     await salvarComparavel(c); toast('Comparável salvo'); onFechar();
@@ -138,9 +138,9 @@ function ComparavelModal({ comparavel, onFechar }: { comparavel: ComparavelImobi
           <div><label>Tipo</label>
             <select value={c.tipo} onChange={(e) => setC({ ...c, tipo: e.target.value as TipoAtivo })}>{TIPOS.map((t) => <option key={t.v} value={t.v}>{t.r}</option>)}</select>
           </div>
-          <div><label>Área (m²)</label><input type="text" value={c.m2 ?? ''} onChange={(e) => setC({ ...c, m2: numOr(e.target.value) })} /></div>
-          <div><label>Preço pedido (venda, R$)</label><input type="text" value={c.precoPedido ?? ''} onChange={(e) => setC({ ...c, precoPedido: numOr(e.target.value) })} /></div>
-          <div><label>Aluguel mensal (R$)</label><input type="text" value={c.aluguelMensal ?? ''} onChange={(e) => setC({ ...c, aluguelMensal: numOr(e.target.value) })} /></div>
+          <div><label>Área (m²)</label><CampoNumero value={c.m2} vazio={undefined} onChange={(v) => setC({ ...c, m2: v })} /></div>
+          <div><label>Preço pedido (venda, R$)</label><CampoNumero value={c.precoPedido} vazio={undefined} casas={2} onChange={(v) => setC({ ...c, precoPedido: v })} /></div>
+          <div><label>Aluguel mensal (R$)</label><CampoNumero value={c.aluguelMensal} vazio={undefined} casas={2} onChange={(v) => setC({ ...c, aluguelMensal: v })} /></div>
         </div>
         <label>Fonte (obrigatório na prática)</label><input type="text" value={c.fonte} onChange={(e) => setC({ ...c, fonte: e.target.value })} placeholder="ex.: OLX, imobiliária X, corretor Y" />
         <label>Observação</label><textarea value={c.observacao ?? ''} onChange={(e) => setC({ ...c, observacao: e.target.value })} />
