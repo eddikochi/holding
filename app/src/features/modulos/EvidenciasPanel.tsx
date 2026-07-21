@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/database';
-import { salvarEvidencia, apagarEvidencia, evidenciaEmBranco } from '../../db/actions';
+import {
+  salvarEvidencia, apagarEvidencia, evidenciaEmBranco, vincularEvidenciaAHipotese,
+} from '../../db/actions';
 import { EmptyState } from '../../components/EmptyState';
 import { BadgeConfianca } from '../../components/Badge';
 import { useToast } from '../../components/Toast';
 import { fmtData } from '../../lib/datas';
-import type { Evidencia, Pilar, FonteEvidencia, Confianca } from '../../models/types';
+import type { Evidencia, Hipotese, Pilar, FonteEvidencia, Confianca } from '../../models/types';
 
 const FONTES: { v: FonteEvidencia; r: string }[] = [
   { v: 'entrevista', r: 'Entrevista' },
@@ -15,11 +17,22 @@ const FONTES: { v: FonteEvidencia; r: string }[] = [
   { v: 'dado_oficial', r: 'Dado oficial' },
 ];
 
+/** Rótulo curto de uma hipótese para os selects de vínculo. */
+function rotuloHipotese(h: Hipotese): string {
+  return h.enunciado.slice(0, 40) || '(sem enunciado)';
+}
+
 /**
- * Lista + CRUD de evidências de um pilar. Reutilizado pelos módulos 04/06/07.
+ * Painel único de Evidências de um pilar, reutilizado por TODOS os diagnósticos.
+ * Campos: Conteúdo, Tipo de fonte, Fonte específica (fonteDetalhe), Confiança e
+ * vínculo à hipótese (no modal e via coluna "Vinculada a" na tabela).
+ *
  * `fonteDetalhePadrao` pré-preenche o rótulo de origem (ex.: "Incentivo municipal").
  * Se `separarFatoEspeculacao`, agrupa por confiança: alta/média = "com fonte",
  * baixa = "a confirmar" (fato vs. especulação da spec do módulo Econômico).
+ *
+ * O vínculo evidência→hipótese é sempre do MESMO pilar: só hipóteses deste pilar
+ * são oferecidas (evidência e hipótese carregam `pilar`; não há cruzamento).
  */
 export function EvidenciasPanel({
   pilar,
@@ -38,9 +51,10 @@ export function EvidenciasPanel({
 }) {
   const toast = useToast();
   const evidencias = useLiveQuery(() => db.evidencias.where('pilar').equals(pilar).toArray(), [pilar]);
+  const hipoteses = useLiveQuery(() => db.hipoteses.where('pilar').equals(pilar).toArray(), [pilar]);
   const [edit, setEdit] = useState<Evidencia | null>(null);
 
-  if (!evidencias) return <div className="panel">Carregando…</div>;
+  if (!evidencias || !hipoteses) return <div className="panel">Carregando…</div>;
 
   function novo() {
     const e = evidenciaEmBranco(pilar);
@@ -55,12 +69,31 @@ export function EvidenciasPanel({
         <td style={{ fontSize: 11 }}>{FONTES.find((f) => f.v === e.fonte)?.r}</td>
         <td><BadgeConfianca confianca={e.confianca} /></td>
         <td>
+          <select
+            value={e.hipoteseId ?? ''}
+            onChange={async (ev) => { await vincularEvidenciaAHipotese(e.id, ev.target.value || undefined); toast('Vínculo atualizado'); }}
+            style={{ fontSize: 12, padding: '4px 6px' }}
+          >
+            <option value="">— sem vínculo —</option>
+            {hipoteses!.map((h) => <option key={h.id} value={h.id}>{rotuloHipotese(h)}</option>)}
+          </select>
+        </td>
+        <td>
           <div className="row-actions">
             <button className="btn small secondary" onClick={() => setEdit(e)}>Editar</button>
             <button className="btn small danger" onClick={async () => { if (confirm('Apagar?')) { await apagarEvidencia(e.id); toast('Apagado'); } }}>×</button>
           </div>
         </td>
       </tr>
+    );
+  }
+
+  function tabela(lista: Evidencia[]) {
+    return (
+      <table>
+        <thead><tr><th>Conteúdo</th><th>Fonte</th><th>Confiança</th><th>Vinculada a</th><th></th></tr></thead>
+        <tbody>{lista.map(linha)}</tbody>
+      </table>
     );
   }
 
@@ -78,29 +111,25 @@ export function EvidenciasPanel({
       {evidencias.length === 0 ? (
         <EmptyState titulo={`Nenhum registro ainda`}>
           Adicione o primeiro {rotuloItem}. Todo dado deve ter a fonte de onde veio — sem fonte,
-          é palpite, não evidência.
+          é palpite, não evidência. Vincule cada uma a uma hipótese para alimentar o funil (aba Discovery).
         </EmptyState>
       ) : separarFatoEspeculacao ? (
         <>
           <h3 style={{ color: 'var(--green)' }}>Com fonte / confirmado ({comFonte.length})</h3>
-          {comFonte.length === 0 ? <p style={{ color: 'var(--ink-soft)', fontSize: 13 }}>Nada aqui ainda.</p> : (
-            <table><thead><tr><th>Conteúdo</th><th>Fonte</th><th>Confiança</th><th></th></tr></thead><tbody>{comFonte.map(linha)}</tbody></table>
-          )}
+          {comFonte.length === 0 ? <p style={{ color: 'var(--ink-soft)', fontSize: 13 }}>Nada aqui ainda.</p> : tabela(comFonte)}
           <h3 style={{ color: 'var(--amber)', marginTop: 16 }}>A confirmar / especulação ({aConfirmar.length})</h3>
-          {aConfirmar.length === 0 ? <p style={{ color: 'var(--ink-soft)', fontSize: 13 }}>Nada aqui ainda.</p> : (
-            <table><thead><tr><th>Conteúdo</th><th>Fonte</th><th>Confiança</th><th></th></tr></thead><tbody>{aConfirmar.map(linha)}</tbody></table>
-          )}
+          {aConfirmar.length === 0 ? <p style={{ color: 'var(--ink-soft)', fontSize: 13 }}>Nada aqui ainda.</p> : tabela(aConfirmar)}
         </>
       ) : (
-        <table><thead><tr><th>Conteúdo</th><th>Fonte</th><th>Confiança</th><th></th></tr></thead><tbody>{evidencias.map(linha)}</tbody></table>
+        tabela(evidencias)
       )}
 
-      {edit && <EvidenciaModal evidencia={edit} rotuloItem={rotuloItem} onFechar={() => setEdit(null)} />}
+      {edit && <EvidenciaModal evidencia={edit} hipoteses={hipoteses} rotuloItem={rotuloItem} onFechar={() => setEdit(null)} />}
     </div>
   );
 }
 
-function EvidenciaModal({ evidencia, rotuloItem, onFechar }: { evidencia: Evidencia; rotuloItem: string; onFechar: () => void }) {
+function EvidenciaModal({ evidencia, hipoteses, rotuloItem, onFechar }: { evidencia: Evidencia; hipoteses: Hipotese[]; rotuloItem: string; onFechar: () => void }) {
   const toast = useToast();
   const [e, setE] = useState<Evidencia>(evidencia);
   const [erro, setErro] = useState<string | null>(null);
@@ -111,7 +140,7 @@ function EvidenciaModal({ evidencia, rotuloItem, onFechar }: { evidencia: Eviden
   return (
     <div className="modal-backdrop" onClick={onFechar}>
       <div className="modal" onClick={(ev) => ev.stopPropagation()}>
-        <h3 style={{ marginTop: 0 }}>{evidencia.conteudo ? 'Editar' : 'Novo'} {rotuloItem}</h3>
+        <h3 style={{ marginTop: 0 }}>{evidencia.conteudo ? 'Editar' : 'Nova'} {rotuloItem}</h3>
         <label>Conteúdo</label>
         <textarea value={e.conteudo} onChange={(ev) => setE({ ...e, conteudo: ev.target.value })} />
         <label>Fonte específica (de onde veio)</label>
@@ -130,6 +159,11 @@ function EvidenciaModal({ evidencia, rotuloItem, onFechar }: { evidencia: Eviden
             </select>
           </div>
         </div>
+        <label>Vincular à hipótese</label>
+        <select value={e.hipoteseId ?? ''} onChange={(ev) => setE({ ...e, hipoteseId: ev.target.value || undefined })}>
+          <option value="">— sem vínculo —</option>
+          {hipoteses.map((h) => <option key={h.id} value={h.id}>{rotuloHipotese(h)}</option>)}
+        </select>
         {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
         <div className="row-actions" style={{ marginTop: 16 }}>
           <button className="btn" onClick={salvar}>Salvar</button>

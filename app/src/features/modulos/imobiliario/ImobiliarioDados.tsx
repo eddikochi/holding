@@ -8,6 +8,7 @@ import { CampoNumero } from '../../../components/CampoNumero';
 import { BadgeSemFonte } from '../../../components/Badge';
 import { useToast } from '../../../components/Toast';
 import { fmtData } from '../../../lib/datas';
+import { EvidenciasPanel } from '../EvidenciasPanel';
 import type { ComparavelImobiliario, TipoAtivo, Ativo, CenariosUso } from '../../../models/types';
 
 const TIPOS: { v: TipoAtivo; r: string }[] = [
@@ -114,6 +115,12 @@ export function ImobiliarioDados() {
           </table>
         )}
       </div>
+
+      <EvidenciasPanel
+        pilar="imobiliario"
+        titulo="Evidências"
+        ajuda="Fatos coletados sobre o mercado imobiliário local (visitas, corretores, anúncios, documentos). Vincule cada uma a uma hipótese para alimentar o funil da aba Discovery."
+      />
 
       {edit && <ComparavelModal comparavel={edit} onFechar={() => setEdit(null)} />}
       {editCenario && <CenariosModal ativo={editCenario} onFechar={() => setEditCenario(null)} />}

@@ -6,6 +6,7 @@ import { EmptyState } from '../../../components/EmptyState';
 import { useToast } from '../../../components/Toast';
 import { fmtData } from '../../../lib/datas';
 import { ITENS_JURIDICOS } from '../../../models/types';
+import { EvidenciasPanel } from '../EvidenciasPanel';
 import type { Ativo, ItemChecklistJuridico, StatusJuridico, ItemJuridicoChave } from '../../../models/types';
 
 const STATUS: { v: StatusJuridico; r: string }[] = [
@@ -158,6 +159,12 @@ export function JuridicoDados() {
           style={{ minHeight: 100 }}
         />
       </div>
+
+      <EvidenciasPanel
+        pilar="juridico"
+        titulo="Evidências"
+        ajuda="Fatos e documentos que sustentam a leitura jurídica (matrículas, certidões, pareceres, andamentos). Vincule cada um a uma hipótese para alimentar o funil da aba Discovery."
+      />
 
       {edit && <ItemModal ativo={edit.ativo} chave={edit.chave} onFechar={() => setEdit(null)} />}
     </div>

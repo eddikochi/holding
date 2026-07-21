@@ -6,6 +6,7 @@ import { EmptyState } from '../../../components/EmptyState';
 import { CampoNumero } from '../../../components/CampoNumero';
 import { useToast } from '../../../components/Toast';
 import { AtivosMapa } from './AtivosMapa';
+import { EvidenciasPanel } from '../EvidenciasPanel';
 import { novoId } from '../../../lib/ids';
 import { PILARES } from '../../../models/types';
 import type {
@@ -158,6 +159,12 @@ export function PatrimonialDados() {
         <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>Ativos com lat/lng plotados sobre o OpenStreetMap. Sem internet, vira lista automaticamente.</p>
         <AtivosMapa ativos={ativos} />
       </div>
+
+      <EvidenciasPanel
+        pilar="patrimonial"
+        titulo="Evidências"
+        ajuda="Fatos e registros sobre os imóveis (vistorias, fotos, documentos, observações de campo). Vincule cada um a uma hipótese para alimentar o funil da aba Discovery."
+      />
 
       {edit && <AtivoModal ativo={edit} onFechar={() => setEdit(null)} />}
     </div>
