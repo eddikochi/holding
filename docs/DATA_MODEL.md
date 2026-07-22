@@ -5,9 +5,10 @@
 
 ## Versão de schema
 
-- **Schema atual: v3** (`SCHEMA_VERSION = 3` em `database.ts`).
+- **Schema atual: v4** (`SCHEMA_VERSION = 4` em `database.ts`).
 - v1 → v2: migração aditiva (nova store `analises`).
 - v2 → v3: migração aditiva (nova store `comparaveis`); campo opcional `cenariosUso` no Ativo (não indexado, sem migração).
+- v3 → v4: Evidencia/Hipotese passam a pilar-múltiplo (`pilares: Pilar[]`, índice multiEntry `*pilares`) e Evidencia troca `hipoteseId` único por `vinculos: {hipoteseId,efeito}[]` (não indexado, filtro em memória). Upgrade Dexie popula os campos novos a partir dos legados e remove os legados do storage.
 
 ## Convenções
 
@@ -90,6 +91,46 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 (`Config.minEvidenciasParaValidar`, default 3 — `getMinEvidencias()` em `database.ts`).
 
 ## Histórico de decisões de schema
+
+### v5 (cont.) — 2026-07-22 — `bairro`/`codigo` em ComparavelImobiliario
+- Campos aditivos `ComparavelImobiliario.bairro?: string` e `.codigo?: string` (metadados de
+  pesquisa; já existiam nos dados de campo, agora tipados). Não indexados, sem migração Dexie.
+- `bairro` aparece inline na tabela de comparáveis; `codigo` só no Editar (decisão do usuário).
+- `BACKUP_SCHEMA_VERSION` 9 → 10. Backup round-trip verificado lossless.
+- Contexto: Fase 4.2 do SPEC_MODELO_DADOS (padrão de tabela agrupada com mediana, piloto Imobiliário).
+
+### v4 — 2026-07-21 — pilar-múltiplo + vínculo com efeito (Evidência/Hipótese)
+- `Evidencia.pilar` e `Hipotese.pilar` (string única) → **`pilares: Pilar[]`**; índice Dexie
+  `pilar` → **`*pilares`** (multiEntry). Uma evidência/hipótese existe uma vez e é etiquetada
+  com vários pilares (nunca duplicada). Conta em cada pilar que etiqueta.
+- `Evidencia.hipoteseId` (string única) → **`vinculos: { hipoteseId, efeito }[]`** com
+  `efeito: 'sustenta' | 'refuta' | 'neutro'`. Índice `hipoteseId` **removido** (array de objeto
+  não é indexável direto — filtro em memória; o dataset é pequeno).
+- **Regra de ouro** passou a contar só evidências que **sustentam** (`efeito: 'sustenta'`).
+- Legados `pilar`/`hipoteseId`: `@deprecated` no tipo (só p/ importar backups antigos), **removidos
+  do storage** pelo upgrade Dexie v4 e pela normalização no import (`restaurarBackup`). Decisão (a):
+  fonte única, sem drift. Helpers tolerantes `pilaresDe`/`vinculosDe` cobrem registros não-migrados.
+- Fora de escopo (intocados): `Stakeholder.pilar`/`.hipoteseId` e `Oportunidade/Decisao.hipoteseIds`.
+- `BACKUP_SCHEMA_VERSION` 7 → 8. Backup round-trip verificado lossless; índice multiEntry verificado.
+- Aprovado com escopo travado (Fase 1 do SPEC_MODELO_DADOS). ID estruturado (`codigo`) é Fase 2.
+
+### v3 (cont.) — 2026-07-21 — `statusDominio` explícito no Ativo
+- Novo tipo `StatusDominio = 'resgatada' | 'pendente' | 'nao_avaliada'` e campo aditivo
+  `Ativo.statusDominio?: StatusDominio`. Não indexado, sem migração Dexie; `SCHEMA_VERSION` segue 3.
+- **Motivo:** a faixa de status de enfiteuse da nova ficha de leitura (piloto Patrimonial) derivava a cor
+  de texto livre (`situacaoJuridicaResumo`) e mostrava "resgatada" (verde) falso em imóveis com foro/laudêmio
+  pendentes. A cor agora lê **só este campo**; nunca infere de texto. undefined = não avaliada (cinza).
+- Retrocompatível: ativos existentes ficam `undefined` (cinza) até preenchimento manual no formulário.
+- Backup: **sem mudança** — o campo viaja em `BackupCompleto.ativos: Ativo[]`; import não gateia por versão.
+- Exposto no formulário (`AtivoModal`, seção "Registro & valores") como select com os 3 valores + "— não informado —".
+- Aprovado pelo usuário com escopo travado (piloto do padrão de ficha escaneável, só Patrimonial).
+
+### v3 (cont.) — 2026-07-20 — `url` opcional em ComparavelImobiliario
+- Campo aditivo `ComparavelImobiliario.url?: string` (link do anúncio de origem). Não indexado,
+  sem migração Dexie (propriedade livre da store `comparaveis`). Nenhuma key renomeada/removida.
+- Backup: `BACKUP_SCHEMA_VERSION` 6 → 7 (registro de formato; retrocompatível — import não gateia por versão).
+- Aprovado pelo usuário com escopo travado (só o campo `url?` + injeção de 16 comparáveis de mercado
+  via round-trip de backup). UI do módulo 03 ainda não expõe o campo (edição/exibição fica p/ depois).
 
 ### v3 (cont.) — 2026-07-09 — checklist de discovery marcável (Config)
 - Novo tipo `ItemChecklistDiscovery { id, texto, categoria: 'campo'|'desk', feito, custom }`.

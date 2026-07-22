@@ -2,6 +2,7 @@
  * Cálculos do diagnóstico logístico — funções puras, testáveis sem browser.
  * Ranking de dores e funil hipótese → evidência → validação.
  */
+import { vinculosDe } from '../../models/types';
 import type { Stakeholder, Hipotese, Evidencia } from '../../models/types';
 
 export interface DorContada {
@@ -43,7 +44,7 @@ export function hipotesesComContagem(
 ): HipoteseComEvidencias[] {
   const porHipotese = new Map<string, number>();
   for (const e of evidencias) {
-    if (e.hipoteseId) porHipotese.set(e.hipoteseId, (porHipotese.get(e.hipoteseId) ?? 0) + 1);
+    for (const v of vinculosDe(e)) porHipotese.set(v.hipoteseId, (porHipotese.get(v.hipoteseId) ?? 0) + 1);
   }
   return hipoteses.map((h) => {
     const n = porHipotese.get(h.id) ?? 0;
@@ -65,7 +66,7 @@ export function etapasDoFunil(
   businessCases = 0
 ): EtapasFunil {
   const idsHip = new Set(hipoteses.map((h) => h.id));
-  const evVinc = evidencias.filter((e) => e.hipoteseId && idsHip.has(e.hipoteseId)).length;
+  const evVinc = evidencias.filter((e) => vinculosDe(e).some((v) => idsHip.has(v.hipoteseId))).length;
   const validadas = hipoteses.filter((h) => h.status === 'validada').length;
   return {
     hipoteses: hipoteses.length,

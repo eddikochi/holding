@@ -6,6 +6,7 @@ import { EmptyState } from '../../../components/EmptyState';
 import { CampoNumero } from '../../../components/CampoNumero';
 import { useToast } from '../../../components/Toast';
 import { AtivosMapa } from './AtivosMapa';
+import { AtivoCard } from './AtivoCard';
 import { EvidenciasPanel } from '../EvidenciasPanel';
 import { novoId } from '../../../lib/ids';
 import { PILARES } from '../../../models/types';
@@ -13,8 +14,14 @@ import type {
   Ativo, TipoAtivo, Pilar, Unidade, RelacaoUnidade,
   StatusVisitaAtivo, StatusVisitaUnidade, TipoRelacaoUnidade,
   RegistroImovel, ProprietarioAtivo, OcupacaoImovel,
-  DocumentoRef, TipoDocumento,
+  DocumentoRef, TipoDocumento, StatusDominio,
 } from '../../../models/types';
+
+const STATUS_DOMINIO: { v: StatusDominio; r: string }[] = [
+  { v: 'pendente', r: 'Não resgatada / pendente' },
+  { v: 'resgatada', r: 'Resgatada' },
+  { v: 'nao_avaliada', r: 'Não avaliada' },
+];
 
 const TIPOS: { v: TipoAtivo; r: string }[] = [
   { v: 'galpao', r: 'Galpão' }, { v: 'terreno', r: 'Terreno' }, { v: 'loja', r: 'Loja' },
@@ -105,26 +112,16 @@ export function PatrimonialDados() {
             ferramenta de campo. Cada ativo vira uma ficha usada por todos os outros diagnósticos.
           </EmptyState>
         ) : (
-          <table>
-            <thead><tr><th>Nome</th><th>Tipo</th><th>Endereço</th><th>Área</th><th>Estado</th><th></th></tr></thead>
-            <tbody>
-              {ativos.map((a) => (
-                <tr key={a.id}>
-                  <td><b>{a.nome || '(sem nome)'}</b></td>
-                  <td>{TIPOS.find((t) => t.v === a.tipo)?.r ?? a.tipo}</td>
-                  <td>{a.endereco}</td>
-                  <td>{a.metragens.construidaM2 ? `${a.metragens.construidaM2} m²` : a.metragens.terrenoM2 ? `${a.metragens.terrenoM2} m² (terreno)` : '—'}</td>
-                  <td style={{ fontSize: 11, color: 'var(--ink-soft)', maxWidth: 180 }}>{(a.estadoFisico || '').slice(0, 60)}</td>
-                  <td>
-                    <div className="row-actions">
-                      <button className="btn small secondary" onClick={() => setEdit(a)}>Editar</button>
-                      <button className="btn small danger" onClick={async () => { if (confirm(`Apagar "${a.nome}"?`)) { await apagarAtivo(a.id); toast('Ativo apagado'); } }}>×</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div>
+            {ativos.map((a) => (
+              <AtivoCard
+                key={a.id}
+                ativo={a}
+                onEditar={() => setEdit(a)}
+                onApagar={async () => { if (confirm(`Apagar "${a.nome}"?`)) { await apagarAtivo(a.id); toast('Ativo apagado'); } }}
+              />
+            ))}
+          </div>
         )}
       </div>
 
@@ -261,6 +258,12 @@ function AtivoModal({ ativo, onFechar }: { ativo: Ativo; onFechar: () => void })
               <input type="text" placeholder="ex.: Município de São Borja" value={a.enfiteuta ?? ''} onChange={(e) => setA({ ...a, enfiteuta: e.target.value || undefined })} />
             </div>
           )}
+          <div><label>Situação do domínio (enfiteuse)</label>
+            <select value={a.statusDominio ?? ''} onChange={(e) => setA({ ...a, statusDominio: e.target.value ? e.target.value as StatusDominio : undefined })}>
+              <option value="">— não informado —</option>
+              {STATUS_DOMINIO.map((s) => <option key={s.v} value={s.v}>{s.r}</option>)}
+            </select>
+          </div>
           <div className="form-grid">
             <div><label>Valor de partilha (R$)</label><CampoNumero value={a.valorPartilha} vazio={undefined} casas={2} onChange={(v) => setA({ ...a, valorPartilha: v })} /></div>
             <div><label>Avaliação fiscal / venal (R$)</label><CampoNumero value={a.valorAvaliacaoFiscal} vazio={undefined} casas={2} onChange={(v) => setA({ ...a, valorAvaliacaoFiscal: v })} /></div>

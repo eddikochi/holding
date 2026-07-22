@@ -111,6 +111,40 @@ tr:hover td { background: var(--bg-hover); }
 .badge.st-refutada { background: var(--red-soft); color: var(--red); }
 .badge.sem-fonte { background: var(--amber-soft); color: var(--amber); }
 
+/* ponto de confiança (compacto, com tooltip) */
+.ponto-conf { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: middle; }
+.ponto-conf.conf-alta { background: var(--green); }
+.ponto-conf.conf-media { background: var(--amber); }
+.ponto-conf.conf-baixa { background: var(--red); }
+
+/* efeito de vínculo (sustenta/refuta/neutro) */
+.efeito-sustenta { color: var(--green); }
+.efeito-refuta { color: var(--red); }
+.efeito-neutro { color: var(--ink-soft); }
+
+/* célula de conteúdo truncada (2 linhas) */
+.txt-clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* padrão "tabela agrupada com mediana" (aba Dados — item 4.1) */
+.tam-grupo { margin-top: var(--s4); }
+.tam-cab { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s2); padding: 6px 0; border-bottom: 2px solid var(--line); }
+.tam-count { color: var(--ink-soft); font-size: 12px; font-weight: 400; }
+.tam-mediana { font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tam-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.tam-primaria { flex: 1 1 220px; min-width: 0; }
+.tam-cel { text-align: right; font-variant-numeric: tabular-nums; min-width: 72px; color: var(--ink-soft); font-size: 13px; }
+.tam-cel.tam-enfase { margin-left: auto; font-weight: 800; color: var(--ink); font-size: 15px; min-width: 112px; }
+.tam-acoes { flex: 0 0 auto; opacity: 0; transition: opacity .15s; }
+.tam-row:hover .tam-acoes { opacity: 1; }
+.tam-linha-mediana { border-top: 1px dashed var(--amber); text-align: right; padding-top: 3px; margin-top: 3px; }
+.tam-linha-mediana span { font-size: 11px; color: var(--amber); font-weight: 700; }
+.tam-incompletos { margin-top: 6px; }
+.tam-inc-toggle { background: transparent; border: none; color: var(--ink-soft); font: inherit; font-size: 12.5px; cursor: pointer; padding: 6px 0; }
+@media (max-width: 680px) {
+  .tam-acoes { opacity: 1; }        /* touch: sem hover, ações sempre visíveis */
+  .tam-primaria { flex: 1 1 100%; } /* nome ocupa a linha; numéricas quebram abaixo, métrica à direita */
+}
+
 /* estado vazio */
 .empty-state {
   text-align: center; color: var(--ink-soft);

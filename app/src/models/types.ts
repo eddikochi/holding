@@ -112,6 +112,12 @@ export type StatusVisitaUnidade = 'a_visitar' | 'visitado';
 /** Situação de ocupação de um imóvel ou unidade. */
 export type OcupacaoImovel = 'locado' | 'vago' | 'uso_proprio' | 'cedido' | 'irregular';
 
+/**
+ * Situação do domínio/enfiteuse de um imóvel foreiro, informada EXPLICITAMENTE.
+ * Nunca inferida de texto livre. undefined = não avaliada (mesma leitura de 'nao_avaliada').
+ */
+export type StatusDominio = 'resgatada' | 'pendente' | 'nao_avaliada';
+
 /** Tipo de relação física entre duas unidades do mesmo ativo. */
 export type TipoRelacaoUnidade = 'agua' | 'energia' | 'acesso' | 'outro';
 
@@ -221,6 +227,11 @@ export interface Ativo extends BaseEntity {
   foreiro?: boolean;
   /** Titular do domínio direto (senhorio), quando foreiro. Opcional. */
   enfiteuta?: string;
+  /**
+   * Situação do domínio/enfiteuse, EXPLÍCITA (não inferida de texto). Opcional e
+   * retrocompatível: undefined = não avaliada. Fonte única da faixa de status na ficha.
+   */
+  statusDominio?: StatusDominio;
   /** Valor atribuído na partilha (R$). Opcional — vazio quando não informado. */
   valorPartilha?: number;
   /** Valor de avaliação fiscal / venal (R$). Opcional — vazio quando não informado. */
@@ -273,11 +284,21 @@ export type FonteEvidencia =
   | 'dado_oficial';
 export type Confianca = 'alta' | 'media' | 'baixa';
 
+/** Efeito de uma evidência sobre uma hipótese (funil de validação). */
+export type EfeitoVinculo = 'sustenta' | 'refuta' | 'neutro';
+
+/** Vínculo Evidência→Hipótese com o efeito que exerce. Uma evidência pode ter vários. */
+export interface VinculoHipotese {
+  hipoteseId: ID;
+  efeito: EfeitoVinculo;
+}
+
 export interface Evidencia extends BaseEntity {
   tipo: TipoEvidencia;
   conteudo: string;
   foto?: FotoRef;
-  pilar: Pilar;
+  /** Etiquetas de pilar (uma ou várias). Fonte única: substitui o antigo `pilar`. */
+  pilares: Pilar[];
   fonte: FonteEvidencia;
   /** Rótulo livre da origem específica, ex.: "Registro de campo — Rota Comercial". */
   fonteDetalhe?: string;
@@ -286,9 +307,18 @@ export interface Evidencia extends BaseEntity {
   /** Vínculo a uma unidade específica de um ativo subdividido (opcional). */
   unidadeId?: ID;
   stakeholderId?: ID;
-  hipoteseId?: ID;
+  /** Vínculos a hipóteses, cada um com efeito. Fonte única: substitui o antigo `hipoteseId`. */
+  vinculos: VinculoHipotese[];
   confianca: Confianca;
   origem?: OrigemImportacao;
+  /** Código estruturado global imutável 'EV-{n}'. Nasce na criação/migração, nunca muda. */
+  codigo?: string;
+  /** Código manual antigo, rastro (ex.: 'EV-7-JUR'). Só nos registros que tinham código no texto. */
+  codigoLegado?: string;
+  /** @deprecated legado migrado para `pilares`. Só tolerado ao importar backups antigos. */
+  pilar?: Pilar;
+  /** @deprecated legado migrado para `vinculos`. Só tolerado ao importar backups antigos. */
+  hipoteseId?: ID;
 }
 
 /* ── 4. HIPÓTESE ──────────────────────────────────────────────────────── */
@@ -300,12 +330,29 @@ export type StatusHipotese =
 
 export interface Hipotese extends BaseEntity {
   enunciado: string;
-  pilar: Pilar;
+  /** Etiquetas de pilar (uma ou várias). Fonte única: substitui o antigo `pilar`. */
+  pilares: Pilar[];
   criteriosValidacao: string;
-  /** 'validada' exige ≥ N evidências vinculadas (config minEvidenciasParaValidar). */
+  /** 'validada' exige ≥ N evidências que SUSTENTAM (config minEvidenciasParaValidar). */
   status: StatusHipotese;
   decisaoId?: ID;
-  // evidências vinculadas = consulta por Evidencia.hipoteseId (normalizado)
+  /** Código estruturado global imutável 'HIP-{n}'. Nasce na criação/migração, nunca muda. */
+  codigo?: string;
+  /** Código manual antigo, rastro (ex.: 'HIP-JUR-2'). Só nas que tinham código no texto. */
+  codigoLegado?: string;
+  /** @deprecated legado migrado para `pilares`. Só tolerado ao importar backups antigos. */
+  pilar?: Pilar;
+  // evidências vinculadas = evidências cujo `vinculos[]` referencia esta hipótese
+}
+
+/** Pilares de uma evidência/hipótese, tolerante a registro legado (`pilar` único) não-migrado. */
+export function pilaresDe(x: { pilares?: Pilar[]; pilar?: Pilar }): Pilar[] {
+  return x.pilares?.length ? x.pilares : x.pilar ? [x.pilar] : [];
+}
+
+/** Vínculos de uma evidência, tolerante a registro legado (`hipoteseId` único) não-migrado. */
+export function vinculosDe(e: { vinculos?: VinculoHipotese[]; hipoteseId?: ID }): VinculoHipotese[] {
+  return e.vinculos?.length ? e.vinculos : e.hipoteseId ? [{ hipoteseId: e.hipoteseId, efeito: 'sustenta' }] : [];
 }
 
 /* ── 5. OPORTUNIDADE ──────────────────────────────────────────────────── */
@@ -441,6 +488,12 @@ export interface ComparavelImobiliario extends BaseEntity {
   fonte: string; // de onde veio o dado (anúncio, corretor…) — nunca vazio na prática
   data: ISODate;
   observacao?: string;
+  /** Link do anúncio de origem (opcional). Adicionado de forma aditiva. */
+  url?: string;
+  /** Bairro/localização (metadado inline na tabela). Opcional, aditivo. */
+  bairro?: string;
+  /** Código próprio da pesquisa de campo (só no Editar). Opcional, aditivo. */
+  codigo?: string;
 }
 
 /* ── Sazonalidade agro (módulo 06) — guardada em Config ───────────────── */

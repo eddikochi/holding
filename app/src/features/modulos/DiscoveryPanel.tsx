@@ -4,13 +4,17 @@ import { db, getMinEvidencias } from '../../db/database';
 import {
   salvarHipotese, apagarHipotese, hipoteseEmBranco, vincularEvidenciaAHipotese, RegraDominioError,
 } from '../../db/actions';
-import { funilDoPilar, evidenciasDaHipotese } from '../../lib/calc/discovery';
+import { funilDoPilar, evidenciasDaHipotese, contarEfeitos, efeitoDe } from '../../lib/calc/discovery';
 import { DISCOVERY_PILAR } from '../../content/discovery';
 import { EmptyState } from '../../components/EmptyState';
-import { BadgeStatusHipotese, BadgeConfianca } from '../../components/Badge';
+import { BadgeStatusHipotese, PontoConfianca } from '../../components/Badge';
 import { useToast } from '../../components/Toast';
 import { fmtData } from '../../lib/datas';
-import type { Pilar, Hipotese, StatusHipotese } from '../../models/types';
+import { compararCodigo } from '../../lib/ordenar';
+import { vinculosDe } from '../../models/types';
+import type { Pilar, Hipotese, StatusHipotese, EfeitoVinculo } from '../../models/types';
+
+const ROTULO_EFEITO: Record<EfeitoVinculo, string> = { sustenta: 'sustenta', refuta: 'refuta', neutro: 'neutro' };
 
 /**
  * Painel de Discovery de um pilar: funil hipótese → evidência → validação → decisão.
@@ -27,8 +31,8 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
 
   const dados = useLiveQuery(async () => {
     const [hipoteses, evidencias, stakeholders, decisoes] = await Promise.all([
-      db.hipoteses.where('pilar').equals(pilar).toArray(),
-      db.evidencias.where('pilar').equals(pilar).toArray(),
+      db.hipoteses.where('pilares').equals(pilar).toArray(),
+      db.evidencias.where('pilares').equals(pilar).toArray(),
       db.stakeholders.where('pilar').equals(pilar).toArray(),
       db.decisoes.toArray(),
     ]);
@@ -59,7 +63,7 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
         <div className="funil">
           <div className="funil-etapa"><div className="n">{funil.total}</div><div className="l">hipóteses</div></div>
           <div className="funil-seta">→</div>
-          <div className="funil-etapa"><div className="n">{funil.comEvidencia}</div><div className="l">com evidência</div></div>
+          <div className="funil-etapa"><div className="n">{funil.comEvidencia}</div><div className="l">com sustentação</div></div>
           <div className="funil-seta">→</div>
           <div className="funil-etapa"><div className="n">{funil.parcial}</div><div className="l">parciais</div></div>
           <div className="funil-seta">→</div>
@@ -67,6 +71,11 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
           <div className="funil-seta">→</div>
           <div className="funil-etapa"><div className="n" style={{ color: 'var(--red)' }}>{funil.refutada}</div><div className="l">refutadas</div></div>
         </div>
+        {funil.comRefuta > 0 && (
+          <p style={{ color: 'var(--red)', fontSize: 12, marginTop: 8, marginBottom: 0 }}>
+            ▲ {funil.comRefuta} hipótese(s) com evidência que <b>refuta</b> — revisar antes de decidir.
+          </p>
+        )}
       </div>
 
       <div className="panel">
@@ -91,22 +100,26 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
             Uma hipótese é uma aposta a testar. Cadastre as do pilar (no Logístico, elas vêm do import
             da ferramenta de campo) e vá acumulando evidências até validar ou refutar.
           </EmptyState>
-        ) : hipoteses.map((h) => {
+        ) : [...hipoteses].sort((a, b) => compararCodigo(a.codigo, b.codigo)).map((h) => {
           const evs = evidenciasDaHipotese(h.id, evidencias);
+          const efc = contarEfeitos(h.id, evidencias);
           const entrevistados = stakeholders.filter((s) => s.hipoteseId === h.id);
           const decisao = decisoes.find((d) => d.hipoteseIds.includes(h.id));
-          const atinge = evs.length >= min;
+          const atinge = efc.sustenta >= min;
           const expandida = aberta === h.id;
           return (
             <div key={h.id} style={{ borderTop: '1px solid var(--line)', paddingTop: 10, marginTop: 10 }}>
               <div className="row-actions" style={{ justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setAberta(expandida ? null : h.id)}>
                 <div>
                   <span style={{ marginRight: 6 }}>{expandida ? '▾' : '▸'}</span>
+                  {h.codigo && <span style={{ fontWeight: 700, color: 'var(--ink-soft)', fontSize: 12, marginRight: 6 }}>{h.codigo}</span>}
                   <b>{h.enunciado || '(sem enunciado)'}</b>{' '}
                   <BadgeStatusHipotese status={h.status} />
                 </div>
                 <span style={{ fontSize: 12, color: atinge ? 'var(--green)' : 'var(--amber)' }}>
-                  {evs.length}/{min} evidências{decisao ? ' · decisão registrada' : ''}
+                  {efc.sustenta}/{min} sustentam
+                  {efc.refuta > 0 && <span style={{ color: 'var(--red)' }}> · {efc.refuta} refutam</span>}
+                  {decisao ? ' · decisão registrada' : ''}
                 </span>
               </div>
 
@@ -117,13 +130,20 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
                   <h4 style={{ margin: '8px 0 4px' }}>Evidências vinculadas ({evs.length})</h4>
                   {evs.length === 0 ? <p style={{ fontSize: 12, color: 'var(--ink-soft)' }}>Nenhuma. Vincule evidências abaixo.</p> : (
                     <table><tbody>
-                      {evs.map((e) => (
-                        <tr key={e.id}>
-                          <td style={{ fontSize: 12 }}>{e.conteudo.slice(0, 90)}<br /><span style={{ color: 'var(--ink-soft)' }}>{e.fonteDetalhe ?? e.fonte} · {fmtData(e.data)}</span></td>
-                          <td><BadgeConfianca confianca={e.confianca} /></td>
-                          <td><button className="btn small ghost" onClick={() => vincularEvidenciaAHipotese(e.id, undefined)}>desvincular</button></td>
-                        </tr>
-                      ))}
+                      {evs.map((e) => {
+                        const ef = efeitoDe(e, h.id);
+                        return (
+                          <tr key={e.id}>
+                            <td style={{ fontSize: 12 }}>
+                              {e.codigo && <b style={{ color: 'var(--ink-soft)', marginRight: 4 }}>{e.codigo}</b>}
+                              {e.conteudo.slice(0, 90)}<br /><span style={{ color: 'var(--ink-soft)' }}>{e.fonteDetalhe ?? e.fonte} · {fmtData(e.data)}</span>
+                            </td>
+                            <td style={{ textAlign: 'center' }}><PontoConfianca confianca={e.confianca} /></td>
+                            <td>{ef && <span className={`efeito-${ef}`} style={{ fontSize: 11, fontWeight: 700 }}>{ROTULO_EFEITO[ef]}</span>}</td>
+                            <td><button className="btn small ghost" onClick={() => vincularEvidenciaAHipotese(e.id, undefined)}>desvincular</button></td>
+                          </tr>
+                        );
+                      })}
                     </tbody></table>
                   )}
 
@@ -145,7 +165,7 @@ export function DiscoveryPanel({ pilar }: { pilar: Pilar }) {
                     </>
                   )}
 
-                  <VincularEvidencia hipoteseId={h.id} evidenciasLivres={evidencias.filter((e) => e.hipoteseId !== h.id)} />
+                  <VincularEvidencia hipoteseId={h.id} evidenciasLivres={evidencias.filter((e) => !vinculosDe(e).some((v) => v.hipoteseId === h.id))} />
 
                   {decisao && (
                     <p style={{ fontSize: 12, marginTop: 8 }}><b>Decisão associada:</b> {decisao.decisao} <span style={{ color: 'var(--ink-soft)' }}>({fmtData(decisao.data)})</span></p>

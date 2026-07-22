@@ -2,9 +2,9 @@
  * Ações de escrita (CRUD) sobre o Dexie. Preenchem timestamps e aplicam
  * regras de domínio na camada de dados (não só na UI).
  */
-import { db, getMinEvidencias } from './database';
+import { db, getMinEvidencias, CONFIG_PROX_EV, CONFIG_PROX_HIP } from './database';
 import { novoId, agora } from '../lib/ids';
-import { ITENS_JURIDICOS } from '../models/types';
+import { ITENS_JURIDICOS, vinculosDe, pilaresDe } from '../models/types';
 import type {
   Ativo,
   Stakeholder,
@@ -27,6 +27,7 @@ import type {
   ItemChecklistJuridico,
   ItemChecklistDiscovery,
   CategoriaDiscovery,
+  EfeitoVinculo,
 } from '../models/types';
 
 /** Erro de violação de regra de domínio (a UI mostra a mensagem). */
@@ -109,7 +110,7 @@ export function hipoteseEmBranco(pilar: Pilar): Hipotese {
     createdAt: ts,
     updatedAt: ts,
     enunciado: '',
-    pilar,
+    pilares: [pilar],
     criteriosValidacao: '',
     status: 'nao_validada',
   };
@@ -122,13 +123,19 @@ export function hipoteseEmBranco(pilar: Pilar): Hipotese {
 export async function salvarHipotese(h: Hipotese): Promise<void> {
   if (h.status === 'validada') {
     const min = await getMinEvidencias();
-    const vinculadas = await db.evidencias.where('hipoteseId').equals(h.id).count();
+    // Regra de ouro: conta só evidências que SUSTENTAM (efeito 'sustenta').
+    // `vinculos` não é indexado (é array de objeto) — filtra em memória.
+    const todas = await db.evidencias.toArray();
+    const vinculadas = todas.filter((e) =>
+      vinculosDe(e).some((v) => v.hipoteseId === h.id && v.efeito === 'sustenta')
+    ).length;
     if (vinculadas < min) {
       throw new RegraDominioError(
-        `Esta hipótese precisa de pelo menos ${min} evidências vinculadas para ser marcada como validada (tem ${vinculadas}).`
+        `Esta hipótese precisa de pelo menos ${min} evidências que a sustentam para ser marcada como validada (tem ${vinculadas}).`
       );
     }
   }
+  if (!h.codigo) h.codigo = await proximoCodigo('HIP', CONFIG_PROX_HIP);
   h.updatedAt = agora();
   await db.hipoteses.put(h);
 }
@@ -137,8 +144,15 @@ export async function apagarHipotese(id: string): Promise<void> {
   // desvincula evidências e stakeholders que apontavam para esta hipótese
   await db.transaction('rw', [db.hipoteses, db.evidencias, db.stakeholders], async () => {
     await db.hipoteses.delete(id);
-    const evs = await db.evidencias.where('hipoteseId').equals(id).toArray();
-    for (const e of evs) await db.evidencias.update(e.id, { hipoteseId: undefined });
+    // vinculos não é indexado: varre todas e remove o vínculo desta hipótese.
+    const evs = await db.evidencias.toArray();
+    for (const e of evs) {
+      const vs = vinculosDe(e);
+      if (vs.some((v) => v.hipoteseId === id)) {
+        await db.evidencias.update(e.id, { vinculos: vs.filter((v) => v.hipoteseId !== id) });
+      }
+    }
+    // Stakeholder está fora de escopo desta fase: mantém `hipoteseId` único (indexado).
     const sts = await db.stakeholders.where('hipoteseId').equals(id).toArray();
     for (const s of sts) await db.stakeholders.update(s.id, { hipoteseId: undefined });
   });
@@ -153,14 +167,30 @@ export function evidenciaEmBranco(pilar: Pilar): Evidencia {
     updatedAt: ts,
     tipo: 'observacao',
     conteudo: '',
-    pilar,
+    pilares: [pilar],
     fonte: 'observacao_campo',
     data: ts,
     confianca: 'media',
+    vinculos: [],
   };
 }
 
+/**
+ * Próximo código estruturado da sequência ('EV-{n}'/'HIP-{n}'), incrementando o
+ * contador persistente do Config de forma atômica (transação rw). Imutável depois.
+ */
+async function proximoCodigo(prefixo: 'EV' | 'HIP', chave: string): Promise<string> {
+  let n = 1;
+  await db.transaction('rw', db.config, async () => {
+    const c = await db.config.get(chave);
+    n = typeof c?.valor === 'number' ? (c.valor as number) : 1;
+    await db.config.put({ chave, valor: n + 1 });
+  });
+  return `${prefixo}-${n}`;
+}
+
 export async function salvarEvidencia(e: Evidencia): Promise<void> {
+  if (!e.codigo) e.codigo = await proximoCodigo('EV', CONFIG_PROX_EV);
   e.updatedAt = agora();
   await db.evidencias.put(e);
 }
@@ -169,12 +199,18 @@ export async function apagarEvidencia(id: string): Promise<void> {
   await db.evidencias.delete(id);
 }
 
-/** Vincula (ou desvincula) uma evidência a uma hipótese. */
+/**
+ * Vincula (ou desvincula) uma evidência a UMA hipótese com um efeito.
+ * Comportamento de vínculo único (a UI multi-vínculo com efeito é da Fase 3):
+ * grava `vinculos` com um item, ou vazio ao desvincular.
+ */
 export async function vincularEvidenciaAHipotese(
   evidenciaId: string,
-  hipoteseId: string | undefined
+  hipoteseId: string | undefined,
+  efeito: EfeitoVinculo = 'sustenta'
 ): Promise<void> {
-  await db.evidencias.update(evidenciaId, { hipoteseId, updatedAt: agora() });
+  const vinculos = hipoteseId ? [{ hipoteseId, efeito }] : [];
+  await db.evidencias.update(evidenciaId, { vinculos, updatedAt: agora() });
 }
 
 /* ── ANÁLISE POR PILAR ────────────────────────────────────────────────── */
@@ -270,7 +306,7 @@ export async function promoverHipoteseParaOportunidade(hipoteseId: string): Prom
   const o = oportunidadeEmBranco();
   if (h) {
     o.nome = h.enunciado.slice(0, 80);
-    o.pilares = [h.pilar];
+    o.pilares = pilaresDe(h);
     o.hipoteseIds = [h.id];
     o.descricao = `Promovida da hipótese: ${h.enunciado}`;
     o.status = 'em_avaliacao';

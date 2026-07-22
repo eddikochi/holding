@@ -7,6 +7,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { contarPorPilar, sinaisDadosDiagnostico, progressoDiagnostico, unidadePreenchida } from '../../lib/calc/progresso';
 import { progressoChecklist } from '../../db/actions';
 import { linhasSemFonte } from '../../lib/calc/financeiro';
+import { vinculosDe } from '../../models/types';
 import type { ItemChecklistDiscovery, SazonalidadeMes } from '../../models/types';
 
 interface Alerta { tipo: string; texto: string; }
@@ -54,7 +55,7 @@ export function Home() {
     }
   }
   // 2) hipótese sem evidência
-  const comEv = new Set(dados.evidencias.filter((e) => e.hipoteseId).map((e) => e.hipoteseId));
+  const comEv = new Set(dados.evidencias.flatMap((e) => vinculosDe(e).map((v) => v.hipoteseId)));
   const hipsSemEv = dados.hipoteses.filter((h) => !comEv.has(h.id)).length;
   if (hipsSemEv > 0) alertas.push({ tipo: 'Hipótese sem evidência', texto: `${hipsSemEv} hipótese(s) ainda sem nenhuma evidência vinculada.` });
   // 3) pendência jurídica

@@ -19,7 +19,7 @@ export function StakeholdersPanel({ pilar, titulo, ajuda }: { pilar: Pilar; titu
   const toast = useToast();
   const dados = useLiveQuery(async () => ({
     stakeholders: await db.stakeholders.where('pilar').equals(pilar).toArray(),
-    hipoteses: await db.hipoteses.where('pilar').equals(pilar).toArray(),
+    hipoteses: await db.hipoteses.where('pilares').equals(pilar).toArray(),
   }), [pilar]);
   const [edit, setEdit] = useState<Stakeholder | null>(null);
 

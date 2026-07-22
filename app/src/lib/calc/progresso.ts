@@ -3,6 +3,7 @@
  * Fase 1: heurística simples baseada em existência de dados por pilar.
  * Fases seguintes refinam por completude de campos.
  */
+import { pilaresDe } from '../../models/types';
 import type { Pilar, Unidade } from '../../models/types';
 
 export interface ContagensPorPilar {
@@ -91,8 +92,8 @@ export function progressoDiagnostico(sinaisDados: boolean[], checklistPct: numbe
 /** Agrupa contagens por pilar a partir de listas planas. */
 export function contarPorPilar(
   stakeholders: { pilar: Pilar }[],
-  evidencias: { pilar: Pilar }[],
-  hipoteses: { pilar: Pilar }[]
+  evidencias: { pilares?: Pilar[]; pilar?: Pilar }[],
+  hipoteses: { pilares?: Pilar[]; pilar?: Pilar }[]
 ): Record<Pilar, ContagensPorPilar> {
   const base = (): ContagensPorPilar => ({ ativos: 0, stakeholders: 0, evidencias: 0, hipoteses: 0 });
   const acc = {
@@ -100,7 +101,8 @@ export function contarPorPilar(
     logistico: base(), agroindustrial: base(), turistico: base(), educacao: base(),
   } as Record<Pilar, ContagensPorPilar>;
   for (const s of stakeholders) acc[s.pilar].stakeholders++;
-  for (const e of evidencias) acc[e.pilar].evidencias++;
-  for (const h of hipoteses) acc[h.pilar].hipoteses++;
+  // pilar-múltiplo: uma evidência/hipótese conta em cada pilar que etiqueta.
+  for (const e of evidencias) for (const p of pilaresDe(e)) acc[p].evidencias++;
+  for (const h of hipoteses) for (const p of pilaresDe(h)) acc[p].hipoteses++;
   return acc;
 }

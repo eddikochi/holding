@@ -5,10 +5,16 @@ import {
   salvarEvidencia, apagarEvidencia, evidenciaEmBranco, vincularEvidenciaAHipotese,
 } from '../../db/actions';
 import { EmptyState } from '../../components/EmptyState';
-import { BadgeConfianca } from '../../components/Badge';
+import { PontoConfianca } from '../../components/Badge';
 import { useToast } from '../../components/Toast';
 import { fmtData } from '../../lib/datas';
-import type { Evidencia, Hipotese, Pilar, FonteEvidencia, Confianca } from '../../models/types';
+import { compararCodigo } from '../../lib/ordenar';
+import { vinculosDe } from '../../models/types';
+import type { Evidencia, Hipotese, Pilar, FonteEvidencia, Confianca, EfeitoVinculo } from '../../models/types';
+
+const EFEITOS: { v: EfeitoVinculo; r: string }[] = [
+  { v: 'sustenta', r: 'Sustenta' }, { v: 'refuta', r: 'Refuta' }, { v: 'neutro', r: 'Neutro' },
+];
 
 const FONTES: { v: FonteEvidencia; r: string }[] = [
   { v: 'entrevista', r: 'Entrevista' },
@@ -17,9 +23,10 @@ const FONTES: { v: FonteEvidencia; r: string }[] = [
   { v: 'dado_oficial', r: 'Dado oficial' },
 ];
 
-/** Rótulo curto de uma hipótese para os selects de vínculo. */
+/** Rótulo estruturado de uma hipótese para os selects de vínculo: 'HIP-n · enunciado'. */
 function rotuloHipotese(h: Hipotese): string {
-  return h.enunciado.slice(0, 40) || '(sem enunciado)';
+  const nome = h.enunciado.slice(0, 36) || '(sem enunciado)';
+  return h.codigo ? `${h.codigo} · ${nome}` : nome;
 }
 
 /**
@@ -31,8 +38,8 @@ function rotuloHipotese(h: Hipotese): string {
  * Se `separarFatoEspeculacao`, agrupa por confiança: alta/média = "com fonte",
  * baixa = "a confirmar" (fato vs. especulação da spec do módulo Econômico).
  *
- * O vínculo evidência→hipótese é sempre do MESMO pilar: só hipóteses deste pilar
- * são oferecidas (evidência e hipótese carregam `pilar`; não há cruzamento).
+ * O vínculo evidência→hipótese oferece as hipóteses deste pilar (ambas carregam
+ * `pilares: Pilar[]`). Cada vínculo tem efeito (sustenta/refuta/neutro).
  */
 export function EvidenciasPanel({
   pilar,
@@ -50,8 +57,8 @@ export function EvidenciasPanel({
   rotuloItem?: string;
 }) {
   const toast = useToast();
-  const evidencias = useLiveQuery(() => db.evidencias.where('pilar').equals(pilar).toArray(), [pilar]);
-  const hipoteses = useLiveQuery(() => db.hipoteses.where('pilar').equals(pilar).toArray(), [pilar]);
+  const evidencias = useLiveQuery(() => db.evidencias.where('pilares').equals(pilar).toArray(), [pilar]);
+  const hipoteses = useLiveQuery(() => db.hipoteses.where('pilares').equals(pilar).toArray(), [pilar]);
   const [edit, setEdit] = useState<Evidencia | null>(null);
 
   if (!evidencias || !hipoteses) return <div className="panel">Carregando…</div>;
@@ -63,20 +70,38 @@ export function EvidenciasPanel({
   }
 
   function linha(e: Evidencia) {
+    const v0 = vinculosDe(e)[0];
     return (
       <tr key={e.id}>
-        <td>{e.conteudo}<br /><span style={{ color: 'var(--ink-soft)', fontSize: 11 }}>{e.fonteDetalhe ? e.fonteDetalhe + ' · ' : ''}{fmtData(e.data)}</span></td>
+        <td style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink-soft)', whiteSpace: 'nowrap' }}>{e.codigo ?? '—'}</td>
+        <td style={{ maxWidth: 380 }}>
+          <div className="txt-clamp">{e.conteudo}</div>
+          <span style={{ color: 'var(--ink-soft)', fontSize: 11 }}>{e.fonteDetalhe ? e.fonteDetalhe + ' · ' : ''}{fmtData(e.data)}</span>
+        </td>
         <td style={{ fontSize: 11 }}>{FONTES.find((f) => f.v === e.fonte)?.r}</td>
-        <td><BadgeConfianca confianca={e.confianca} /></td>
+        <td style={{ textAlign: 'center' }}><PontoConfianca confianca={e.confianca} /></td>
         <td>
-          <select
-            value={e.hipoteseId ?? ''}
-            onChange={async (ev) => { await vincularEvidenciaAHipotese(e.id, ev.target.value || undefined); toast('Vínculo atualizado'); }}
-            style={{ fontSize: 12, padding: '4px 6px' }}
-          >
-            <option value="">— sem vínculo —</option>
-            {hipoteses!.map((h) => <option key={h.id} value={h.id}>{rotuloHipotese(h)}</option>)}
-          </select>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+            <select
+              value={v0?.hipoteseId ?? ''}
+              onChange={async (ev) => { await vincularEvidenciaAHipotese(e.id, ev.target.value || undefined, v0?.efeito ?? 'sustenta'); toast('Vínculo atualizado'); }}
+              style={{ fontSize: 12, padding: '4px 6px' }}
+            >
+              <option value="">— sem vínculo —</option>
+              {hipoteses!.map((h) => <option key={h.id} value={h.id}>{rotuloHipotese(h)}</option>)}
+            </select>
+            {v0 && (
+              <select
+                className={`efeito-${v0.efeito}`}
+                value={v0.efeito}
+                title="Efeito desta evidência sobre a hipótese"
+                onChange={async (ev) => { await vincularEvidenciaAHipotese(e.id, v0.hipoteseId, ev.target.value as EfeitoVinculo); toast('Efeito atualizado'); }}
+                style={{ fontSize: 12, padding: '4px 6px', fontWeight: 700 }}
+              >
+                {EFEITOS.map((f) => <option key={f.v} value={f.v}>{f.r}</option>)}
+              </select>
+            )}
+          </div>
         </td>
         <td>
           <div className="row-actions">
@@ -89,10 +114,11 @@ export function EvidenciasPanel({
   }
 
   function tabela(lista: Evidencia[]) {
+    const ordenada = [...lista].sort((a, b) => compararCodigo(a.codigo, b.codigo));
     return (
       <table>
-        <thead><tr><th>Conteúdo</th><th>Fonte</th><th>Confiança</th><th>Vinculada a</th><th></th></tr></thead>
-        <tbody>{lista.map(linha)}</tbody>
+        <thead><tr><th>Código</th><th>Conteúdo</th><th>Fonte</th><th style={{ textAlign: 'center' }}>Confiança</th><th>Vinculada a</th><th></th></tr></thead>
+        <tbody>{ordenada.map(linha)}</tbody>
       </table>
     );
   }
@@ -160,10 +186,27 @@ function EvidenciaModal({ evidencia, hipoteses, rotuloItem, onFechar }: { eviden
           </div>
         </div>
         <label>Vincular à hipótese</label>
-        <select value={e.hipoteseId ?? ''} onChange={(ev) => setE({ ...e, hipoteseId: ev.target.value || undefined })}>
-          <option value="">— sem vínculo —</option>
-          {hipoteses.map((h) => <option key={h.id} value={h.id}>{rotuloHipotese(h)}</option>)}
-        </select>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <select
+            style={{ flex: 1, minWidth: 180 }}
+            value={vinculosDe(e)[0]?.hipoteseId ?? ''}
+            onChange={(ev) => setE({ ...e, vinculos: ev.target.value ? [{ hipoteseId: ev.target.value, efeito: vinculosDe(e)[0]?.efeito ?? 'sustenta' }] : [] })}
+          >
+            <option value="">— sem vínculo —</option>
+            {hipoteses.map((h) => <option key={h.id} value={h.id}>{rotuloHipotese(h)}</option>)}
+          </select>
+          {vinculosDe(e)[0] && (
+            <select
+              className={`efeito-${vinculosDe(e)[0].efeito}`}
+              style={{ fontWeight: 700 }}
+              value={vinculosDe(e)[0].efeito}
+              title="Efeito desta evidência sobre a hipótese"
+              onChange={(ev) => setE({ ...e, vinculos: [{ hipoteseId: vinculosDe(e)[0].hipoteseId, efeito: ev.target.value as EfeitoVinculo }] })}
+            >
+              {EFEITOS.map((f) => <option key={f.v} value={f.v}>{f.r}</option>)}
+            </select>
+          )}
+        </div>
         {erro && <div className="alerta" style={{ marginTop: 12 }}>{erro}</div>}
         <div className="row-actions" style={{ marginTop: 16 }}>
           <button className="btn" onClick={salvar}>Salvar</button>

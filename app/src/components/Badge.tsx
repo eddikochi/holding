@@ -6,6 +6,12 @@ export function BadgeConfianca({ confianca }: { confianca: Confianca }) {
   return <span className={`badge conf-${confianca}`}>{rotulo}</span>;
 }
 
+/** Ponto colorido de confiança (verde/âmbar/vermelho) com tooltip. Versão compacta p/ tabelas. */
+export function PontoConfianca({ confianca }: { confianca: Confianca }) {
+  const rotulo = { alta: 'Confiança alta', media: 'Confiança média', baixa: 'Confiança baixa' }[confianca];
+  return <span className={`ponto-conf conf-${confianca}`} title={rotulo} aria-label={rotulo} role="img" />;
+}
+
 /** Badge de status de hipótese — nunca verde antes de validada. */
 export function BadgeStatusHipotese({ status }: { status: StatusHipotese }) {
   const rotulo = {
