@@ -183,6 +183,12 @@ Depende de tudo acima. É onde o princípio da seção 0 se realiza.
       evidência e do tabelão de comparáveis.
 - [ ] Campo `titulo` opcional nas evidências (só se o truncamento não bastar).
 - [ ] Replicar o padrão de card patrimonial em outros pilares de inventário, se houver.
+- [ ] **Card OPERACIONAL do galpão no Logístico (≠ patrimonial):** o "Diagnóstico do galpão"
+      hoje é uma linha mínima. Evoluir para um card com os campos que importam à OPERAÇÃO
+      logística — acesso/docas, pé-direito, área útil/coberta, vãos, piso/carga — em vez do
+      enquadramento patrimonial (avaliação fiscal, enfiteuse etc.). Mesmo ativo, leitura
+      diferente por pilar. Verificar se os campos já existem em `Ativo.metragens` (peDireitoM,
+      construidaM2) ou se exige campo aditivo — se exigir, propor antes (gate de schema).
 - [ ] Campo de domínio explícito já resolvido no Patrimonial (`statusDominio`);
       avaliar se outros status de pilar precisam do mesmo tratamento (enum vs texto).
 - [ ] **Varredura de chats antigos:** buscar em conversas anteriores deste projeto
