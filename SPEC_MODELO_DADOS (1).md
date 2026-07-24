@@ -182,6 +182,11 @@ Depende de tudo acima. É onde o princípio da seção 0 se realiza.
       Munição já existente: antes/depois do card Patrimonial, da linha de
       evidência e do tabelão de comparáveis.
 - [ ] Campo `titulo` opcional nas evidências (só se o truncamento não bastar).
+- [ ] **Categoria de dor (Logístico):** o ranking de dores agrupa pelo TEXTO do campo
+      `dorOportunidade` (categoria antes de " — "), então só soma quando os players digitam
+      igual. Avaliar um campo estruturado de **categoria** (separado do detalhe livre) para o
+      ranking agrupar de forma robusta, sem depender de digitação idêntica. Mexe em schema →
+      propor antes. Só fazer se o ranking em campo provar que a agregação por texto não basta.
 - [ ] Replicar o padrão de card patrimonial em outros pilares de inventário, se houver.
 - [ ] **Card OPERACIONAL do galpão no Logístico (≠ patrimonial):** o "Diagnóstico do galpão"
       hoje é uma linha mínima. Evoluir para um card com os campos que importam à OPERAÇÃO
