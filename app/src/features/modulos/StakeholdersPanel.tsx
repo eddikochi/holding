@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/database';
 import {
@@ -15,7 +15,25 @@ import type { Stakeholder, Pilar, Disposicao } from '../../models/types';
  * o roteiro de entrevista do pilar e a lista sugerida de tipos de player; as
  * respostas do roteiro viram evidências vinculadas à hipótese escolhida.
  */
-export function StakeholdersPanel({ pilar, titulo, ajuda }: { pilar: Pilar; titulo: string; ajuda: string }) {
+/** Etiqueta de estado (desk vs entrevistado), derivada de `disposicao`. */
+function EtiquetaEstado({ disposicao }: { disposicao?: Disposicao }) {
+  const desk = disposicao === 'nao_perguntado' || disposicao == null;
+  return desk
+    ? <span className="badge" style={{ background: 'var(--amber-soft)', color: 'var(--amber)' }}>perfil desk · a validar</span>
+    : <span className="badge" style={{ background: 'var(--green-soft)', color: 'var(--green)' }}>player real</span>;
+}
+
+export function StakeholdersPanel({ pilar, titulo, ajuda, estadoDesk = false, filtrar, controle }: {
+  pilar: Pilar;
+  titulo: string;
+  ajuda: string;
+  /** Mostra a etiqueta "perfil desk · a validar" / "player real" por registro (opt-in). */
+  estadoDesk?: boolean;
+  /** Filtro genérico da lista (ex.: relevância de curto prazo). Não persiste. */
+  filtrar?: (s: Stakeholder) => boolean;
+  /** Controle extra (ex.: filtro) renderizado dentro do painel, acima da lista. */
+  controle?: ReactNode;
+}) {
   const toast = useToast();
   const dados = useLiveQuery(async () => ({
     stakeholders: await db.stakeholders.where('pilar').equals(pilar).toArray(),
@@ -25,23 +43,32 @@ export function StakeholdersPanel({ pilar, titulo, ajuda }: { pilar: Pilar; titu
 
   if (!dados) return <div className="panel">Carregando…</div>;
   const { stakeholders, hipoteses } = dados;
+  const lista = filtrar ? stakeholders.filter(filtrar) : stakeholders;
+  const contagem = lista.length === stakeholders.length ? `${stakeholders.length}` : `${lista.length} de ${stakeholders.length}`;
 
   return (
     <div className="panel">
       <div className="row-actions" style={{ justifyContent: 'space-between' }}>
-        <h2 style={{ margin: 0 }}>{titulo} ({stakeholders.length})</h2>
+        <h2 style={{ margin: 0 }}>{titulo} ({contagem})</h2>
         <button className="btn small" onClick={() => setEdit(stakeholderEmBranco(pilar))}>+ Novo</button>
       </div>
       <p style={{ color: 'var(--ink-soft)', marginTop: 4 }}>{ajuda}</p>
+      {controle}
       {stakeholders.length === 0 ? (
         <EmptyState titulo="Nenhum registro ainda">Cadastre o primeiro, ou importe da ferramenta de campo. Ao registrar, você verá o roteiro de entrevista do pilar.</EmptyState>
+      ) : lista.length === 0 ? (
+        <p style={{ color: 'var(--ink-soft)', fontSize: 13 }}>Nenhum registro neste filtro.</p>
       ) : (
         <table>
           <thead><tr><th>Nome</th><th>Tipo</th><th>Dor / oportunidade</th><th>Paga?</th><th></th></tr></thead>
           <tbody>
-            {stakeholders.map((s) => (
+            {lista.map((s) => (
               <tr key={s.id}>
-                <td><b>{s.nome}</b><br /><span style={{ color: 'var(--ink-soft)', fontSize: 11 }}>{s.local}</span></td>
+                <td>
+                  <b>{s.nome}</b><br />
+                  <span style={{ color: 'var(--ink-soft)', fontSize: 11 }}>{s.local}</span>
+                  {estadoDesk && <div style={{ marginTop: 4 }}><EtiquetaEstado disposicao={s.disposicao} /></div>}
+                </td>
                 <td>{s.segmento}</td>
                 <td>{s.dorOportunidade}</td>
                 <td>{s.disposicao ?? '—'}{s.valorCitado ? ` (${s.valorCitado})` : ''}</td>
