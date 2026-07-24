@@ -92,6 +92,13 @@ Uma `Hipotese` só pode ir a `status: 'validada'` com **≥ N evidências vincul
 
 ## Histórico de decisões de schema
 
+### v5 (cont.) — 2026-07-22 — Config `logistico_ativosIds` (galpão operacional)
+- Nova chave em `Config` (store auxiliar `{chave, valor}`, sem mudança de schema/store):
+  `logistico_ativosIds: ID[]` — ativos designados como galpão operacional do pilar logístico.
+- Motivo: o bloco "Diagnóstico do galpão" filtrava `tipo==='galpao'` e não achava o ativo real
+  (um terreno que é galpão). Passou a usar **referência explícita** escolhida pelo usuário, não
+  heurística de tipo. Só UI + Config; backup round-trip verificado (a chave viaja em `config[]`).
+
 ### v5 (cont.) — 2026-07-22 — `bairro`/`codigo` em ComparavelImobiliario
 - Campos aditivos `ComparavelImobiliario.bairro?: string` e `.codigo?: string` (metadados de
   pesquisa; já existiam nos dados de campo, agora tipados). Não indexados, sem migração Dexie.

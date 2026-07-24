@@ -112,6 +112,9 @@ export const db = new MasterplanDB();
 export const CONFIG_PROX_EV = 'proxEV';
 export const CONFIG_PROX_HIP = 'proxHIP';
 
+/** Config: ids dos ativos designados como galpão operacional do pilar logístico (Fase 4.3). */
+export const CONFIG_LOGISTICO_ATIVOS = 'logistico_ativosIds';
+
 /** Config: mínimo de evidências para validar uma hipótese (regra de ouro). */
 export const CONFIG_MIN_EVIDENCIAS = 'minEvidenciasParaValidar';
 export const DEFAULT_MIN_EVIDENCIAS = 3;

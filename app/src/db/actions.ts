@@ -2,7 +2,7 @@
  * Ações de escrita (CRUD) sobre o Dexie. Preenchem timestamps e aplicam
  * regras de domínio na camada de dados (não só na UI).
  */
-import { db, getMinEvidencias, CONFIG_PROX_EV, CONFIG_PROX_HIP } from './database';
+import { db, getMinEvidencias, CONFIG_PROX_EV, CONFIG_PROX_HIP, CONFIG_LOGISTICO_ATIVOS } from './database';
 import { novoId, agora } from '../lib/ids';
 import { ITENS_JURIDICOS, vinculosDe, pilaresDe } from '../models/types';
 import type {
@@ -211,6 +211,12 @@ export async function vincularEvidenciaAHipotese(
 ): Promise<void> {
   const vinculos = hipoteseId ? [{ hipoteseId, efeito }] : [];
   await db.evidencias.update(evidenciaId, { vinculos, updatedAt: agora() });
+}
+
+/* ── LOGÍSTICO: galpão(ões) operacional(is) ───────────────────────────── */
+/** Grava os ids dos ativos designados como galpão operacional do pilar logístico. */
+export async function salvarGalpoesLogistico(ids: string[]): Promise<void> {
+  await db.config.put({ chave: CONFIG_LOGISTICO_ATIVOS, valor: ids });
 }
 
 /* ── ANÁLISE POR PILAR ────────────────────────────────────────────────── */

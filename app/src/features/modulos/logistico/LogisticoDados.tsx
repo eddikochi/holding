@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../../../db/database';
+import { db, CONFIG_LOGISTICO_ATIVOS } from '../../../db/database';
+import { salvarGalpoesLogistico } from '../../../db/actions';
 import { rankingDeDores, relevanciaCurtoPrazo, type RelevanciaLog } from '../../../lib/calc/logistico';
 import { EmptyState } from '../../../components/EmptyState';
 import { StakeholdersPanel } from '../StakeholdersPanel';
 import { EvidenciasPanel } from '../EvidenciasPanel';
+import type { TipoAtivo } from '../../../models/types';
 
 const FILTROS: { v: 'todos' | RelevanciaLog; r: string }[] = [
   { v: 'todos', r: 'Todos' }, { v: 'curto', r: 'Curto prazo' }, { v: 'hub', r: 'Tese de hub' },
 ];
+const ROTULO_TIPO: Record<TipoAtivo, string> = {
+  galpao: 'Galpão', terreno: 'Terreno', loja: 'Loja', oficina: 'Oficina', outro: 'Outro',
+};
 
 /**
  * Aba "Dados" do módulo 05 Logístico. Padrão próprio (não usa TabelaAgrupadaMediana:
@@ -19,16 +24,22 @@ const FILTROS: { v: 'todos' | RelevanciaLog; r: string }[] = [
 export function LogisticoDados() {
   const [filtro, setFiltro] = useState<'todos' | RelevanciaLog>('todos');
   const dados = useLiveQuery(async () => {
-    const [stakeholders, ativos] = await Promise.all([
+    const [stakeholders, ativos, cfg] = await Promise.all([
       db.stakeholders.where('pilar').equals('logistico').toArray(),
-      db.ativos.where('tipo').equals('galpao').toArray(),
+      db.ativos.toArray(),
+      db.config.get(CONFIG_LOGISTICO_ATIVOS),
     ]);
-    return { stakeholders, ativos };
+    const galpaoIds: string[] = Array.isArray(cfg?.valor) ? (cfg!.valor as string[]) : [];
+    return { stakeholders, ativos, galpaoIds };
   });
 
   if (!dados) return <div className="panel">Carregando…</div>;
 
-  const { stakeholders, ativos } = dados;
+  const { stakeholders, ativos, galpaoIds } = dados;
+  const galpoes = ativos.filter((a) => galpaoIds.includes(a.id));
+  async function toggleGalpao(id: string) {
+    await salvarGalpoesLogistico(galpaoIds.includes(id) ? galpaoIds.filter((x) => x !== id) : [...galpaoIds, id]);
+  }
   // Estado do pilar (derivado): desk = disposição não perguntada; entrevistado = qualquer outra.
   const entrevistados = stakeholders.filter((s) => s.disposicao && s.disposicao !== 'nao_perguntado').length;
   const desk = stakeholders.length - entrevistados;
@@ -110,17 +121,39 @@ export function LogisticoDados() {
       <div className="panel">
         <h2>Diagnóstico do galpão</h2>
         {ativos.length === 0 ? (
-          <EmptyState titulo="Nenhum galpão cadastrado">
-            O galpão é o ativo âncora deste pilar. Cadastre-o no módulo 01 Patrimonial ou importe do campo.
+          <EmptyState titulo="Nenhum ativo cadastrado">
+            O galpão operacional é o ativo âncora deste pilar. Cadastre-o no módulo 01 Patrimonial ou importe do campo.
           </EmptyState>
         ) : (
-          ativos.map((a) => (
-            <div key={a.id} style={{ fontSize: 13, marginBottom: 8 }}>
-              <b>{a.nome}</b>
-              {a.metragens.construidaM2 ? ` · ${a.metragens.construidaM2} m²` : ''}
-              <br /><span style={{ color: 'var(--ink-soft)' }}>{a.estadoFisico || 'sem descrição de estado'}</span>
-            </div>
-          ))
+          <>
+            {galpoes.length === 0 ? (
+              <p style={{ color: 'var(--amber)', fontSize: 13, marginTop: 0 }}>
+                ▲ Nenhum ativo designado como galpão operacional. Marque abaixo qual imóvel é o galpão (pode ser terreno/oficina — não depende do tipo cadastral).
+              </p>
+            ) : (
+              galpoes.map((a) => (
+                <div key={a.id} style={{ fontSize: 13, marginBottom: 8 }}>
+                  <b>{a.nome}</b>
+                  <span style={{ color: 'var(--ink-soft)' }}> · {ROTULO_TIPO[a.tipo]}</span>
+                  {a.metragens.construidaM2 ? ` · ${a.metragens.construidaM2} m²` : a.metragens.terrenoM2 ? ` · ${a.metragens.terrenoM2} m² (terreno)` : ''}
+                  <br /><span style={{ color: 'var(--ink-soft)' }}>{a.estadoFisico || 'sem descrição de estado'}</span>
+                </div>
+              ))
+            )}
+            <details style={{ marginTop: 'var(--s2)' }}>
+              <summary style={{ cursor: 'pointer', color: 'var(--ink-soft)', fontSize: 12.5 }}>
+                Designar galpão operacional ({galpoes.length} de {ativos.length})
+              </summary>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 'var(--s2)' }}>
+                {ativos.map((a) => (
+                  <label key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 400, textTransform: 'none', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={galpaoIds.includes(a.id)} onChange={() => toggleGalpao(a.id)} style={{ width: 'auto' }} />
+                    {a.nome || '(sem nome)'} <span style={{ color: 'var(--ink-soft)', fontSize: 11 }}>· {ROTULO_TIPO[a.tipo]}</span>
+                  </label>
+                ))}
+              </div>
+            </details>
+          </>
         )}
       </div>
     </div>
