@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/database';
 import {
@@ -29,6 +29,19 @@ function rotuloHipotese(h: Hipotese): string {
   return h.codigo ? `${h.codigo} · ${nome}` : nome;
 }
 
+/** Agrupa evidências por uma chave; grupos ordenados por tamanho desc, depois alfabético. */
+function agrupar(evs: Evidencia[], keyFn: (e: Evidencia) => string): { chave: string; itens: Evidencia[] }[] {
+  const m = new Map<string, Evidencia[]>();
+  for (const e of evs) {
+    const k = keyFn(e);
+    if (!m.has(k)) m.set(k, []);
+    m.get(k)!.push(e);
+  }
+  return [...m.entries()]
+    .map(([chave, itens]) => ({ chave, itens }))
+    .sort((a, b) => b.itens.length - a.itens.length || a.chave.localeCompare(b.chave));
+}
+
 /**
  * Painel único de Evidências de um pilar, reutilizado por TODOS os diagnósticos.
  * Campos: Conteúdo, Tipo de fonte, Fonte específica (fonteDetalhe), Confiança e
@@ -37,6 +50,8 @@ function rotuloHipotese(h: Hipotese): string {
  * `fonteDetalhePadrao` pré-preenche o rótulo de origem (ex.: "Incentivo municipal").
  * Se `separarFatoEspeculacao`, agrupa por confiança: alta/média = "com fonte",
  * baixa = "a confirmar" (fato vs. especulação da spec do módulo Econômico).
+ * `resumo` renderiza uma linha derivada no topo; `agruparPor` agrupa a lista por
+ * uma chave (ex.: categoria de fonte no Econômico) — ambos opcionais e reusáveis.
  *
  * O vínculo evidência→hipótese oferece as hipóteses deste pilar (ambas carregam
  * `pilares: Pilar[]`). Cada vínculo tem efeito (sustenta/refuta/neutro).
@@ -48,6 +63,8 @@ export function EvidenciasPanel({
   fonteDetalhePadrao,
   separarFatoEspeculacao = false,
   rotuloItem = 'evidência',
+  resumo,
+  agruparPor,
 }: {
   pilar: Pilar;
   titulo: string;
@@ -55,6 +72,10 @@ export function EvidenciasPanel({
   fonteDetalhePadrao?: string;
   separarFatoEspeculacao?: boolean;
   rotuloItem?: string;
+  /** Linha-resumo derivada dos dados, no topo (ex.: "N com fonte · M a confirmar"). */
+  resumo?: (evidencias: Evidencia[]) => ReactNode;
+  /** Agrupa a lista por uma chave (ex.: categoria de fonte). Precede separarFatoEspeculacao. */
+  agruparPor?: (e: Evidencia) => string;
 }) {
   const toast = useToast();
   const evidencias = useLiveQuery(() => db.evidencias.where('pilares').equals(pilar).toArray(), [pilar]);
@@ -133,12 +154,20 @@ export function EvidenciasPanel({
         <button className="btn small" onClick={novo}>+ Adicionar</button>
       </div>
       <p style={{ color: 'var(--ink-soft)', marginTop: 4 }}>{ajuda}</p>
+      {resumo && evidencias.length > 0 && <div style={{ marginBottom: 'var(--s2)' }}>{resumo(evidencias)}</div>}
 
       {evidencias.length === 0 ? (
         <EmptyState titulo={`Nenhum registro ainda`}>
           Adicione o primeiro {rotuloItem}. Todo dado deve ter a fonte de onde veio — sem fonte,
           é palpite, não evidência. Vincule cada uma a uma hipótese para alimentar o funil (aba Discovery).
         </EmptyState>
+      ) : agruparPor ? (
+        agrupar(evidencias, agruparPor).map((g) => (
+          <div key={g.chave} style={{ marginTop: 'var(--s3)' }}>
+            <h3 style={{ fontSize: 15, margin: '0 0 4px' }}>{g.chave} <span style={{ color: 'var(--ink-soft)', fontWeight: 400, fontSize: 12 }}>({g.itens.length})</span></h3>
+            {tabela(g.itens)}
+          </div>
+        ))
       ) : separarFatoEspeculacao ? (
         <>
           <h3 style={{ color: 'var(--green)' }}>Com fonte / confirmado ({comFonte.length})</h3>

@@ -21,6 +21,34 @@ const ABREV: Record<StatusJuridico, string> = {
 };
 const HOLDING_NOTAS = 'juridico_holding_notas';
 
+/** Item de um ativo por chave, com default `nao_iniciado` (item ausente ≠ pendência ≠ ok). */
+function statusItem(a: Ativo, chave: ItemJuridicoChave): ItemChecklistJuridico {
+  return a.checklistJuridico?.find((i) => i.chave === chave) ?? { chave, status: 'nao_iniciado', observacao: '', responsavel: '' };
+}
+
+/** Resumo derivado por ativo. Âncora = pendências (o que trava); completude é secundária. */
+function resumoJuridico(a: Ativo): { pendencias: number; concluidos: number; emAndamento: number; pct: number } {
+  const conta = (st: StatusJuridico) => ITENS_JURIDICOS.filter((it) => statusItem(a, it.chave).status === st).length;
+  const concluidos = conta('ok') + conta('nao_se_aplica'); // resolvido = OK ou não-se-aplica
+  return { pendencias: conta('pendencia'), concluidos, emAndamento: conta('em_andamento'), pct: Math.round((concluidos / ITENS_JURIDICOS.length) * 100) };
+}
+
+/** Âncora de pendências (destaque) + barra de completude (secundária). */
+function ResumoAtivo({ a }: { a: Ativo }) {
+  const r = resumoJuridico(a);
+  return (
+    <div style={{ marginTop: 4 }}>
+      <span style={{ fontWeight: 800, fontSize: 12.5, color: r.pendencias > 0 ? 'var(--red)' : 'var(--green)' }}>
+        {r.pendencias > 0 ? `▲ ${r.pendencias} pendência${r.pendencias > 1 ? 's' : ''}` : '✓ sem pendências'}
+      </span>
+      <div className="prog-track" style={{ marginTop: 4, maxWidth: 150 }}><div className="prog-fill" style={{ width: `${r.pct}%` }} /></div>
+      <span style={{ fontSize: 11, color: 'var(--ink-soft)' }}>
+        {r.concluidos}/{ITENS_JURIDICOS.length} concluídos{r.emAndamento ? ` · ${r.emAndamento} em andamento` : ''}
+      </span>
+    </div>
+  );
+}
+
 /** Aba "Dados" do módulo 02 Jurídico — matriz ativo × item, pendências, holding/SPE. */
 export function JuridicoDados() {
   const toast = useToast();
@@ -34,9 +62,11 @@ export function JuridicoDados() {
 
   if (!ativos) return <div className="panel">Carregando…</div>;
 
-  function itemDe(a: Ativo, chave: ItemJuridicoChave): ItemChecklistJuridico {
-    return a.checklistJuridico?.find((i) => i.chave === chave) ?? { chave, status: 'nao_iniciado', observacao: '', responsavel: '' };
-  }
+  // Ordena por pendências desc (o que trava a decisão vem primeiro), depois por nome.
+  const ativosOrd = [...ativos].sort((a, b) => {
+    const d = resumoJuridico(b).pendencias - resumoJuridico(a).pendencias;
+    return d !== 0 ? d : (a.nome || '').localeCompare(b.nome || '');
+  });
 
   const pendencias = ativos.flatMap((a) =>
     (a.checklistJuridico ?? [])
@@ -61,9 +91,13 @@ export function JuridicoDados() {
       ) : (
         <>
           <div className="panel">
-            <h2>Matriz ativo × item jurídico</h2>
-            <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>Clique numa célula para editar status, observação, responsável e prazo.</p>
-            <div style={{ overflowX: 'auto' }}>
+            <h2>Checklist jurídico por ativo</h2>
+            <p style={{ color: 'var(--ink-soft)', marginTop: 0 }}>
+              O que trava a decisão vem primeiro (mais pendências no topo). Clique num item para editar status, observação, responsável e prazo.
+            </p>
+
+            {/* Desktop: matriz ativo × 9 itens */}
+            <div className="jur-desktop" style={{ overflowX: 'auto' }}>
               <table>
                 <thead>
                   <tr>
@@ -72,11 +106,11 @@ export function JuridicoDados() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ativos.map((a) => (
+                  {ativosOrd.map((a) => (
                     <tr key={a.id}>
-                      <td><b>{a.nome || '(sem nome)'}</b></td>
+                      <td style={{ minWidth: 180 }}><b>{a.nome || '(sem nome)'}</b><ResumoAtivo a={a} /></td>
                       {ITENS_JURIDICOS.map((it) => {
-                        const item = itemDe(a, it.chave);
+                        const item = statusItem(a, it.chave);
                         return (
                           <td key={it.chave} style={{ padding: 3 }}>
                             <div
@@ -97,11 +131,37 @@ export function JuridicoDados() {
                 </tbody>
               </table>
             </div>
+
+            {/* Mobile: acordeão por ativo (sem scroll horizontal) */}
+            <div className="jur-mobile">
+              {ativosOrd.map((a) => (
+                <details key={a.id} className="jur-acc">
+                  <summary>
+                    <b>{a.nome || '(sem nome)'}</b>
+                    <ResumoAtivo a={a} />
+                  </summary>
+                  <div>
+                    {ITENS_JURIDICOS.map((it) => {
+                      const item = statusItem(a, it.chave);
+                      return (
+                        <button key={it.chave} type="button" className="jur-acc-item" onClick={() => setEdit({ ativo: a, chave: it.chave })}>
+                          <span className={`matriz-cell jur-${item.status}`} style={{ minWidth: 26 }}>{ABREV[item.status]}</span>
+                          <span className="rot">{it.rotulo}</span>
+                          <span style={{ color: 'var(--ink-soft)', fontSize: 11 }}>{STATUS.find((s) => s.v === item.status)?.r}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </details>
+              ))}
+            </div>
+
             <div style={{ fontSize: 11, color: 'var(--ink-soft)', marginTop: 8 }}>
               Legenda: <span className="matriz-cell jur-ok" style={{ display: 'inline-block', padding: '1px 6px' }}>✓ OK</span>{' '}
               <span className="matriz-cell jur-em_andamento" style={{ display: 'inline-block', padding: '1px 6px' }}>⋯ Em andamento</span>{' '}
               <span className="matriz-cell jur-pendencia" style={{ display: 'inline-block', padding: '1px 6px' }}>! Pendência</span>{' '}
-              <span className="matriz-cell jur-nao_iniciado" style={{ display: 'inline-block', padding: '1px 6px' }}>– Não iniciado</span>
+              <span className="matriz-cell jur-nao_iniciado" style={{ display: 'inline-block', padding: '1px 6px' }}>– Não iniciado</span>{' '}
+              <span className="matriz-cell jur-nao_se_aplica" style={{ display: 'inline-block', padding: '1px 6px' }}>n/a N/A</span>
             </div>
           </div>
 

@@ -232,6 +232,22 @@ input[type=text], input[type=file], select, textarea {
 .jur-pendencia { background: var(--red-soft); color: var(--red); }
 .jur-nao_se_aplica { background: transparent; color: var(--ink-soft); border: 1px dashed var(--line); }
 
+/* jurídico: matriz (desktop) × acordeão (mobile) */
+.jur-desktop { display: block; }
+/* status centralizados no eixo do bloco do ativo (nome + pendências + barra) */
+.jur-desktop tbody td { vertical-align: middle; }
+.jur-mobile { display: none; }
+@media (max-width: 720px) {
+  .jur-desktop { display: none; }
+  .jur-mobile { display: block; }
+}
+.jur-acc { border: 1px solid var(--line); border-radius: var(--r-panel); margin-top: var(--s2); }
+.jur-acc > summary { list-style: none; cursor: pointer; padding: var(--s3); }
+.jur-acc > summary::-webkit-details-marker { display: none; }
+.jur-acc-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: transparent; border: none; border-top: 1px solid var(--line); padding: 8px var(--s3); cursor: pointer; color: var(--ink); font: inherit; font-size: 13px; }
+.jur-acc-item:hover { background: var(--bg-hover); }
+.jur-acc-item .rot { flex: 1; }
+
 /* form em grade */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
 @media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }

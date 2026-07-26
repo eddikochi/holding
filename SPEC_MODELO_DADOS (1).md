@@ -153,16 +153,47 @@ Cada pilar tem dor e estrutura própria na aba Dados. Trabalhar individualmente.
 - [x] 4.1 Padrão de tabela definido e materializado num componente **reaproveitável** `TabelaAgrupadaMediana` (métrica derivada = coluna de ênfase à direita, ordenação asc, linha de mediana, bloco de incompletos, agrupamento por realidade). Mediana em `lib/estatistica.ts`.
 - [x] 4.2 Imobiliário: comparáveis agrupados por tipo (Galpões mediana R$ 14,04/m² · Lojas R$ 20,52/m²), R$/m² derivado em render, sem m² no rodapé recolhível, painel de médias removido, `bairro` inline + `codigo` no Editar. Backup íntegro. Testado (desktop + mobile sem scroll horizontal).
 - [x] 4.3 Logístico — padrão próprio (estado + honestidade do vazio, SEM TabelaAgrupadaMediana): indicador "N perfis desk · M entrevistados — aguardando campo"; etiqueta desk/real por player (prop opt-in `estadoDesk`); ranking vira lista simples (dor + segmento) enquanto contagem = 1; filtro derivado curto/hub (heurística, sem campo novo, reversível, padrão Todos). "Diagnóstico do galpão" passou a usar **referência explícita** (Config `logistico_ativosIds` + seletor), não `tipo==='galpao'` — um terreno/oficina pode ser o galpão. Só UI + Config. Testado, backup íntegro.
-- [ ] 4.4 Jurídico (checklist de 9 itens por ativo).
-- [ ] 4.5 Econômico (indicadores).
+- [x] 4.4 Jurídico — checklist de 9 itens por ativo com resumo derivado: **âncora = N pendências** (o que trava, destaque vermelho/verde) + completude secundária (barra concluídos/9). Ativos ordenados por pendências desc. **Matriz no desktop, acordeão por ativo no mobile** (sem scroll horizontal). `nao_iniciado` (cinza cheio) ≠ `nao_se_aplica` (tracejado) mantidos distintos; não-iniciado nunca vira pendência nem OK. Só UI/leitura, sem schema. Testado, backup íntegro.
+- [x] 4.5 Econômico — padrão "estado + honestidade" (qualitativo, SEM TabelaAgrupadaMediana: não há métrica numérica). Linha-resumo no topo ("N com fonte firme · M a confirmar (especulação)", âmbar quando há especulação) + evidências **agrupadas por categoria de fonte** (`fonteDetalhe`: IBGE, Incentivo municipal, Corredor bioceânico…). `EvidenciasPanel` ganhou slots reusáveis `resumo` e `agruparPor`. Só UI, sem inventar número. Testado, backup íntegro. **Fase 4 completa (4.0–4.5).**
 
-### ▶ FASE 5 — Dashboard de decisão (a frente grande, por último)
-Depende de tudo acima. É onde o princípio da seção 0 se realiza.
-- [ ] 5.1 Cruzar Evidência + Hipótese + Comparativo + SWOT.
-- [ ] 5.2 Responder "onde há mais chance de dar certo e onde está a dor":
-      qual oportunidade tem mais evidência a favor e menos risco.
-- [ ] 5.3 Substituir a âncora de "avaliação fiscal" (venal, subvalorizada) por
-      **valor de mercado estimado** calculado via comparável (R$/m² × área).
+### ▶ FASE 5 — Dashboard (o "frontend" de apresentação)
+Depende das Fases 1–4 (evidência com efeito, hipótese com estado, código, pilar-etiqueta):
+só é possível porque elas estruturaram os dados.
+
+**Conceito — dois lados, públicos distintos:**
+- **BACKEND** = os 13 pilares (Fases 1–4). Público: Eddi, inserindo dados. Denso, operacional, completo. É onde o dado entra.
+- **FRONTEND** = o dashboard (Fase 5). Público: pai e irmão, vendo para onde ir. Sintético, visual, escaneável. Só leitura, nunca formulário. É onde o dado vira decisão.
+- Analogia-guia: uma evolução personalizada de Notion + Monday + Power BI.
+
+**Princípio central — data-driven e sempre-válido:**
+- Mostra o estado ATUAL, seja qual for. Nunca exige "todos os dados" para funcionar — dado entrando/saindo é o estado normal, não uma fase.
+- A incompletude É informação: "não investigado" tem o mesmo peso visual que "respondido". Mostrar o que se sabe E o que não se sabe.
+- Não há pergunta-âncora fixa. O dashboard DERIVA a jogada mais sustentada do momento (mais evidência a favor, menos trava) e a mostra no topo. Dados mudam → a recomendação muda sozinha.
+
+**Fundamento em pesquisa de UX (padrões testados — citar no case):**
+- **Evidence Coverage Matrix** (CHI 2026): cobertura de evidência por área, destacando o não-coberto — motiva a completar, não só informa.
+- **Decision Dashboard bayesiano**: hipóteses plotadas por PESO DE EVIDÊNCIA × GRAU DE VALIDAÇÃO, em quadrantes coloridos. A posição É a recomendação.
+- **Risk-Reward Grid 2×2**: oportunidades por risco × retorno (quick win / aposta estratégica / pão-com-manteiga / elefante branco). Pesos evoluem com os dados.
+
+**Arquitetura em zonas** (abas ou rolagem — decidir na UI profunda, não impeditivo agora; lista aberta, pode crescer):
+- **ZONA 1 — "O que temos / como está":** inventário + estado + o que trava. Forma: Evidence Coverage (pilares × cobertura: respondido/parcial/vazio).
+- **ZONA 2 — "Para onde ir / decisão":** a jogada derivada + o que a sustenta. DOIS mapas 2×2 complementares — (a) evidência × validação (quão pronta está a decisão); (b) risco × retorno (vale o esforço). Posição = recomendação.
+- **ZONA 3 — "Comparativos / números":** reusa os gráficos já feitos (R$/m² do Imobiliário, funil de hipóteses).
+
+**Forma segue a pergunta (anti-decoração):** cada elemento visual responde uma pergunta que a família faria. Se não responde pergunta, é decoração → sai.
+- decisão/jogada (1 resposta) → frase de destaque + 1 número, NÃO gráfico
+- proporção → rosca/progresso · comparação → barra ordenada · alerta/trava → ícone + cor, NÃO gráfico
+- funil de evidência → barra por hipótese · estado/não-investigado → cluster com clique
+- Animação: só para transição de estado (número subindo, barra crescendo), nunca decorativa.
+
+**Macro → micro:** a tela de abertura é síntese (macro); clicar abre o drill (micro) — evidências que sustentam, números, SWOT.
+
+**Método — piloto primeiro:** UMA zona de ponta a ponta prova o padrão, depois replica. NÃO construir as 3 zonas de uma vez.
+- [ ] 5.1 **Piloto — ZONA 2, mapa (a) evidência × validação:** hipóteses plotadas por peso de evidência × grau de validação; posição = recomendação. (o mais novo e valioso para a família)
+- [ ] 5.2 ZONA 2, mapa (b) risco × retorno (2×2 de oportunidades).
+- [ ] 5.3 ZONA 1 — Evidence Coverage (pilares × cobertura, com o não-investigado em destaque).
+- [ ] 5.4 ZONA 3 — reuso dos comparativos (R$/m², funil de hipóteses).
+- [ ] 5.5 Macro → micro: drill de cada elemento para as evidências/números que o sustentam.
 
 ---
 
@@ -178,9 +209,17 @@ Depende de tudo acima. É onde o princípio da seção 0 se realiza.
       (Evidência/Hipótese globais ↔ pilar como etiqueta múltipla ↔ vínculo com
       efeito), fluxo diagnóstico → evidência → hipótese → validação → oportunidade
       → priorização → business case → decisão, e a espinha de fases como histórico
-      de construção. NÃO vai para dentro do app — o onboarding já cobre o uso.
+      de construção. Incluir um **ORGANOGRAMA da modelagem de dados** — visual e de
+      fácil compreensão — mostrando Evidência/Hipótese globais ↔ pilar como etiqueta
+      ↔ vínculo com efeito ↔ ativos (as relações entre as entidades, não só o fluxo).
+      Citar o **fundamento de pesquisa de UX** do dashboard (Fase 5) como embasamento:
+      Evidence Coverage Matrix, decision quadrants (evidência × validação) e Risk-Reward Grid.
+      NÃO vai para dentro do app — o onboarding já cobre o uso.
       Munição já existente: antes/depois do card Patrimonial, da linha de
       evidência e do tabelão de comparáveis.
+- [ ] **Valor de mercado estimado (âncora do card Patrimonial):** substituir a âncora de
+      "avaliação fiscal" (venal, subvalorizada) por valor de mercado calculado via comparável
+      (R$/m² mediano do tipo × área). Preservado da antiga Fase 5.3; depende dos comparáveis (4.2).
 - [ ] Campo `titulo` opcional nas evidências (só se o truncamento não bastar).
 - [ ] **Categoria de dor (Logístico):** o ranking de dores agrupa pelo TEXTO do campo
       `dorOportunidade` (categoria antes de " — "), então só soma quando os players digitam
