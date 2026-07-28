@@ -342,7 +342,7 @@ input[type=text], input[type=file], select, textarea {
 .sintese-painel { border-left: 3px solid var(--color-accent); }
 .sintese-frase { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.4; }
 
-.mapa-ev-svg { width: 100%; height: auto; display: block; touch-action: manipulation; }
+.mapa-ev-svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; touch-action: manipulation; }
 .mapa-ev .faixa-validada { fill: var(--green-soft); }   /* faixa-alvo: hipótese validada. Vazia = estado real. */
 .mapa-ev .q-lbl { fill: var(--ink-soft); font-size: 8.5px; font-weight: 600; opacity: 0.75; }
 .mapa-ev .divisor { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 3; }

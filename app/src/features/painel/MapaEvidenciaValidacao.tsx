@@ -24,13 +24,38 @@ const COR_STATUS: Record<StatusHipotese, string> = {
   refutada: 'var(--red)',
 };
 
-// Geometria do viewBox (retrato, cabe em tela de celular a 100% de largura).
-const W = 320;
-const H = 300;
-const M = { top: 14, right: 14, bottom: 46, left: 46 };
+// Geometria do viewBox: paisagem (largura > altura). O eixo X (evidência, contínuo)
+// é o informativo → ganha largura; o Y só distingue 2 faixas (validada/não) → altura mínima.
+// O tamanho absoluto é limitado no CSS (.mapa-ev-svg max-width) para não dominar a tela.
+const W = 380;
+const H = 240;
+const M = { top: 14, right: 14, bottom: 44, left: 46 };
 const PLOT = { x0: M.left, x1: W - M.right, y0: M.top, y1: H - M.bottom };
 const PLOT_W = PLOT.x1 - PLOT.x0;
 const PLOT_H = PLOT.y1 - PLOT.y0;
+
+// Folga à esquerda: valor 0 fica ligeiramente à direita do eixo Y (a bolha não cruza a linha).
+const GUT = 18;
+// A faixa "não validada" ocupa 60% de baixo — é onde os dados se concentram (estado real:
+// muita hipótese sem validação, várias sem evidência empilhadas em x=0). "parcial" e "validada"
+// dividem os 40% de cima (20% cada).
+const FRAC_NV = 0.6;
+const xNoEixo = (v: number, dom: number) => PLOT.x0 + GUT + (v / dom) * (PLOT_W - GUT);
+// As faixas "parcial" e "validada" dividem o que sobra acima de "não validada" (metade cada).
+const FAIXA_TOPO = (1 - FRAC_NV) / 2;
+// Frações verticais (medidas de BAIXO) [início, fim] de cada nível: 0 não validada, 1 parcial, 2 validada.
+const FAIXAS: [number, number][] = [
+  [0, FRAC_NV],
+  [FRAC_NV, FRAC_NV + FAIXA_TOPO],
+  [FRAC_NV + FAIXA_TOPO, 1],
+];
+const yDeFracao = (f: number) => PLOT.y1 - PLOT_H * f;
+/** Centro vertical da faixa por nível. */
+const yCentroFaixa = (nivel: number): number => yDeFracao((FAIXAS[nivel][0] + FAIXAS[nivel][1]) / 2);
+/** Bordas [topo, base] da faixa em coords svg (topo < base), para conter o empilhamento. */
+const bordasFaixa = (nivel: number): [number, number] => [yDeFracao(FAIXAS[nivel][1]), yDeFracao(FAIXAS[nivel][0])];
+/** Linha divisória de validação: topo da faixa "não validada". */
+const Y_DIVISOR = yDeFracao(FRAC_NV);
 
 interface Geo extends PontoHipotese {
   cx: number;
@@ -56,8 +81,8 @@ export function MapaEvidenciaValidacao({
   // que vem do campo `status` — real. O limiar de evidência é regra de negócio (backlog),
   // então não se desenha corte vertical: seria sugerir um limiar que não existe.
   const domX = Math.max(maxSustenta, 1) + 1;
-  const xDoValor = (v: number) => PLOT.x0 + (v / domX) * PLOT_W;
-  const yDivisor = PLOT.y0 + PLOT_H * (1 - 0.34); // "não validada" fica no terço inferior
+  const xDoValor = (v: number) => xNoEixo(v, domX);
+  const yDivisor = Y_DIVISOR; // topo da faixa "não validada" (metade inferior)
 
   const selecionado = geo.find((g) => g.id === sel) ?? null;
 
@@ -80,7 +105,7 @@ export function MapaEvidenciaValidacao({
         <line x1={PLOT.x0} y1={PLOT.y0} x2={PLOT.x0} y2={PLOT.y1} className="eixo" />
 
         {/* Ticks do eixo X: só 0 e o máximo observado. Nenhum limiar marcado. */}
-        <text x={PLOT.x0} y={PLOT.y1 + 14} className="tick" textAnchor="middle">0</text>
+        <text x={xDoValor(0)} y={PLOT.y1 + 14} className="tick" textAnchor="middle">0</text>
         {maxSustenta > 0 && (
           <text x={xDoValor(maxSustenta)} y={PLOT.y1 + 14} className="tick" textAnchor="middle">{maxSustenta}</text>
         )}
@@ -151,14 +176,9 @@ export function MapaEvidenciaValidacao({
   );
 }
 
-/** Beeswarm simples: posiciona por X, e empurra na vertical (dentro da faixa do status) para não sobrepor. */
+/** Beeswarm: posiciona por X (evidência) e empurra na vertical, DENTRO da faixa do status, sem sobrepor. */
 function calcularGeometria(pontos: PontoHipotese[], maxSustenta: number): Geo[] {
   const domX = Math.max(maxSustenta, 1) + 1; // + folga p/ não colar na borda direita
-  const xDe = (s: number) => PLOT.x0 + (s / domX) * PLOT_W;
-
-  // 3 faixas verticais (base/meio/topo). Centro de cada faixa.
-  const faixaH = PLOT_H / 3;
-  const yCentro = (nivel: number) => PLOT.y1 - faixaH * (nivel + 0.5);
   const rDe = (total: number) => 6 + Math.min(total, 8) * 1.3; // 6..16
 
   const colocados: Geo[] = [];
@@ -168,20 +188,18 @@ function calcularGeometria(pontos: PontoHipotese[], maxSustenta: number): Geo[] 
   for (const p of ordenado) {
     const nivel = p.status === 'refutada' ? 0 : NIVEL_Y[p.status];
     const r = rDe(p.totalVinculada);
-    const cx = xDe(p.sustenta);
-    const base = yCentro(nivel);
-    const limSup = PLOT.y0 + faixaH * (2 - nivel) + r + 1;
-    const limInf = PLOT.y1 - faixaH * nivel - r - 1;
-    let cy = base;
+    const cx = xNoEixo(p.sustenta, domX);
+    const centro = yCentroFaixa(nivel);
+    const [topo, base] = bordasFaixa(nivel);
+    const limSup = topo + r + 1;
+    const limInf = base - r - 1;
+    const passoV = r * 2 + 2; // casa com o raio de colisão (c.r+r+2) p/ empilhar sem sobrepor
+    let cy = centro;
     // Tenta o centro; se colidir, alterna para cima/baixo em passos até achar espaço na faixa.
-    for (let passo = 0; passo < 24; passo++) {
-      const tent = base + (passo % 2 === 0 ? 1 : -1) * Math.ceil(passo / 2) * 7;
+    for (let passo = 0; passo < 40; passo++) {
+      const tent = centro + (passo % 2 === 0 ? 1 : -1) * Math.ceil(passo / 2) * passoV;
       if (tent < limSup || tent > limInf) continue;
-      const colide = colocados.some((c) => {
-        const dx = c.cx - cx;
-        const dy = c.cy - tent;
-        return Math.hypot(dx, dy) < c.r + r + 2;
-      });
+      const colide = colocados.some((c) => Math.hypot(c.cx - cx, c.cy - tent) < c.r + r + 2);
       if (!colide) { cy = tent; break; }
       cy = tent; // guarda a última tentativa como fallback
     }
