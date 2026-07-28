@@ -2,7 +2,7 @@
  * Ações de escrita (CRUD) sobre o Dexie. Preenchem timestamps e aplicam
  * regras de domínio na camada de dados (não só na UI).
  */
-import { db, getMinEvidencias, CONFIG_PROX_EV, CONFIG_PROX_HIP, CONFIG_LOGISTICO_ATIVOS } from './database';
+import { db, getMinEvidencias, CONFIG_PROX_EV, CONFIG_PROX_HIP, CONFIG_LOGISTICO_ATIVOS, CONFIG_IMOB_UNIDADE_TIPO } from './database';
 import { novoId, agora } from '../lib/ids';
 import { ITENS_JURIDICOS, vinculosDe, pilaresDe } from '../models/types';
 import type {
@@ -217,6 +217,20 @@ export async function vincularEvidenciaAHipotese(
 /** Grava os ids dos ativos designados como galpão operacional do pilar logístico. */
 export async function salvarGalpoesLogistico(ids: string[]): Promise<void> {
   await db.config.put({ chave: CONFIG_LOGISTICO_ATIVOS, valor: ids });
+}
+
+/* ── IMOBILIÁRIO: tipo de mercado por unidade (comparar R$/m²) ─────────── */
+/**
+ * Define (ou limpa) o tipo de mercado usado para comparar o R$/m² de UMA unidade.
+ * `tipo === undefined` remove a entrada (volta a usar o tipo do ativo pai como padrão).
+ * Grava só em Config — não toca a entidade Unidade. Reversível (Opção B, Fase 5).
+ */
+export async function salvarTipoComparacaoUnidade(unidadeId: string, tipo: TipoAtivo | undefined): Promise<void> {
+  const atual = (await db.config.get(CONFIG_IMOB_UNIDADE_TIPO))?.valor;
+  const mapa: Record<string, TipoAtivo> = (atual && typeof atual === 'object') ? { ...(atual as Record<string, TipoAtivo>) } : {};
+  if (tipo) mapa[unidadeId] = tipo;
+  else delete mapa[unidadeId];
+  await db.config.put({ chave: CONFIG_IMOB_UNIDADE_TIPO, valor: mapa });
 }
 
 /* ── ANÁLISE POR PILAR ────────────────────────────────────────────────── */

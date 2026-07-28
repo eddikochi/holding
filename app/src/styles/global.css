@@ -380,3 +380,23 @@ input[type=text], input[type=file], select, textarea {
 .refutada-linha { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
 .refutada-linha:last-child { border-bottom: none; }
 .refutada-linha .rc { font-weight: 700; color: var(--red); margin-right: 6px; }
+
+/* ── Comparativo R$/m² nossos imóveis × mercado (Fase 5) ──────────────── */
+.cmp-lista { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.cmp-row { border: 1px solid var(--line); border-radius: var(--r-panel); padding: 10px 12px; background: var(--bg); }
+.cmp-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cmp-nome { font-size: 14px; }
+.cmp-sub { color: var(--ink-soft); font-size: 11.5px; font-weight: 400; }
+.cmp-seletor { display: inline-flex; align-items: center; gap: 6px; }
+.cmp-seletor select { width: auto; min-height: 32px; padding: 4px 8px; font-size: 12.5px; }
+.cmp-barra-wrap { margin: 8px 0 6px; }
+.cmp-barra-track { position: relative; height: 18px; background: var(--panel-2); border-radius: 4px; overflow: hidden; }
+.cmp-barra-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px 0 0 4px; transition: width .3s ease; }
+.cmp-mediana-marca { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); box-shadow: 0 0 0 1px var(--bg); }
+.cmp-numeros { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cmp-nosso { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.cmp-sem-mercado { font-style: italic; }
+.cmp-alerta { margin-top: 14px; border-left: 3px solid var(--amber); background: var(--amber-soft); border-radius: var(--r-panel); padding: 10px 12px; }
+.cmp-alerta-linha { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.cmp-alerta-linha:first-of-type { border-top: none; }
+.cmp-rodape { margin-top: 12px; color: var(--ink-soft); font-size: 12px; }

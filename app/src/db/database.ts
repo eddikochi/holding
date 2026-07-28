@@ -115,6 +115,13 @@ export const CONFIG_PROX_HIP = 'proxHIP';
 /** Config: ids dos ativos designados como galpão operacional do pilar logístico (Fase 4.3). */
 export const CONFIG_LOGISTICO_ATIVOS = 'logistico_ativosIds';
 
+/**
+ * Config: mapa manual unidade → tipo de mercado para comparar R$/m² (Fase 5, Opção B).
+ * `{ [unidadeId]: TipoAtivo }`. Reversível, sem tocar entidade. Ausente = usa o tipo do
+ * ativo pai como padrão. Escolhido em vez de campo em `Unidade` por serem poucos casos.
+ */
+export const CONFIG_IMOB_UNIDADE_TIPO = 'imobiliario_unidadeTipoComparacao';
+
 /** Config: mínimo de evidências para validar uma hipótese (regra de ouro). */
 export const CONFIG_MIN_EVIDENCIAS = 'minEvidenciasParaValidar';
 export const DEFAULT_MIN_EVIDENCIAS = 3;

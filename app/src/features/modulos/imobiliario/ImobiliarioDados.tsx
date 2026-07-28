@@ -8,6 +8,7 @@ import { TabelaAgrupadaMediana, type GrupoMediana } from '../../../components/Ta
 import { useToast } from '../../../components/Toast';
 import { fmtData } from '../../../lib/datas';
 import { EvidenciasPanel } from '../EvidenciasPanel';
+import { ComparativoAluguelPanel } from './ComparativoAluguelPanel';
 import type { ComparavelImobiliario, TipoAtivo, Ativo, CenariosUso } from '../../../models/types';
 
 const TIPOS: { v: TipoAtivo; r: string }[] = [
@@ -95,6 +96,8 @@ export function ImobiliarioDados() {
           />
         )}
       </div>
+
+      <ComparativoAluguelPanel />
 
       <div className="panel">
         <h2>Cenários de uso por ativo</h2>
