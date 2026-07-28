@@ -189,7 +189,7 @@ só é possível porque elas estruturaram os dados.
 **Macro → micro:** a tela de abertura é síntese (macro); clicar abre o drill (micro) — evidências que sustentam, números, SWOT.
 
 **Método — piloto primeiro:** UMA zona de ponta a ponta prova o padrão, depois replica. NÃO construir as 3 zonas de uma vez.
-- [ ] 5.1 **Piloto — ZONA 2, mapa (a) evidência × validação:** hipóteses plotadas por peso de evidência × grau de validação; posição = recomendação. (o mais novo e valioso para a família)
+- [x] 5.1 **Piloto — ZONA 2, mapa (a) evidência × validação (CONCLUÍDO, publicado):** hipóteses plotadas por peso de evidência (nº `sustenta`) × grau de validação (`status`). Tamanho da bolha = evidência acumulada (todos os vínculos); `refuta` = badge/anel (não subtrai do peso); `neutro` = ignorado; refutadas saem do mapa e vão para lista à parte. Síntese derivada do estado (muda sozinha com o dado). Só leitura, sem schema novo. Eixo X é contínuo, **sem corte vertical** — o limiar de "evidência suficiente" é regra de negócio adiada (ver §5), e desenhar a linha sem regra atrás seria sugerir um limiar inexistente. Único divisor real = validação (eixo Y, campo `status`). Backup round-trip verificado lossless. Rota `/painel` ("Para onde ir"). (o mais novo e valioso para a família)
 - [ ] 5.2 ZONA 2, mapa (b) risco × retorno (2×2 de oportunidades).
 - [ ] 5.3 ZONA 1 — Evidence Coverage (pilares × cobertura, com o não-investigado em destaque).
 - [ ] 5.4 ZONA 3 — reuso dos comparativos (R$/m², funil de hipóteses).
@@ -198,6 +198,13 @@ só é possível porque elas estruturaram os dados.
 ---
 
 ## 5. BACKLOG PARALELO (não bloqueia — fazer quando couber)
+- [ ] **Limiar de "evidência suficiente" (eixo X do mapa da Zona 2):** definir quantos vínculos
+      `sustenta` caracterizam evidência suficiente para uma hipótese — é regra de **negócio**, não do
+      piloto. Enquanto não definida, o mapa da Zona 2 mantém o eixo X contínuo, **sem corte vertical**
+      (linha sem lógica atrás = decoração enganosa, sugere limiar que não existe). Quando definida, o
+      eixo X ganha o divisor e o mapa vira 2×2 pleno (quadrantes investigar / pronta p/ validar /
+      validada com pouca base / decisão sustentada). Decidido adiar nesta sessão (2026-07-27): o piloto
+      não define o que valida nem o que "basta" para uma hipótese.
 - [ ] **Multi-vínculo por evidência (UI):** o modelo já suporta `vinculos: {hipoteseId,efeito}[]`
       com N vínculos, mas a UI da Fase 3 mantém **um** vínculo por evidência (dropdown único +
       seletor de efeito). Construir a UI para ligar uma evidência a **várias** hipóteses, cada uma

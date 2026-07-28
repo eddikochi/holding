@@ -337,3 +337,46 @@ input[type=text], input[type=file], select, textarea {
 }
 .login-btn:hover { filter: brightness(0.92); }
 .login-erro { color: var(--red); font-size: 13px; text-align: center; margin: 0; font-weight: 600; }
+
+/* ── Painel de decisão · Zona 2: mapa evidência × validação ───────────── */
+.sintese-painel { border-left: 3px solid var(--color-accent); }
+.sintese-frase { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+
+.mapa-ev-svg { width: 100%; height: auto; display: block; touch-action: manipulation; }
+.mapa-ev .faixa-validada { fill: var(--green-soft); }   /* faixa-alvo: hipótese validada. Vazia = estado real. */
+.mapa-ev .q-lbl { fill: var(--ink-soft); font-size: 8.5px; font-weight: 600; opacity: 0.75; }
+.mapa-ev .divisor { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 3; }
+.mapa-ev .eixo { stroke: var(--ink-soft); stroke-width: 1; opacity: 0.5; }
+.mapa-ev .tick { fill: var(--ink-soft); font-size: 8.5px; }
+.mapa-ev .eixo-lbl { fill: var(--ink-soft); font-size: 10px; font-weight: 600; }
+.mapa-ev .bolha { cursor: pointer; }
+.mapa-ev .bolha.sel circle { stroke-width: 2.5; }
+.mapa-ev .bolha-lbl { fill: var(--ink); font-size: 8.5px; font-weight: 700; pointer-events: none; }
+.mapa-ev .anel-refuta { fill: none; stroke: var(--red); stroke-width: 1.5; stroke-dasharray: 2 2; }
+.mapa-ev .badge-refuta { fill: var(--red); font-size: 9px; font-weight: 800; }
+
+.mapa-legenda { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 12px; color: var(--ink-soft); }
+.mapa-legenda span { display: inline-flex; align-items: center; gap: 5px; }
+.mapa-legenda .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.mapa-legenda .dot.ring { background: transparent; border: 1.5px dashed var(--red); }
+.mapa-legenda .dot.dash { background: transparent; border: 1.5px dashed var(--ink-soft); }
+.mapa-legenda .leg-obs { font-style: italic; opacity: 0.8; }
+
+.mapa-detalhe { margin-top: 12px; padding: 10px 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r-panel); }
+.md-cod { font-size: 12px; font-weight: 700; color: var(--ink-soft); margin-bottom: 4px; }
+.md-cod .st { padding: 1px 7px; border-radius: 20px; font-size: 11px; }
+.md-cod .st-nao_validada { background: var(--line); color: var(--ink); }
+.md-cod .st-parcial { background: var(--amber-soft); color: var(--amber); }
+.md-cod .st-validada { background: var(--green-soft); color: var(--green); }
+.md-cod .st-refutada { background: var(--red-soft); color: var(--red); }
+.md-enun { font-size: 14px; color: var(--ink); line-height: 1.4; }
+.md-nums { display: flex; gap: 10px; margin-top: 6px; font-size: 12px; font-weight: 600; }
+.md-nums .ok { color: var(--green); }
+.md-nums .ru { color: var(--red); }
+.md-nums .nu { color: var(--ink-soft); }
+.md-pil { margin-top: 4px; font-size: 11.5px; color: var(--ink-soft); }
+
+.vazio-honesto { border-left: 3px solid var(--amber); font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+.refutada-linha { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.refutada-linha:last-child { border-bottom: none; }
+.refutada-linha .rc { font-weight: 700; color: var(--red); margin-right: 6px; }

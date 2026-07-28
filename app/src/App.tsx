@@ -19,6 +19,9 @@ export function App() {
           <NavLink to="/" end className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
             <span className="num">◆</span> Visão geral
           </NavLink>
+          <NavLink to="/painel" className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}>
+            <span className="num">◈</span> Para onde ir
+          </NavLink>
 
           {GRUPOS.map((g) => (
             <div key={g.chave}>

@@ -6,6 +6,7 @@ import { Home } from './features/home/Home';
 import { ModuloDispatcher } from './features/modulos/ModuloDispatcher';
 import { Importar } from './features/importar/Importar';
 import { Backup } from './features/backup/Backup';
+import { PainelDecisao } from './features/painel/PainelDecisao';
 import { ToastProvider } from './components/Toast';
 import { Login } from './pages/Login';
 import './styles/global.css';
@@ -17,6 +18,7 @@ const router = createHashRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
+      { path: 'painel', element: <PainelDecisao /> },
       { path: 'modulo/:slug', element: <ModuloDispatcher /> },
       { path: 'importar', element: <Importar /> },
       { path: 'backup', element: <Backup /> },
